@@ -83,7 +83,7 @@ public class Main extends ApplicationAdapter {
 
 	}
 
-	public void updatePresence(){
+	private void updatePresence(){
 		DiscordRichPresence presence = new DiscordRichPresence();//setDetails();
 		presence.state = "score : "+game.getScore();
 		presence.details = "in version "+game.version;
@@ -92,7 +92,7 @@ public class Main extends ApplicationAdapter {
 		DiscordRPC.INSTANCE.Discord_UpdatePresence(presence);
 	}
 
-	public boolean update(int x, int y){
+	private boolean update(int x, int y){
 		if(!game.getPlayer().move(x, y)) return true;
 		updatePresence();
 		try {
@@ -112,10 +112,10 @@ public class Main extends ApplicationAdapter {
 		boolean hasLose = false;
 		batch.begin();
 
-		if(Gdx.input.isKeyJustPressed(Input.Keys.LEFT)) hasLose = !update(-1, 0);
-		else if(Gdx.input.isKeyJustPressed(Input.Keys.RIGHT)) hasLose = !update(1, 0);
-		else if(Gdx.input.isKeyJustPressed(Input.Keys.UP)) hasLose = !update(0, 1);
-		else if(Gdx.input.isKeyJustPressed(Input.Keys.DOWN)) hasLose = !update(0, -1);
+		if(Gdx.input.isKeyJustPressed(Input.Keys.LEFT)) hasLose = update(-1, 0);
+		else if(Gdx.input.isKeyJustPressed(Input.Keys.RIGHT)) hasLose = update(1, 0);
+		else if(Gdx.input.isKeyJustPressed(Input.Keys.UP)) hasLose = update(0, 1);
+		else if(Gdx.input.isKeyJustPressed(Input.Keys.DOWN)) hasLose = update(0, -1);
 		if(Gdx.input.isKeyPressed(Input.Keys.ENTER) && (game.getPlayer().hasLose() || game.getMap().getEmptyCases().isEmpty())) {
 			try {
 				game = new Game();
@@ -123,7 +123,7 @@ public class Main extends ApplicationAdapter {
 				e.printStackTrace();
 			}
 		}
-		if(hasLose) {
+		if(!hasLose) {
 			tmpBuffer.clear();
 			tmpBuffer.add("You are dead. Please press enter.");
 		}
@@ -173,7 +173,7 @@ public class Main extends ApplicationAdapter {
 		return new Texture(getAsset(path));
 	}
 
-	public Sound getSound(String path){
+	private Sound getSound(String path){
 		FileHandle handle = getAsset(path);
 		if(handle == null) return null;
 		return Gdx.audio.newSound(handle);
@@ -189,9 +189,9 @@ public class Main extends ApplicationAdapter {
 		sound.play(volume);
 	}
 
-	public static FileHandle getAsset(String path){
+	private static FileHandle getAsset(String path){
 
-		path = "assets/"+path;
+		path = "textures/"+path;
 		File textureFile = new File(path);
 		FileHandle handle = Gdx.files.internal(path);
 		if (handle.exists())
@@ -220,7 +220,7 @@ public class Main extends ApplicationAdapter {
 		renderer.dispose();
 	}
 
-	public void drawTexture(Rectangle rectangle, Texture texture){
+	private void drawTexture(Rectangle rectangle, Texture texture){
 
 		batch.draw(texture, rectangle.x, rectangle.y, rectangle.width, rectangle.height);
 
