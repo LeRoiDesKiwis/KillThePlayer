@@ -6,8 +6,11 @@ import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
 import com.badlogic.gdx.graphics.GL20;
 import fr.leroideskiwis.ktp.Main;
 
+import java.io.File;
+
 public class DesktopLauncher {
 	public static void main (String[] arg) {
+
 		LwjglApplicationConfiguration cfg = new LwjglApplicationConfiguration();
 
 		cfg.title = "KillThePlayer (created by LeRoiDesKiwis)";

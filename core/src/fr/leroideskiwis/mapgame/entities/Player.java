@@ -1,21 +1,26 @@
-package fr.leroideskiwis.mapgame;
+package fr.leroideskiwis.mapgame.entities;
 
+import fr.leroideskiwis.mapgame.Entity;
+import fr.leroideskiwis.mapgame.Game;
+import fr.leroideskiwis.mapgame.Map;
+import fr.leroideskiwis.mapgame.Position;
 import fr.leroideskiwis.mapgame.specialobjects.InvinciblePlayer;
-import fr.leroideskiwis.mapgame.specialobjects.SpecialObj;
+import fr.leroideskiwis.plugins.events.OnMove;
+import fr.leroideskiwis.plugins.events.OnPlayerTakeObject;
+import fr.leroideskiwis.plugins.events.OnTakeCoin;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class Player {
+public class Player extends Entity {
 
     private Map map;
-    private char token;
     private Game game;
     private int invincibleTour;
 
-    public Player(Game game, Map map, char token){
+    public Player(Game game, Map map){
+        super("player");
         this.map = map;
-        this.token = token;
         this.game = game;
     }
 
@@ -31,11 +36,11 @@ public class Player {
         return setPosition(position.getX(), position.getY());
     }
 
-    public void passOneInvincibleMove(){
+    private void passOneInvincibleMove(){
         invincibleTour--;
         if(invincibleTour > 0)
-            game.addInBuffer("You're invincible mode will be disabled in "+invincibleTour+" moves");
-        else game.addInBuffer("You're invincible mode was been disabled");
+            game.sendMessage("You're invincible mode will be disabled in "+invincibleTour+" moves");
+        else game.sendMessage("You're invincible mode was been disabled");
     }
 
     /**
@@ -46,7 +51,7 @@ public class Player {
      */
     public boolean setPosition(int x, int y){
         Position before = getPosition();
-        Object object = map.getObject(x, y);
+        Entity object = map.getObject(x, y);
         if(object instanceof SpecialObj) {
             SpecialObj special = (SpecialObj)object;
             executeSpecialObj(special);
@@ -54,25 +59,33 @@ public class Player {
         } else if(object instanceof Coin){
 
             game.addScore(((Coin)object).getAmount());
+            OnTakeCoin event = new OnTakeCoin(new Position(x, y), (Coin) object);
+            game.getPluginManager().callEvent(event);
+            if(event.isCancelled()) return false;
             map.deleteObject(x, y);
         }
 
         if(invincibleTour > 0 && !(object instanceof InvinciblePlayer)) {
             if(object != null) {
-                if (object instanceof Ennemy) {
+                if (object instanceof Enemy) {
                     map.replaceObject(x, y, this);
-                    game.addInBuffer("You are in invicible mode : you killed an " + object.getClass().getSimpleName().toLowerCase() + ".");
+                    game.sendMessage("You are in invicible mode : you killed an " + object.getClass().getSimpleName().toLowerCase() + ".");
                     passOneInvincibleMove();
                 }
             } else {
-                game.addInBuffer("You kill nothing.");
+                game.sendMessage("You kill nothing.");
                 passOneInvincibleMove();
             }
 
         }
 
+        OnMove event = new OnMove(before, new Position(x,y));
+        game.getPluginManager().callEvent(event);
+        if(event.isCancelled()) return false;
+
         if(!map.setObject(x, y, this) && !map.getObject(x,y).equals(this)) return false;
         map.replaceObject(before.getX(), before.getY(), null);
+
         return true;
     }
 
@@ -81,7 +94,10 @@ public class Player {
     }
 
     public void executeSpecialObj(SpecialObj special, boolean message){
-        if(message) game.addInBuffer("You have found the special object \"" + special.name() + "\" ");
+        OnPlayerTakeObject event = new OnPlayerTakeObject(game.getMap().getPositionByObject(special), special);
+        game.getPluginManager().callEvent(event);
+        if(event.isCancelled()) return;
+        if(message) game.sendMessage("You have found the special object \"" + special.name() + "\" ");
         List<String> tmpBuffer = new ArrayList<>(game.getBuffer());
         special.execute(game, map, this);
         game.getBuffer().clear();
@@ -122,10 +138,6 @@ public class Player {
                 !map.isNull(getPosition().add(-1, 0)) &&
                 !map.isNull(getPosition().add(0, -1));
 
-    }
-
-    public String toString(){
-        return Character.toString(token);
     }
 
 }

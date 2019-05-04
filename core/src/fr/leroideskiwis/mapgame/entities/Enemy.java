@@ -1,12 +1,17 @@
-package fr.leroideskiwis.mapgame;
+package fr.leroideskiwis.mapgame.entities;
+
+import fr.leroideskiwis.mapgame.Entity;
+import fr.leroideskiwis.mapgame.Map;
+import fr.leroideskiwis.mapgame.Position;
 
 import java.util.Random;
 
-public class Ennemy {
+public class Enemy extends Entity {
 
     private Map map;
 
-    public Ennemy(Map map){
+    public Enemy(Map map){
+        super("ennemy");
         this.map = map;
     }
 

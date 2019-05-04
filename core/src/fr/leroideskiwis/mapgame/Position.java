@@ -66,7 +66,7 @@ public class Position {
     }
 
     public boolean isOutOfMap(Map map){
-        return x < 0 || y < 0 || x >= map.getSize()[0] || y >= map.getSize()[1];
+        return x < 0 || y < 0 || x >= map.getSize() || y >= map.getSize();
     }
 
     @Override

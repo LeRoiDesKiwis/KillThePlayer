@@ -1,6 +1,10 @@
 package fr.leroideskiwis.mapgame;
 
-import fr.leroideskiwis.ktp.Main;
+import fr.leroideskiwis.mapgame.entities.Enemy;
+import fr.leroideskiwis.mapgame.entities.Obstacle;
+import fr.leroideskiwis.mapgame.entities.Player;
+import fr.leroideskiwis.plugins.events.OnEnnemyDeath;
+import fr.leroideskiwis.plugins.events.OnEntitySpawn;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,18 +13,14 @@ import java.util.stream.Collectors;
 
 public class Map implements Cloneable{
 
-    private final Object[][] content;
+    private final Entity[][] content;
     private final Game game;
 
-    public int getTotalSize(){
-        return getSize()[0]*getSize()[1];
-    }
-
     public Map(Game main, int x, int y){
-        this(main, new Object[y][x]);
+        this(main, new Entity[y][x]);
     }
 
-    public Map(Game main, Object[][] content){
+    public Map(Game main, Entity[][] content){
         this.game = main;
         this.content = content;
         Obstacle border = new Obstacle();
@@ -46,8 +46,8 @@ public class Map implements Cloneable{
      * @return in args[0] the line size and args[1] the column size
      */
 
-    public int[] getSize(){
-        return new int[]{content[0].length, content.length};
+    public int getSize(){
+        return content.length;
     }
 
     /**
@@ -56,11 +56,11 @@ public class Map implements Cloneable{
      * @return the Object who is situate in x y
      */
 
-    public Object getObject(Position pos){
+    public Entity getObject(Position pos){
         return content[pos.getY()][pos.getX()];
     }
 
-    public Object getObject(int x, int y){
+    public Entity getObject(int x, int y){
         return getObject(new Position(x, y));
     }
 
@@ -99,19 +99,23 @@ public class Map implements Cloneable{
      * <b>WARNING : this method don't replace the object, then it don't go to set the object if there already an object in. If you want to replace, use Map#replaceObject</b>
      *
      * @param pos the coordinates
-     * @param o the object to replace in x y.
+     * @param entity the object to replace in x y.
      * @return false if there are already an object in x y
-     * @see Map#replaceObject(int, int, Object)
+     * @see Map#replaceObject(int, int, Entity)
      */
 
-    public boolean setObject(Position pos, Object o){
-        if(getObject(pos.getX(), pos.getY()) == null)
-            content[pos.getY()][pos.getX()] = o;
+    public boolean setObject(Position pos, Entity entity){
+        if(getObject(pos.getX(), pos.getY()) == null) {
+            OnEntitySpawn event = new OnEntitySpawn(entity, pos);
+            game.getPluginManager().callEvent(event);
+            if(event.isCancelled()) return false;
+            content[pos.getY()][pos.getX()] = entity;
+        }
         else return false;
         return true;
     }
 
-    public boolean setObject(int x, int y, Object o){
+    public boolean setObject(int x, int y, Entity o){
         return setObject(new Position(x, y), o);
     }
 
@@ -140,7 +144,13 @@ public class Map implements Cloneable{
      * @param newObject the object to replace with
      */
 
-    public void replaceObject(int x, int y, Object newObject){
+    public void replaceObject(int x, int y, Entity newObject){
+        if(getObject(x, y) instanceof Enemy) {
+            OnEnnemyDeath event = new OnEnnemyDeath(new Position(x, y), (Enemy) getObject(x, y));
+            game.getPluginManager().callEvent(event);
+            if(event.isCancelled()) return;
+        }
+
         content[y][x] = newObject;
     }
 
@@ -149,9 +159,9 @@ public class Map implements Cloneable{
      * @param o The object to generate
      */
 
-    public void generateRandom(Object o){
+    public void generateRandom(Entity o){
 
-        setObject(game.getRandomList(getPositions().stream().filter(pos -> isNull(pos)).collect(Collectors.toList())), o);
+        setObject(game.getRandomList(getPositions().stream().filter(this::isNull).collect(Collectors.toList())), o);
 
     }
 
@@ -190,7 +200,7 @@ public class Map implements Cloneable{
      * @return the locations of all object o
      */
 
-    public Position getPositionByObject(Object o){
+    public Position getPositionByObject(Entity o){
         for (int x = 0; x < content.length; x++) {
             for (int y = 0; y < content[x].length; y++) {
                 Object obj = getObject(x, y);
@@ -250,6 +260,8 @@ public class Map implements Cloneable{
 
     public <T> List<T> getObjectsByType(Class<T> clazz){
 
+        if(!(clazz.getSuperclass() == Entity.class)) return null;
+
         List<Position> positions = getPositionsByType(clazz);
         List<T> objects = new ArrayList<>();
 
@@ -275,11 +287,11 @@ public class Map implements Cloneable{
         return builder.toString();
     }
 
-    public Object[][] getContent(){
+    public Entity[][] getContent(){
         return content;
     }
 
-    public void replaceObject(Position positionByObject, Object newObject) {
+    public void replaceObject(Position positionByObject, Entity newObject) {
         replaceObject(positionByObject.getX(), positionByObject.getY(), newObject);
     }
 

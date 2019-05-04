@@ -1,17 +1,18 @@
-package fr.leroideskiwis.mapgame;
+package fr.leroideskiwis.mapgame.entities;
 
-import fr.leroideskiwis.mapgame.specialobjects.SpecialObj;
+import fr.leroideskiwis.mapgame.Entity;
 
-public class Obstacle {
+public class Obstacle extends Entity {
 
     private final SpecialObj lostObject;
 
     public Obstacle(){
-        this.lostObject = null;
+        this(null);
     }
 
     public Obstacle(SpecialObj obj){
-        this.lostObject = obj;
+         super("obstacle.png");
+         this.lostObject = obj;
     }
 
     public boolean wasObject(){

@@ -15,55 +15,84 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
+import fr.leroideskiwis.ktp.textbox.IpTextBoxListener;
+import fr.leroideskiwis.ktp.window.Button;
 import fr.leroideskiwis.mapgame.*;
-import fr.leroideskiwis.mapgame.specialobjects.SpecialObj;
+import fr.leroideskiwis.mapgame.multiplayer.Multiplayer;
+import org.json.JSONException;
 
-import java.io.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.util.*;
 import java.util.Map;
+import java.util.stream.Stream;
 
 public class Main extends ApplicationAdapter {
 	private SpriteBatch batch;
 	private Game game;
 	private ShapeRenderer renderer;
 	private List<String> tmpBuffer = new ArrayList<>();
-	private float MULTIPLICATOR;
+	private float multiplicatorY;
+	private float multiplicatorX;
 	private long started;
-	private Map<String, Texture> textures = new HashMap<>();
 	private static Map<String, Sound> sounds = new HashMap<>();
+	private Texture emptyCase;
+	private Menu menu = Menu.MAINMENU;
+	private List<Button> buttons = new ArrayList<>();
+	private Animator animator = new Animator();
+	private Texture background;
+	private Multiplayer multi;
+	private IpTextBoxListener ipListener;
 
 	@Override
 	public void resize(int width, int height) {
     }
 
-	@Override
-	public void create () {
-		textures.put("ennemy", getTexture("ennemy.png"));
-		textures.put("coin", getTexture("coin.png"));
-		textures.put("obstacle", getTexture("obstacle.png"));
-		textures.put("empty", getTexture("emptycase.png"));
-		textures.put("player", getTexture("player.png"));
-		sounds.put("coinsound", getSound("coin.mp3"));
-		sounds.put("objectsound", getSound("object.mp3"));
+    private void startAnimator(int updatePerSeconds){
+		animator.start(updatePerSeconds);
+	}
 
-		this.started = System.currentTimeMillis();
-	    Gdx.app.log("INFO", "starting game...");
-		batch = new SpriteBatch();
-		renderer = new ShapeRenderer();
+	private void initGame(Menu menu){
+		this.menu = menu;
+		Gdx.app.log("INFO", "starting game...");
 		try {
 			this.game = new Game();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		Gdx.graphics.setContinuousRendering(false);
 
 		Gdx.app.log("INFO", "game is started !");
 
-		MULTIPLICATOR = (1005f/1.675f)/game.getMap().getSize()[0];
+		multiplicatorY = (1050f/1.75f)/game.getMap().getSize();
+		multiplicatorX = (1050f/1.75f)/game.getMap().getSize();
+
+	}
+
+	@Override
+	public void create () {
+		Gdx.graphics.setContinuousRendering(false);
+		emptyCase = getTexture("emptycase.png");
+		background = getTexture("background.png");
+
+		this.started = System.currentTimeMillis();
+
+		batch = new SpriteBatch();
+		renderer = new ShapeRenderer();
 
 		//DiscordEventHandlers handlers = new DiscordEventHandlers.Builder().setReadyEventHandler((user) -> System.out.println(user.username+"#"+user.discriminator+" played the version "+game.version)).build();
+
+		buttons.add(new Button(() -> game == null, () -> initGame(Menu.SOLO), getTexture("soloButton.png"), "solo",150, 250));
+		buttons.add(new Button(() -> {
+				if(true) return;
+				this.multi = new Multiplayer(game);
+				ipListener = new IpTextBoxListener(multi);
+				Gdx.input.getTextInput(ipListener, "ip du serveur ?", "", "tapez l'ip");
+				initGame(Menu.MULTI);
+		}, getTexture("MultiButton.png"), "multi", 550, 250));
+		buttons.add(new Button(() -> game != null, () -> menu = Menu.SOLO, getTexture("continue.png"), "continue", 150, 250));
+		buttons.add(new Button(() -> game != null, () -> initGame(Menu.SOLO), getTexture("reset.png"), "reset", 150, 50));
+		buttons.add(new Button(() -> Gdx.app.exit(), getTexture("exit.png"), "exit", 550, 50));
+		buttons.add(new Button(() -> multi != null, () -> multi = null, getTexture("quit.png"), "quit", 550, 250));
 
 		DiscordRPC discord = DiscordRPC.INSTANCE;
 		discord.Discord_Initialize("562996306646138911", new DiscordEventHandlers(), true, "");
@@ -84,6 +113,7 @@ public class Main extends ApplicationAdapter {
 	}
 
 	private void updatePresence(){
+		if(game == null) return;
 		DiscordRichPresence presence = new DiscordRichPresence();//setDetails();
 		presence.state = "score : "+game.getScore();
 		presence.details = "in version "+game.version;
@@ -104,31 +134,99 @@ public class Main extends ApplicationAdapter {
 	}
 
 	@Override
-	public void render () {
-
-		playSound("coinsound", 1f);
-
-		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-		boolean hasLose = false;
+	public void render() {
 		batch.begin();
 
-		if(Gdx.input.isKeyJustPressed(Input.Keys.LEFT)) hasLose = update(-1, 0);
-		else if(Gdx.input.isKeyJustPressed(Input.Keys.RIGHT)) hasLose = update(1, 0);
-		else if(Gdx.input.isKeyJustPressed(Input.Keys.UP)) hasLose = update(0, 1);
-		else if(Gdx.input.isKeyJustPressed(Input.Keys.DOWN)) hasLose = update(0, -1);
+		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
+		switch(menu){
+			case SOLO:
+				processSoloGame();
+				break;
+
+			case MAINMENU:
+				processMainMenu();
+				break;
+			case MULTI:
+				try {
+					processMulti();
+				} catch (IOException | JSONException | IllegalAccessException | InstantiationException | InvocationTargetException | ClassNotFoundException e) {
+					e.printStackTrace();
+				}
+				break;
+		}
+
+		batch.end();
+
+	}
+
+	private Stream<Button> getButtonsWithCondition(){
+		return buttons.stream().filter(Button::condition);
+	}
+
+	private void reset() throws IOException {
+		this.game = null;
+		if(multi != null){
+			multi.close();
+			multi = null;
+		}
+		menu = Menu.MAINMENU;
+	}
+
+	private void processMainMenu(){
+		startAnimator(5);
+		batch.draw(background, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+		getButtonsWithCondition().forEach(button -> button.draw(batch));
+		getButtonsWithCondition().forEach(Button::runClicked);
+
+	}
+
+	private void processMulti() throws IOException, JSONException, ClassNotFoundException, InstantiationException, IllegalAccessException, InvocationTargetException {
+		if(multi == null || (multi.isClosed() && multi.isConnected())) reset();
+		else {
+
+			if(multi.isConnected()) {
+				updateGame();
+				multi.reloadMaps();
+
+				drawMap(game.getMap(), 1, 1);
+				drawMap(multi.getOtherMap(), 1, game.getMap().getSize() * multiplicatorY + 20);
+			}
+
+		}
+
+	}
+
+	private boolean updateGame(){
+
+		if(Gdx.input.isKeyPressed(Input.Keys.ESCAPE)) menu = Menu.MAINMENU;
+
+		if(Gdx.input.isKeyJustPressed(Input.Keys.LEFT)) return update(-1, 0);
+		else if(Gdx.input.isKeyJustPressed(Input.Keys.RIGHT)) return update(1, 0);
+		else if(Gdx.input.isKeyJustPressed(Input.Keys.UP)) return update(0, 1);
+		else if(Gdx.input.isKeyJustPressed(Input.Keys.DOWN)) return update(0, -1);
 		if(Gdx.input.isKeyPressed(Input.Keys.ENTER) && (game.getPlayer().hasLose() || game.getMap().getEmptyCases().isEmpty())) {
 			try {
-				game = new Game();
+				game.getPluginManager().unloadPlugins();
+				menu = Menu.MAINMENU;
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}
+
+		return false;
+
+	}
+
+	private void processSoloGame() {
+		animator.stop();
+
+		boolean hasLose = updateGame();
+
 		if(!hasLose) {
 			tmpBuffer.clear();
 			tmpBuffer.add("You are dead. Please press enter.");
 		}
-
-		renderer.begin(ShapeRenderer.ShapeType.Filled);
 
 		drawText("Your score is "+game.getScore(), 750, 500, null);
 
@@ -143,34 +241,37 @@ public class Main extends ApplicationAdapter {
 			drawText(s, 650, 460-i*20, null);
 		}
 
-		for(int x = 0; x < game.getMap().getContent().length; x++) {
-
-				for(int y = 0; y < game.getMap().getContent()[x].length; y++){
-
-					Object object = game.getMap().getObject(x, y);
-
-					Rectangle rectangle = new Rectangle(x*MULTIPLICATOR+1, y*MULTIPLICATOR+1, MULTIPLICATOR, MULTIPLICATOR);
-
-					if(object instanceof Obstacle)
-						drawTexture(rectangle, getMapTexture("obstacle"));
-					if(object instanceof Player) drawTexture(rectangle, getMapTexture("player"));
-					if(object instanceof Ennemy) drawTexture(rectangle, getMapTexture("ennemy"));
-					if(object instanceof SpecialObj) drawTexture(rectangle, ((SpecialObj)object).texture());
-					if(object instanceof Coin) drawTexture(rectangle, getMapTexture("coin"));
-					if(object == null) drawTexture(rectangle, getMapTexture("empty"));
-
-				}
-			}
+		drawMap(game.getMap(), 1, 1);
 
 		batch.flush();
 
 		renderer.end();
-		batch.end();
 
 	}
 
+	private void drawMap(fr.leroideskiwis.mapgame.Map map, float xStart, float yStart){
+		for(int x = 0; x < map.getContent().length; x++) {
+
+			for(int y = 0; y < map.getContent()[x].length; y++){
+
+				Entity entity = map.getObject(x, y);
+
+				Rectangle rectangle = new Rectangle(x*multiplicatorX+xStart, y*multiplicatorY+yStart, multiplicatorX, multiplicatorY);
+
+				if(entity != null) drawTexture(rectangle, entity.texture());
+				else drawTexture(rectangle, emptyCase);
+			}
+		}
+	}
+
 	public static Texture getTexture(String path){
-		return new Texture(getAsset(path));
+		try {
+			Texture texture = new Texture(getAsset(path));
+			texture.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+			return texture;
+		}catch(Exception exception){
+			return null;
+		}
 	}
 
 	private Sound getSound(String path){
@@ -179,7 +280,7 @@ public class Main extends ApplicationAdapter {
 		return Gdx.audio.newSound(handle);
 	}
 
-	public static void playSound(String key){
+	/*public static void playSound(String key){
 		playSound(key, 0.5f);
 	}
 
@@ -187,25 +288,22 @@ public class Main extends ApplicationAdapter {
 		Sound sound = sounds.get(key);
 		if(sound == null) return;
 		sound.play(volume);
-	}
+	}*/
 
 	private static FileHandle getAsset(String path){
+	    if(path.endsWith(".png.png")) path = path.substring(0, path.length()-4);
 
 		path = "textures/"+path;
-		File textureFile = new File(path);
 		FileHandle handle = Gdx.files.internal(path);
 		if (handle.exists())
-			return Gdx.files.internal(path);
+			return handle;
 		else
 			handle = Gdx.files.classpath(path);
 		return handle.exists() ? handle : null;
 	}
 
-	private Texture getMapTexture(String key){
-		return textures.get(key);
-	}
-
 	private void drawText(String s, int x, int y, Color color){
+		if(true) return;
 		BitmapFont font = new BitmapFont();
 		if(color != null) font.setColor(color);
 		else font.setColor(new Color(1, 1, 1, 1));
@@ -218,11 +316,18 @@ public class Main extends ApplicationAdapter {
 	    Gdx.app.log("INFO", "Stopping game...");
 		batch.dispose();
 		renderer.dispose();
+		if(game != null && game.getPluginManager() != null) game.getPluginManager().unloadPlugins();
+		Gdx.app.log("INFO", "game stopped.");
 	}
 
 	private void drawTexture(Rectangle rectangle, Texture texture){
 
 		batch.draw(texture, rectangle.x, rectangle.y, rectangle.width, rectangle.height);
+
+	}
+
+	private enum Menu {
+		MAINMENU, SOLO, MULTI;
 
 	}
 }

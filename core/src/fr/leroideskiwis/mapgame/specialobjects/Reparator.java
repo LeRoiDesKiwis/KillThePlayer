@@ -1,7 +1,9 @@
 package fr.leroideskiwis.mapgame.specialobjects;
 
-import com.badlogic.gdx.graphics.Color;
 import fr.leroideskiwis.mapgame.*;
+import fr.leroideskiwis.mapgame.entities.Obstacle;
+import fr.leroideskiwis.mapgame.entities.Player;
+import fr.leroideskiwis.mapgame.entities.SpecialObj;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -25,7 +27,7 @@ public class Reparator extends SpecialObj {
             Obstacle obstacle = lostObstacle.get(0);
             if(obstacle.wasObject()) {
                 map.replaceObject(map.getPositionByObject(obstacle), obstacle.getLostObject());
-                main.addInBuffer("You restore a " + obstacle.getLostObject().getClass().getSimpleName());
+                main.sendMessage("You restore a " + obstacle.getLostObject().getClass().getSimpleName());
                 i++;
             }
         }

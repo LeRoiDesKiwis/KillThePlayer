@@ -1,10 +1,13 @@
-package fr.leroideskiwis.mapgame;
+package fr.leroideskiwis.mapgame.entities;
 
-public class Coin {
+import fr.leroideskiwis.mapgame.Entity;
+
+public class Coin extends Entity {
 
     private int amount;
 
     public Coin(int amount){
+        super("coin");
         this.amount = amount;
     }
 

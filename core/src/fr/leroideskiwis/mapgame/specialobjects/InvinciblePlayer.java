@@ -2,8 +2,9 @@ package fr.leroideskiwis.mapgame.specialobjects;
 
 import fr.leroideskiwis.mapgame.Game;
 import fr.leroideskiwis.mapgame.Map;
-import fr.leroideskiwis.mapgame.Player;
+import fr.leroideskiwis.mapgame.entities.Player;
 import fr.leroideskiwis.mapgame.Position;
+import fr.leroideskiwis.mapgame.entities.SpecialObj;
 
 import java.util.Random;
 
@@ -17,7 +18,7 @@ public class InvinciblePlayer extends SpecialObj {
 
         int invincibleTour = new Random().nextInt(3)+3;
         player.setInvincible(player.getInvincible()+invincibleTour);
-        main.addInBuffer("You are now invicible for "+invincibleTour+" moves");
+        main.sendMessage("You are now invicible for "+invincibleTour+" moves");
 
     }
 

@@ -1,12 +1,12 @@
 package fr.leroideskiwis.mapgame.specialobjects;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
-import fr.leroideskiwis.ktp.Main;
 import fr.leroideskiwis.mapgame.*;
+import fr.leroideskiwis.mapgame.entities.Enemy;
+import fr.leroideskiwis.mapgame.entities.Player;
+import fr.leroideskiwis.mapgame.entities.SpecialObj;
 
-public class ClearEnnemies extends SpecialObj{
+public class ClearEnnemies extends SpecialObj {
 
 
     public ClearEnnemies(Game game) {
@@ -16,15 +16,15 @@ public class ClearEnnemies extends SpecialObj{
     @Override
     public void execute(Game main, Map map, Player player) {
 
-        for(Object[] array : map.getContent()){
-            for(Object o : array){
-                if(o instanceof Ennemy){
+        for(Entity[] array : map.getContent()){
+            for(Entity o : array){
+                if(o instanceof Enemy){
                     map.deleteObject(map.getPositionByObject(o));
                 }
             }
         }
 
-        main.addInBuffer("MAP CLEARED");
+        main.sendMessage("MAP CLEARED");
 
     }
 

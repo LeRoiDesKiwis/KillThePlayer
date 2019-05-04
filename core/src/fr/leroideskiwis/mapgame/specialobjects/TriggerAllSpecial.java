@@ -2,10 +2,11 @@ package fr.leroideskiwis.mapgame.specialobjects;
 
 import fr.leroideskiwis.mapgame.Game;
 import fr.leroideskiwis.mapgame.Map;
-import fr.leroideskiwis.mapgame.Player;
+import fr.leroideskiwis.mapgame.entities.Player;
 import fr.leroideskiwis.mapgame.Position;
+import fr.leroideskiwis.mapgame.entities.SpecialObj;
 
-public class TriggerAllSpecial extends SpecialObj{
+public class TriggerAllSpecial extends SpecialObj {
     public TriggerAllSpecial(Game game) {
         super(game, "trigger");
     }
@@ -13,7 +14,7 @@ public class TriggerAllSpecial extends SpecialObj{
     @Override
     public void execute(Game game, Map map, Player player) {
 
-        game.addInBuffer("All special objects are been triggered");
+        game.sendMessage("All special objects are been triggered");
         for(Position pos : map.getPositionsByType(SpecialObj.class)){
             Object o = map.getObject(pos);
             if(o instanceof TriggerAllSpecial) continue;

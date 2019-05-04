@@ -1,11 +1,10 @@
 package fr.leroideskiwis.mapgame.specialobjects;
 
-import com.badlogic.gdx.graphics.Color;
 import fr.leroideskiwis.mapgame.*;
+import fr.leroideskiwis.mapgame.entities.Enemy;
+import fr.leroideskiwis.mapgame.entities.Player;
+import fr.leroideskiwis.mapgame.entities.SpecialObj;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Random;
 import java.util.stream.Collectors;
 
 public class RayonEnnemyKiller extends SpecialObj {
@@ -19,7 +18,7 @@ public class RayonEnnemyKiller extends SpecialObj {
 
         int rayon = game.randomInt(3, 4);
 
-        game.addInBuffer("All ennemies in a radius of " + rayon + " has been killed");
+        game.sendMessage("All ennemies in a radius of " + rayon + " has been killed");
 
         for (int x = position.getX() - rayon; x <= position.getX() + rayon; x++) {
             for (int y = position.getY() - rayon; y <= position.getY() + rayon; y++) {
@@ -28,7 +27,7 @@ public class RayonEnnemyKiller extends SpecialObj {
                 Object object = map.getObject(x, y);
                 if (object == null)
                     continue;
-                if (!(object instanceof Ennemy))
+                if (!(object instanceof Enemy))
                     continue;
                 map.deleteObject(dest);
             }
@@ -57,6 +56,6 @@ public class RayonEnnemyKiller extends SpecialObj {
      */
 
     public Position spawn(Game game, Map map, Player player) {
-        return game.getRandomList(map.getEmptyCases().stream().filter(pos -> pos.getSurroundingsObjects(map).stream().anyMatch(o -> o instanceof Ennemy)).collect(Collectors.toList()));
+        return game.getRandomList(map.getEmptyCases().stream().filter(pos -> pos.getSurroundingsObjects(map).stream().anyMatch(o -> o instanceof Enemy)).collect(Collectors.toList()));
     }
 }
