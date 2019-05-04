@@ -113,10 +113,11 @@ public class Main extends ApplicationAdapter {
 	}
 
 	private void updatePresence(){
-		if(game == null) return;
 		DiscordRichPresence presence = new DiscordRichPresence();//setDetails();
-		presence.state = "score : "+game.getScore();
-		presence.details = "in version "+game.version;
+		if(game != null) {
+			presence.state = "score : " + game.getScore();
+			presence.details = "size of the map : " + game.getSize();
+		}
 		presence.startTimestamp = started;
         presence.largeImageKey = "new_high_score_";
 		DiscordRPC.INSTANCE.Discord_UpdatePresence(presence);

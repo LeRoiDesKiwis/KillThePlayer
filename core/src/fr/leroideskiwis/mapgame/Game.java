@@ -23,9 +23,8 @@ public final class Game {
     private int score;
     private Map map;
     private Player player;
-    private int size = 30;
+    private final int size;
     //private JSONConfiguration configuration;
-    public final String version = "v1.1.0";
     private KtpPluginManager pluginManager = new KtpPluginManager(this);
 
     public void setScore(int score){
@@ -121,6 +120,7 @@ public final class Game {
     }
 
     public Game() throws Exception {
+        this.size = randomInt(20, 50);
         //this.size = configuration.getInt("size", 30);
         Gdx.app.log("INFO", "new instance of game");
         debugMode = false;
@@ -194,8 +194,6 @@ public final class Game {
     }
 
     public int randomInt(int min, int max){
-        if(min < 0) min = 1;
-        if(max < 0) max = 1;
         return new Random().nextInt(max-min)+min;
     }
 
@@ -253,6 +251,10 @@ public final class Game {
 
     public List<String> getBuffer() {
         return bufferSysout;
+    }
+
+    public int getSize() {
+        return size;
     }
 
     /*public JSONConfiguration getConfig() {
