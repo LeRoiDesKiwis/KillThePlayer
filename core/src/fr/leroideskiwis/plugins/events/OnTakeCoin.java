@@ -1,20 +1,20 @@
 package fr.leroideskiwis.plugins.events;
 
+import fr.leroideskiwis.mapgame.Location;
 import fr.leroideskiwis.mapgame.entities.Coin;
-import fr.leroideskiwis.mapgame.Position;
 
 public class OnTakeCoin extends Event {
 
-    private Position position;
+    private Location location;
     private Coin coin;
 
-    public OnTakeCoin(Position position, Coin coin) {
-        this.position = position;
+    public OnTakeCoin(Location location, Coin coin) {
+        this.location = location;
         this.coin = coin;
     }
 
-    public Position getPosition() {
-        return position;
+    public Location getLocation() {
+        return location;
     }
 
     public Coin getCoin() {

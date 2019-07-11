@@ -1,11 +1,12 @@
 package fr.leroideskiwis.mapgame.specialobjects;
 
-import fr.leroideskiwis.mapgame.*;
+import fr.leroideskiwis.mapgame.Game;
+import fr.leroideskiwis.mapgame.Location;
+import fr.leroideskiwis.mapgame.Map;
 import fr.leroideskiwis.mapgame.entities.Enemy;
 import fr.leroideskiwis.mapgame.entities.Player;
 import fr.leroideskiwis.mapgame.entities.SpecialObj;
-
-import java.util.stream.Collectors;
+import fr.leroideskiwis.utils.Interval;
 
 public class RayonEnnemyKiller extends SpecialObj {
     public RayonEnnemyKiller(Game game) {
@@ -14,24 +15,20 @@ public class RayonEnnemyKiller extends SpecialObj {
 
     @Override
     public void execute(Game game, Map map, Player player) {
-        Position position = map.getPositionByObject(this);
+        Location location = getLocation();
 
         int rayon = game.randomInt(3, 4);
 
         game.sendMessage("All ennemies in a radius of " + rayon + " has been killed");
+        int minX = location.getX()-rayon;
+        int maxX = location.getX()+rayon;
 
-        for (int x = position.getX() - rayon; x <= position.getX() + rayon; x++) {
-            for (int y = position.getY() - rayon; y <= position.getY() + rayon; y++) {
-                Position dest = new Position(x, y);
-                if (dest.isOutOfMap(map)) continue;
-                Object object = map.getObject(x, y);
-                if (object == null)
-                    continue;
-                if (!(object instanceof Enemy))
-                    continue;
-                map.deleteObject(dest);
-            }
-        }
+        int minY = location.getY()-rayon;
+        int maxY = location.getY()+rayon;
+
+        game.getEntities()
+                .stream()
+                .filter(entity -> entity instanceof Enemy && Interval.of(minX, maxX).contains(entity.getX()) && Interval.of(minY, maxY).contains(entity.getY())).forEach(entity -> game.getMap().deleteEntity(entity));
     }
 
 
@@ -48,14 +45,14 @@ public class RayonEnnemyKiller extends SpecialObj {
     /*
        tableau de boolean
 
-       isNull   surroundingContains   continue
+       isEmpty   surroundingContains   continue
        true     true                  true
        false    true                  true
        true     false                 true
        false    false                 false
      */
 
-    public Position spawn(Game game, Map map, Player player) {
-        return game.getRandomList(map.getEmptyCases().stream().filter(pos -> pos.getSurroundingsObjects(map).stream().anyMatch(o -> o instanceof Enemy)).collect(Collectors.toList()));
+    public Location spawn(Game game, Map map, Player player) {
+        return game.getLocationNearEnemy();
     }
 }

@@ -1,5 +1,6 @@
 package fr.leroideskiwis.mapgame;
 
+import com.sun.istack.internal.NotNull;
 import fr.leroideskiwis.mapgame.entities.Enemy;
 import fr.leroideskiwis.mapgame.entities.Obstacle;
 import fr.leroideskiwis.mapgame.entities.Player;
@@ -8,131 +9,109 @@ import fr.leroideskiwis.plugins.events.OnEntitySpawn;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class Map implements Cloneable{
 
-    private final Entity[][] content;
+    private final List<Entity> entities = new ArrayList<>();
     private final Game game;
+    private int height;
+    private int width;
 
-    public Map(Game main, int x, int y){
-        this(main, new Entity[y][x]);
-    }
-
-    public Map(Game main, Entity[][] content){
+    public Map(Game main, int height, int width){
         this.game = main;
-        this.content = content;
-        Obstacle border = new Obstacle();
-        for(int i = 0; i < content[0].length; i++){
-            content[0][i] = border;
+        this.height = height;
+        this.width = width;
+
+        for(int x = 0; x < width; x++){
+            entities.add(new Obstacle().setLocation(x, 0));
+            entities.add(new Obstacle().setLocation(x, height-1));
         }
 
-        for(int i = 0; i < content[0].length; i++){
-            content[i][0] = border;
-        }
-
-        for(int i = 0; i < content.length; i++){
-            content[i][content[i].length-1] = border;
-        }
-
-        for(int i = 0; i < content[content.length-1].length; i++){
-            content[content.length-1][i] = border;
+        for(int y = 0; y < height; y++){
+            entities.add(new Obstacle().setLocation(0, y));
+            entities.add(new Obstacle().setLocation(width-1, y));
         }
     }
 
-    /**
-     *
-     * @return in args[0] the line size and args[1] the column size
-     */
-
-    public int getSize(){
-        return content.length;
+    public int getHeight() {
+        return height;
     }
 
-    /**
-     *
-     * @param pos the position of the object
-     * @return the Object who is situate in x y
-     */
-
-    public Entity getObject(Position pos){
-        return content[pos.getY()][pos.getX()];
+    public int getWidth() {
+        return width;
     }
 
-    public Entity getObject(int x, int y){
-        return getObject(new Position(x, y));
+    public Optional<Entity> getEntity(int x, int y){
+        return entities.stream().filter(entity -> entity.getLocation().equals(x, y)).findAny();
     }
 
-    public List<Position> getPositions(){
-        List<Position> positions = new ArrayList<>();
+    public Optional<Entity> getEntity(Location location){
+        return getEntity(location.getX(), location.getY());
+    }
 
-        for (int x = 0; x < content.length; x++) {
+    public List<Location> getLocations() {
+        List<Location> locations = new ArrayList<>();
 
-            for (int y = 0; y < content[x].length; y++) {
+        for(int x = 0; x < width; x++){
+            for(int y = 0; y < height; y++){
 
-                positions.add(new Position(x, y));
+                locations.add(new Location(x, y));
 
             }
-
         }
-        return positions;
 
-    }
+        return locations;
 
-    /**
-     *
-     * @param x the x coordinate
-     * @param y the y coordinate
-     * @param o the object to compare
-     * @return true if the object in x y is equals to o
-     */
-
-    public boolean isObject(int x, int y, Object o){
-        if(o == null) return getObject(x, y) == null;
-        if(getObject(x,y) == null) return false;
-        return getObject(x, y).equals(o);
     }
 
     /**
      * Use this to set an object in the coordinates x y
-     * <b>WARNING : this method don't replace the object, then it don't go to set the object if there already an object in. If you want to replace, use Map#replaceObject</b>
+     * <b>WARNING : this method don't replace the object, then it don't go to set the object if there already an object in. If you want to replace, use {@link #replaceEntity}</b>
      *
      * @param pos the coordinates
      * @param entity the object to replace in x y.
      * @return false if there are already an object in x y
-     * @see Map#replaceObject(int, int, Entity)
+     * @see Map#replaceEntity(int, int, Entity)
      */
-
-    public boolean setObject(Position pos, Entity entity){
-        if(getObject(pos.getX(), pos.getY()) == null) {
+    public boolean setEntity(Location pos, Entity entity){
+        if(!getEntity(pos.getX(), pos.getY()).isPresent()) {
             OnEntitySpawn event = new OnEntitySpawn(entity, pos);
             game.getPluginManager().callEvent(event);
             if(event.isCancelled()) return false;
-            content[pos.getY()][pos.getX()] = entity;
+            entity.setLocation(pos);
+            entities.add(entity);
         }
         else return false;
         return true;
     }
 
-    public boolean setObject(int x, int y, Entity o){
-        return setObject(new Position(x, y), o);
+    public boolean setEntity(int x, int y, Entity o){
+        return setEntity(new Location(x, y), o);
+    }
+
+
+
+    public void deleteEntity(Location location){
+        deleteEntity(location.getX(), location.getY());
+    }
+
+    public void deleteEntity(Entity entity){
+        deleteEntity(entity.getLocation());
     }
 
     /**
-     *
      * Replace the object in x y by null
      *
      * @param x the x coordinate
      * @param y the y coordinate
      */
-
-    public void deleteObject(int x, int y){
-        deleteObject(new Position(x, y));
-    }
-    public void deleteObject(Position pos) {
-        if(getObject(pos) instanceof Player) return;
-        replaceObject(pos.getX(), pos.getY(), null);
+    public void deleteEntity(int x, int y) {
+        getEntity(x, y).ifPresent(entity -> {
+            if(!(entity instanceof Player))
+                entities.remove(entity);
+        });
     }
 
     /**
@@ -141,99 +120,68 @@ public class Map implements Cloneable{
      *
      * @param x the x coordinate
      * @param y the y coordinate
-     * @param newObject the object to replace with
+     * @param newObject the object to replace with <b>don't accept null value ! Please with {@link #deleteEntity(int, int)} to delete an entity !</b>
      */
 
-    public void replaceObject(int x, int y, Entity newObject){
-        if(getObject(x, y) instanceof Enemy) {
-            OnEnnemyDeath event = new OnEnnemyDeath(new Position(x, y), (Enemy) getObject(x, y));
-            game.getPluginManager().callEvent(event);
-            if(event.isCancelled()) return;
-        }
+    public void replaceEntity(int x, int y, @NotNull Entity newObject){
 
-        content[y][x] = newObject;
+        getEntity(x, y).ifPresent(entity -> {
+
+            if(entity instanceof Enemy){
+                OnEnnemyDeath event = new OnEnnemyDeath(new Location(x, y), (Enemy) entity);
+                game.getPluginManager().callEvent(event);
+                if(event.isCancelled()) return;
+            }
+
+            entities.remove(entity);
+            newObject.setLocation(x, y);
+
+        });
+
+    }
+
+    public void replaceEntity(Location locationByObject, Entity newObject) {
+        replaceEntity(locationByObject.getX(), locationByObject.getY(), newObject);
     }
 
     /**
      * Place an object randomly in the map
-     * @param o The object to generate
+     * @param entity The object to generate
      */
 
-    public void generateRandom(Entity o){
+    public void generateRandom(Entity entity){
 
-        setObject(game.getRandomList(getPositions().stream().filter(this::isNull).collect(Collectors.toList())), o);
+        setEntity(game.getRandomList(getEmptyCases()), entity);
 
     }
 
-    public List<Position> getNoEmptyCases(){
-        List<Position> positions = new ArrayList<>();
-
-        for (int x = 0; x < content.length; x++) {
-            for (int y = 0; y < content[x].length; y++) {
-
-                if(content[y][x] != null) positions.add(new Position(x, y));
-
-            }
-        }
-
-        return positions;
+    public List<Location> getEmptyCases(){
+        return getLocations().stream().filter(this::isEmpty).collect(Collectors.toList());
     }
 
-    public List<Position> getEmptyCases(){
-        List<Position> positions = new ArrayList<>();
-
-        for (int x = 0; x < content.length; x++) {
-            for (int y = 0; y < content[x].length; y++) {
-
-                if(content[y][x] == null) positions.add(new Position(x, y));
-
-            }
-        }
-
-        return positions;
+    public List<Entity> getEntities(){
+        return new ArrayList<>(entities);
     }
 
-    /**
-     * Get the locations of a specific object (for example player)
-     *
-     * @param o the object to locate
-     * @return the locations of all object o
-     */
+    public Location getRandomPositionSurrounding(Location location){
+        int choice = game.randomInt(1, 4);
 
-    public Position getPositionByObject(Entity o){
-        for (int x = 0; x < content.length; x++) {
-            for (int y = 0; y < content[x].length; y++) {
-                Object obj = getObject(x, y);
-                if(obj == null) continue;
-
-                if(obj.equals(o)) return new Position(x, y);
-
-            }
-        }
-
-        return null;
-    }
-
-    public Position getRandomPositionSurrounding(Position position){
-        int choice = new Random().nextInt(4)+1;
 
         switch(choice){
             case 1:
-                return position.add(1, 0);
+                return location.add(1, 0);
             case 2:
-                return position.add(0, 1);
+                return location.add(0, 1);
             case 3:
-                return position.add(-1, 0);
-            case 4:
-                return position.add(0, -1);
+                return location.add(-1, 0);
             default:
-                return null;
+                return location.add(0, -1);
         }
 
     }
 
-    public boolean isNull(Position position){
-        return getObject(position) == null;
+    public boolean isEmpty(Location location){
+        return !getEntity(location).isPresent();
     }
 
     /**
@@ -243,56 +191,22 @@ public class Map implements Cloneable{
      * @return the locations of all objects who is type clazz
      */
 
-    public List<Position> getPositionsByType(Class<?> clazz){
-        List<Position> positions = new ArrayList<>();
-        for (int x = 0; x < content.length; x++) {
-            for (int y = 0; y < content[x].length; y++) {
-                Object obj = getObject(x, y);
-                if(obj == null) continue;
-
-                if(obj.getClass() == clazz || obj.getClass().getAnnotatedSuperclass().getType() == clazz) positions.add(new Position(x, y));
-
-            }
-        }
-
-        return positions;
+    public List<Location> getLocationsByType(Class<? extends Entity> clazz){
+        return getEntitiesByType(clazz).stream().map(Entity::getLocation).collect(Collectors.toList());
     }
 
-    public <T> List<T> getObjectsByType(Class<T> clazz){
+    public <T> List<T> getEntitiesByType(Class<T> clazz) {
 
-        if(!(clazz.getSuperclass() == Entity.class)) return null;
-
-        List<Position> positions = getPositionsByType(clazz);
-        List<T> objects = new ArrayList<>();
-
-        for(Position position : positions){
-            objects.add((T)getObject(position));
-        }
-
-        return objects;
+        return entities.stream().filter(clazz::isInstance).map(clazz::cast).collect(Collectors.toList());
 
     }
 
-    public String toString(){
-        StringBuilder builder = new StringBuilder();
-
-        for(Object[] array : content){
-            for(Object c : array){
-                builder.append("[");
-                builder.append(c == null ? " " : c);
-                builder.append("] ");
-            }
-            builder.append("\n");
-        }
-        return builder.toString();
+    /**
+     * Please use directly {@link Entity#getLocation()}
+     * @see Entity#getLocation()
+     */
+    @Deprecated
+    public Location getPositionByObject(Entity entity) {
+        return entity.getLocation();
     }
-
-    public Entity[][] getContent(){
-        return content;
-    }
-
-    public void replaceObject(Position positionByObject, Entity newObject) {
-        replaceObject(positionByObject.getX(), positionByObject.getY(), newObject);
-    }
-
 }

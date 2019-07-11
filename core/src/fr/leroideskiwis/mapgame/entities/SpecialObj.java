@@ -3,14 +3,17 @@ package fr.leroideskiwis.mapgame.entities;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import fr.leroideskiwis.ktp.Main;
-import fr.leroideskiwis.mapgame.*;
+import fr.leroideskiwis.mapgame.Entity;
+import fr.leroideskiwis.mapgame.Game;
+import fr.leroideskiwis.mapgame.Location;
+import fr.leroideskiwis.mapgame.Map;
 
 public abstract class SpecialObj extends Entity{
 
     protected final Game game;
     private final Texture texture;
 
-    public abstract void execute(Game main, Map map, Player player);
+    public abstract void execute(Game game, Map map, Player player);
 
     public SpecialObj(Game game, String path) {
         super(path);
@@ -32,7 +35,7 @@ public abstract class SpecialObj extends Entity{
     }
     public abstract double chance();
 
-    public Position spawn(Game main, Map map, Player player){
+    public Location spawn(Game main, Map map, Player player){
 
         return game.getRandomList(map.getEmptyCases());
 

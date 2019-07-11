@@ -1,6 +1,7 @@
 package fr.leroideskiwis.mapgame.specialobjects;
 
-import fr.leroideskiwis.mapgame.*;
+import fr.leroideskiwis.mapgame.Game;
+import fr.leroideskiwis.mapgame.Map;
 import fr.leroideskiwis.mapgame.entities.Obstacle;
 import fr.leroideskiwis.mapgame.entities.Player;
 import fr.leroideskiwis.mapgame.entities.SpecialObj;
@@ -15,21 +16,19 @@ public class Reparator extends SpecialObj {
     }
 
     @Override
-    public void execute(Game main, Map map, Player player) {
+    public void execute(Game game, Map map, Player player) {
 
-        int i = 0, rand = main.randomInt(1, 2);
+        List<Obstacle> lostObstacle = map.getEntitiesByType(Obstacle.class).stream().filter(Obstacle::wasObject).collect(Collectors.toList());
 
-        List<Obstacle> lostObstacle = map.getObjectsByType(Obstacle.class).stream().filter(Obstacle::wasObject).collect(Collectors.toList());
+        if(lostObstacle.isEmpty()) return;
 
-        while(i < rand){
+        for(int i = 0, rand = game.randomInt(1, 2); i < rand; i++) {
 
-            if(lostObstacle.isEmpty()) break;
             Obstacle obstacle = lostObstacle.get(0);
-            if(obstacle.wasObject()) {
-                map.replaceObject(map.getPositionByObject(obstacle), obstacle.getLostObject());
-                main.sendMessage("You restore a " + obstacle.getLostObject().getClass().getSimpleName());
-                i++;
-            }
+            map.replaceEntity(obstacle.getLocation(), obstacle.getLostObject());
+            game.sendMessage("You restore a " + obstacle.getLostObject().getClass().getSimpleName());
+            i++;
+
         }
 
     }
@@ -41,7 +40,7 @@ public class Reparator extends SpecialObj {
 
     @Override
     public double chance() {
-        if(game.getMap().getObjectsByType(Obstacle.class).stream().anyMatch(Obstacle::wasObject))
+        if(game.getMap().getEntitiesByType(Obstacle.class).stream().anyMatch(Obstacle::wasObject))
             return 0.06;
         return 0;
     }

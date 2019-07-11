@@ -1,23 +1,23 @@
 package fr.leroideskiwis.plugins.events;
 
 import fr.leroideskiwis.mapgame.Entity;
-import fr.leroideskiwis.mapgame.Position;
+import fr.leroideskiwis.mapgame.Location;
 
 public class OnEntitySpawn extends Event {
 
     private Entity entity;
-    private Position position;
+    private Location location;
 
-    public OnEntitySpawn(Entity entity, Position position) {
+    public OnEntitySpawn(Entity entity, Location location) {
         this.entity = entity;
-        this.position = position;
+        this.location = location;
     }
 
     public Entity getEntity() {
         return entity;
     }
 
-    public Position getPosition() {
-        return position;
+    public Location getLocation() {
+        return location;
     }
 }

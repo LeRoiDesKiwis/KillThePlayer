@@ -1,15 +1,15 @@
 package fr.leroideskiwis.plugins.events;
 
-import fr.leroideskiwis.mapgame.Position;
+import fr.leroideskiwis.mapgame.Location;
 import fr.leroideskiwis.mapgame.entities.SpecialObj;
 
 public class OnPlayerTakeObject extends Event {
 
-    private Position position;
+    private Location location;
     private SpecialObj specialObj;
 
-    public OnPlayerTakeObject(Position position, SpecialObj specialObj) {
-        this.position = position;
+    public OnPlayerTakeObject(Location location, SpecialObj specialObj) {
+        this.location = location;
         this.specialObj = specialObj;
     }
 
@@ -21,7 +21,7 @@ public class OnPlayerTakeObject extends Event {
         this.specialObj = specialObj;
     }
 
-    public Position getPosition() {
-        return position;
+    public Location getLocation() {
+        return location;
     }
 }

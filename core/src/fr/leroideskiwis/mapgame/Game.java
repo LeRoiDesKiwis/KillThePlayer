@@ -1,14 +1,21 @@
 package fr.leroideskiwis.mapgame;
 
 import com.badlogic.gdx.Gdx;
-
-import fr.leroideskiwis.mapgame.entities.*;
-import fr.leroideskiwis.mapgame.specialobjects.*;
+import fr.leroideskiwis.mapgame.entities.Coin;
+import fr.leroideskiwis.mapgame.entities.Enemy;
+import fr.leroideskiwis.mapgame.entities.Obstacle;
+import fr.leroideskiwis.mapgame.entities.Player;
+import fr.leroideskiwis.mapgame.entities.SpecialObj;
+import fr.leroideskiwis.mapgame.specialobjects.ClearEnnemies;
+import fr.leroideskiwis.mapgame.specialobjects.InvinciblePlayer;
+import fr.leroideskiwis.mapgame.specialobjects.OpenPath;
+import fr.leroideskiwis.mapgame.specialobjects.RayonEnnemyKiller;
+import fr.leroideskiwis.mapgame.specialobjects.Reparator;
+import fr.leroideskiwis.mapgame.specialobjects.TriggerAllSpecial;
 import fr.leroideskiwis.plugins.KtpPluginManager;
 import fr.leroideskiwis.plugins.events.OnObjectDeath;
 import fr.leroideskiwis.plugins.events.OnObjectSpawn;
 
-import java.io.*;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,6 +33,7 @@ public final class Game {
     private final int size;
     //private JSONConfiguration configuration;
     private KtpPluginManager pluginManager = new KtpPluginManager(this);
+    private boolean lock = false;
 
     public void setScore(int score){
         this.score = score;
@@ -35,34 +43,16 @@ public final class Game {
         return score;
     }
 
+    public List<String> getBuffer() {
+        return new ArrayList<>(bufferSysout);
+    }
+
     public void addScore(int score){
         this.score+= score;
         sendMessage("You win "+score+"pt"+(score == 1 ? "" : "s"));
     }
 
-    private Entity parseObject(String s) throws InstantiationException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
-
-        switch(s){
-            case "!":
-                return getRandomObj();
-            case "SP":
-                return new ClearEnnemies(this);
-            case "P":
-                return new Player(this, map);
-            case "E":
-                return new Enemy(map);
-            case "O":
-                return new Obstacle();
-            case ".":
-                return null;
-            default:
-                return null;
-
-        }
-
-    }
-
-    private SpecialObj getRandomObj() throws IllegalAccessException, InstantiationException, NoSuchMethodException, InvocationTargetException {
+    private SpecialObj getRandomObj() throws IllegalAccessException, InstantiationException,  InvocationTargetException {
         SpecialObj special;
         do {
             special = (SpecialObj) specialObjs.get(new Random().nextInt(specialObjs.size())).getConstructors()[0].newInstance(this);
@@ -76,51 +66,18 @@ public final class Game {
 
     public <T> T getRandomList(List<T> list){
 
-        return list.get(new Random().nextInt(list.size()));
+        return list.get(randomInt(list.size()));
 
     }
 
-    private void tryLoadFile(File file, boolean create) throws Exception {
-        if(!file.exists()) {
-            if(create) file.createNewFile();
-            return;
-        }
-        BufferedReader reader = new BufferedReader(new FileReader(file));
-
-        Entity[][] content = new Entity[size][size];
-        int x = 0;
-
-        for(String line = reader.readLine(); line != null; line = reader.readLine()){
-            String[] lineMap = line.split(" ");
-
-            for (int y = 0; y < lineMap.length; y++) {
-                String s = lineMap[y];
-                content[x][y] = parseObject(s);
-            }
-
-            x++;
-        }
-
-        map = new Map(this, content);
-
-        if(map.getObjectsByType(Player.class).isEmpty())
-            map.generateRandom(new Player(this, map));
-        else player = map.getObjectsByType(Player.class).get(0);
-        if(map.getObjectsByType(Enemy.class).isEmpty())
-            map.generateRandom(new Enemy(map));
-    }
 
     public void setMap(Map map){
         if(map != null)
             this.map = map;
     }
 
-    public void sendMessage(String s){
-        bufferSysout.add(s);
-    }
-
-    public Game() throws Exception {
-        this.size = randomInt(20, 50);
+    public Game() {
+        this.size = randomInt(30, 37);
         //this.size = configuration.getInt("size", 30);
         Gdx.app.log("INFO", "new instance of game");
         debugMode = false;
@@ -144,7 +101,7 @@ public final class Game {
         Gdx.app.log("INFO", "Generate defaults ennemies");
 
         for(int i = 0, rand = randomInt(1, 3); i < rand; i++){
-            map.generateRandom(new Enemy(map));
+            map.generateRandom(new Enemy());
         }
         Gdx.app.log("INFO", "Generate defaults obstacles");
 
@@ -157,8 +114,14 @@ public final class Game {
         pluginManager.loadPlugins();
     }
 
-    public boolean update() throws IllegalAccessException, InstantiationException, InvocationTargetException, NoSuchMethodException {
-        if (map.getObjectsByType(Coin.class).size() == 0) map.generateRandom(new Coin(randomInt(5, 10)));
+    public boolean update() throws IllegalAccessException, InstantiationException, InvocationTargetException {
+
+        if(player.hasLose()) {
+            sendMessage("You are dead. Please press enter.");
+            return false;
+        }
+
+        if (map.getEntitiesByType(Coin.class).size() == 0) map.generateRandom(new Coin(randomInt(5, 10)));
 
         for (int i = 0, rand = randomInt(1, 2); i < rand; i++) {
             spawnEnnemy(map);
@@ -167,22 +130,22 @@ public final class Game {
         if (Math.random() < 0.05) {
 
             SpecialObj special = getRandomObj();
-            Position position = special.spawn(this, map, player);
-            OnObjectSpawn event = new OnObjectSpawn(position, special);
+            Location location = special.spawn(this, map, player);
+            OnObjectSpawn event = new OnObjectSpawn(location, special);
             getPluginManager().callEvent(event);
             if(!event.isCancelled())
-                map.setObject(position, event.getSpecialObj());
+                map.setEntity(location, event.getSpecialObj());
         }
 
-        for (Position position : map.getPositionsByType(SpecialObj.class)) {
+        for (Entity entity : map.getEntitiesByType(SpecialObj.class)) {
 
             if (Math.random() < 0.001) {
 
-                if (position.getSurroundingsObjects(map).stream().allMatch(o -> o instanceof Enemy)) {
-                    OnObjectDeath event = new OnObjectDeath(position, (SpecialObj) map.getObject(position));
+                if (entity.getLocation().getSurroundingsObjects(map).stream().allMatch(o -> o instanceof Enemy)) {
+                    OnObjectDeath event = new OnObjectDeath(entity.getLocation(), (SpecialObj) entity);
                     getPluginManager().callEvent(event);
                     if(!event.isCancelled())
-                        map.replaceObject(position, new Obstacle((SpecialObj) map.getObject(position)));
+                        map.replaceEntity(entity.getLocation(), new Obstacle((SpecialObj) entity));
                 }
             }
 
@@ -190,11 +153,17 @@ public final class Game {
 
         if (player.hasLose() || map.getEmptyCases().size() == 0) return false;
         score++;
+        this.lock = false;
         return true;
     }
 
     public int randomInt(int min, int max){
-        return new Random().nextInt(max-min)+min;
+        return (int)(Math.random()*max-min)+min;
+    }
+
+
+    private int randomInt(int max) {
+        return randomInt(0, max);
     }
 
     public KtpPluginManager getPluginManager() {
@@ -202,41 +171,49 @@ public final class Game {
     }
 
     /**
-     * @see Map#setObject(int, int, Entity)
+     * @see Map#setEntity(int, int, Entity)
      */
 
     public boolean spawn(int x, int y, Entity entity){
-        return map.setObject(x, y, entity);
+        return map.setEntity(x, y, entity);
     }
 
     public void debug(String s){
         Gdx.app.log("[LOG] ", s);
     }
 
+    public Location getLocationNearEnemy(){
+        List<Enemy> enemyList = map.getEntitiesByType(Enemy.class);
+        Location pos;
+        Enemy enemy;
+        do {
+            enemy = getRandomList(enemyList);
+            pos = map.getRandomPositionSurrounding(enemy.getLocation());
+
+        } while (pos.isOutOfMap(map) || !map.isEmpty(pos));
+
+        return pos;
+
+    }
+
     private void spawnEnnemy(Map map) {
         if(debugMode) return;
         if(Math.random() < 0.05){
 
-            Enemy enemy = new Enemy(map);
+            Enemy enemy = new Enemy();
             map.generateRandom(enemy);
 
         }
-        List<Position> positionList = map.getPositionsByType(Enemy.class);
-        if(map.getPositionsByType(Enemy.class).isEmpty()){
-            Enemy enemy = new Enemy(map);
+
+        if(map.getLocationsByType(Enemy.class).isEmpty()){
+            Enemy enemy = new Enemy();
             map.generateRandom(enemy);
+            return;
         }
 		
 		if(map.getEmptyCases().size() == 0) return;
 
-		Position pos;
-		Enemy enemy;
-		do {
-		    enemy = (Enemy) map.getObject(positionList.get(new Random().nextInt(positionList.size())));
-		    pos = map.getRandomPositionSurrounding(map.getPositionByObject(enemy));
-
-		} while (pos.isOutOfMap(map) || !map.setObject(pos, new Enemy(map)));
-
+        map.setEntity(getLocationNearEnemy(), new Enemy());
 
         //System.out.println("A new enemy has spawned in "+pos);
     }
@@ -249,12 +226,20 @@ public final class Game {
         return player;
     }
 
-    public List<String> getBuffer() {
-        return bufferSysout;
+    public List<Entity> getEntities(){
+        return map.getEntities();
     }
 
     public int getSize() {
         return size;
+    }
+    public void sendMessage(String message) {
+
+        if (!lock) {
+            bufferSysout.clear();
+            lock = true;
+        }
+        bufferSysout.add(message);
     }
 
     /*public JSONConfiguration getConfig() {

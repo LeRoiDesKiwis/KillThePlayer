@@ -6,54 +6,33 @@ import club.minnced.discord.rpc.DiscordRichPresence;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
-import fr.leroideskiwis.ktp.textbox.IpTextBoxListener;
-import fr.leroideskiwis.ktp.window.Button;
-import fr.leroideskiwis.mapgame.*;
-import fr.leroideskiwis.mapgame.multiplayer.Multiplayer;
-import org.json.JSONException;
+import fr.leroideskiwis.mapgame.Entity;
+import fr.leroideskiwis.mapgame.Game;
+import fr.leroideskiwis.mapgame.Location;
 
-import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-import java.util.*;
-import java.util.Map;
-import java.util.stream.Stream;
+import java.util.Optional;
 
 public class Main extends ApplicationAdapter {
 	private SpriteBatch batch;
 	private Game game;
-	private ShapeRenderer renderer;
-	private List<String> tmpBuffer = new ArrayList<>();
 	private float multiplicatorY;
 	private float multiplicatorX;
 	private long started;
-	private static Map<String, Sound> sounds = new HashMap<>();
 	private Texture emptyCase;
-	private Menu menu = Menu.MAINMENU;
-	private List<Button> buttons = new ArrayList<>();
-	private Animator animator = new Animator();
-	private Texture background;
-	private Multiplayer multi;
-	private IpTextBoxListener ipListener;
 
 	@Override
 	public void resize(int width, int height) {
     }
 
-    private void startAnimator(int updatePerSeconds){
-		animator.start(updatePerSeconds);
-	}
 
-	private void initGame(Menu menu){
-		this.menu = menu;
+	private void initGame(){
 		Gdx.app.log("INFO", "starting game...");
 		try {
 			this.game = new Game();
@@ -63,36 +42,22 @@ public class Main extends ApplicationAdapter {
 
 		Gdx.app.log("INFO", "game is started !");
 
-		multiplicatorY = (1050f/1.75f)/game.getMap().getSize();
-		multiplicatorX = (1050f/1.75f)/game.getMap().getSize();
+		multiplicatorY = (1050f/1.75f)/game.getMap().getHeight();
+		multiplicatorX = (1050f/1.75f)/game.getMap().getWidth();
 
 	}
 
 	@Override
 	public void create () {
+		initGame();
 		Gdx.graphics.setContinuousRendering(false);
 		emptyCase = getTexture("emptycase.png");
-		background = getTexture("background.png");
 
 		this.started = System.currentTimeMillis();
 
 		batch = new SpriteBatch();
-		renderer = new ShapeRenderer();
 
 		//DiscordEventHandlers handlers = new DiscordEventHandlers.Builder().setReadyEventHandler((user) -> System.out.println(user.username+"#"+user.discriminator+" played the version "+game.version)).build();
-
-		buttons.add(new Button(() -> game == null, () -> initGame(Menu.SOLO), getTexture("soloButton.png"), "solo",150, 250));
-		buttons.add(new Button(() -> {
-				if(true) return;
-				this.multi = new Multiplayer(game);
-				ipListener = new IpTextBoxListener(multi);
-				Gdx.input.getTextInput(ipListener, "ip du serveur ?", "", "tapez l'ip");
-				initGame(Menu.MULTI);
-		}, getTexture("MultiButton.png"), "multi", 550, 250));
-		buttons.add(new Button(() -> game != null, () -> menu = Menu.SOLO, getTexture("continue.png"), "continue", 150, 250));
-		buttons.add(new Button(() -> game != null, () -> initGame(Menu.SOLO), getTexture("reset.png"), "reset", 150, 50));
-		buttons.add(new Button(() -> Gdx.app.exit(), getTexture("exit.png"), "exit", 550, 50));
-		buttons.add(new Button(() -> multi != null, () -> multi = null, getTexture("quit.png"), "quit", 550, 250));
 
 		DiscordRPC discord = DiscordRPC.INSTANCE;
 		discord.Discord_Initialize("562996306646138911", new DiscordEventHandlers(), true, "");
@@ -123,145 +88,74 @@ public class Main extends ApplicationAdapter {
 		DiscordRPC.INSTANCE.Discord_UpdatePresence(presence);
 	}
 
-	private boolean update(int x, int y){
-		if(!game.getPlayer().move(x, y)) return true;
+	private void update(int x, int y){
+		if(!game.getPlayer().move(x, y)) return;
 		updatePresence();
 		try {
-			return game.update();
+			game.update();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		return true;
 	}
 
 	@Override
 	public void render() {
+		Gdx.gl.glClearColor( 0, 0, 0, 0 );
+		Gdx.gl.glClear( GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT );
+		updateGame();
 		batch.begin();
 
-		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-		switch(menu){
-			case SOLO:
-				processSoloGame();
-				break;
 
-			case MAINMENU:
-				processMainMenu();
-				break;
-			case MULTI:
-				try {
-					processMulti();
-				} catch (IOException | JSONException | IllegalAccessException | InstantiationException | InvocationTargetException | ClassNotFoundException e) {
-					e.printStackTrace();
-				}
-				break;
+		drawText("Your score is "+game.getScore(), 750, 500);
+
+		for(int i = 0; i < game.getBuffer().size(); i++) {
+			String s = game.getBuffer().get(i);
+			drawText(s, 650, 460-i*20);
 		}
 
+		drawMap(game.getMap());
+
+		batch.flush();
 		batch.end();
 
 	}
 
-	private Stream<Button> getButtonsWithCondition(){
-		return buttons.stream().filter(Button::condition);
-	}
+	private void updateGame(){
 
-	private void reset() throws IOException {
-		this.game = null;
-		if(multi != null){
-			multi.close();
-			multi = null;
+		if(Gdx.input.isKeyJustPressed(Input.Keys.LEFT)) {
+			update(-1, 0);
+			return;
+		} else if(Gdx.input.isKeyJustPressed(Input.Keys.RIGHT)) {
+			update(1, 0);
+			return;
+		} else if(Gdx.input.isKeyJustPressed(Input.Keys.UP)) {
+			update(0, 1);
+			return;
+		} else if(Gdx.input.isKeyJustPressed(Input.Keys.DOWN)) {
+			update(0, -1);
+			return;
 		}
-		menu = Menu.MAINMENU;
-	}
-
-	private void processMainMenu(){
-		startAnimator(5);
-		batch.draw(background, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-		getButtonsWithCondition().forEach(button -> button.draw(batch));
-		getButtonsWithCondition().forEach(Button::runClicked);
-
-	}
-
-	private void processMulti() throws IOException, JSONException, ClassNotFoundException, InstantiationException, IllegalAccessException, InvocationTargetException {
-		if(multi == null || (multi.isClosed() && multi.isConnected())) reset();
-		else {
-
-			if(multi.isConnected()) {
-				updateGame();
-				multi.reloadMaps();
-
-				drawMap(game.getMap(), 1, 1);
-				drawMap(multi.getOtherMap(), 1, game.getMap().getSize() * multiplicatorY + 20);
-			}
-
-		}
-
-	}
-
-	private boolean updateGame(){
-
-		if(Gdx.input.isKeyPressed(Input.Keys.ESCAPE)) menu = Menu.MAINMENU;
-
-		if(Gdx.input.isKeyJustPressed(Input.Keys.LEFT)) return update(-1, 0);
-		else if(Gdx.input.isKeyJustPressed(Input.Keys.RIGHT)) return update(1, 0);
-		else if(Gdx.input.isKeyJustPressed(Input.Keys.UP)) return update(0, 1);
-		else if(Gdx.input.isKeyJustPressed(Input.Keys.DOWN)) return update(0, -1);
-		if(Gdx.input.isKeyPressed(Input.Keys.ENTER) && (game.getPlayer().hasLose() || game.getMap().getEmptyCases().isEmpty())) {
+		if(Gdx.input.isKeyPressed(Input.Keys.ENTER) && game.getPlayer().hasLose()) {
 			try {
 				game.getPluginManager().unloadPlugins();
-				menu = Menu.MAINMENU;
+				initGame();
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}
 
-		return false;
-
 	}
 
-	private void processSoloGame() {
-		animator.stop();
+	private void drawMap(fr.leroideskiwis.mapgame.Map map){
 
-		boolean hasLose = updateGame();
+		for(Location location : map.getLocations()){
+			Optional<Entity> entity = map.getEntity(location);
 
-		if(!hasLose) {
-			tmpBuffer.clear();
-			tmpBuffer.add("You are dead. Please press enter.");
-		}
+			Rectangle rectangle = new Rectangle(location.getX()*multiplicatorX+1, location.getY()*multiplicatorY+1, multiplicatorX, multiplicatorY);
 
-		drawText("Your score is "+game.getScore(), 750, 500, null);
-
-		for (String s : game.getBuffer()) {
-			if(!tmpBuffer.contains(s)) tmpBuffer = new ArrayList<>(game.getBuffer());
-		}
-
-		game.getBuffer().clear();
-
-		for(int i = 0; i < tmpBuffer.size(); i++) {
-			String s = tmpBuffer.get(i);
-			drawText(s, 650, 460-i*20, null);
-		}
-
-		drawMap(game.getMap(), 1, 1);
-
-		batch.flush();
-
-		renderer.end();
-
-	}
-
-	private void drawMap(fr.leroideskiwis.mapgame.Map map, float xStart, float yStart){
-		for(int x = 0; x < map.getContent().length; x++) {
-
-			for(int y = 0; y < map.getContent()[x].length; y++){
-
-				Entity entity = map.getObject(x, y);
-
-				Rectangle rectangle = new Rectangle(x*multiplicatorX+xStart, y*multiplicatorY+yStart, multiplicatorX, multiplicatorY);
-
-				if(entity != null) drawTexture(rectangle, entity.texture());
-				else drawTexture(rectangle, emptyCase);
-			}
+			if(entity.isPresent()) drawTexture(rectangle, entity.get().texture());
+			else drawTexture(rectangle, emptyCase);
 		}
 	}
 
@@ -273,12 +167,6 @@ public class Main extends ApplicationAdapter {
 		}catch(Exception exception){
 			return null;
 		}
-	}
-
-	private Sound getSound(String path){
-		FileHandle handle = getAsset(path);
-		if(handle == null) return null;
-		return Gdx.audio.newSound(handle);
 	}
 
 	/*public static void playSound(String key){
@@ -303,11 +191,9 @@ public class Main extends ApplicationAdapter {
 		return handle.exists() ? handle : null;
 	}
 
-	private void drawText(String s, int x, int y, Color color){
-		if(true) return;
+	private void drawText(String s, int x, int y){
 		BitmapFont font = new BitmapFont();
-		if(color != null) font.setColor(color);
-		else font.setColor(new Color(1, 1, 1, 1));
+		font.setColor(new Color(1, 1, 1, 1));
 
 		font.draw(batch, s, x, y);
 	}
@@ -316,7 +202,6 @@ public class Main extends ApplicationAdapter {
 	public void dispose () {
 	    Gdx.app.log("INFO", "Stopping game...");
 		batch.dispose();
-		renderer.dispose();
 		if(game != null && game.getPluginManager() != null) game.getPluginManager().unloadPlugins();
 		Gdx.app.log("INFO", "game stopped.");
 	}
@@ -324,11 +209,6 @@ public class Main extends ApplicationAdapter {
 	private void drawTexture(Rectangle rectangle, Texture texture){
 
 		batch.draw(texture, rectangle.x, rectangle.y, rectangle.width, rectangle.height);
-
-	}
-
-	private enum Menu {
-		MAINMENU, SOLO, MULTI;
 
 	}
 }

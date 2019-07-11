@@ -1,6 +1,9 @@
+*.zip
 
-android/
+/plugins/
 
-html/
+/core/out/
 
-ios/
+/core/build/
+
+/.idea/

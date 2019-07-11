@@ -1,22 +1,22 @@
 package fr.leroideskiwis.plugins.events;
 
-import fr.leroideskiwis.mapgame.Position;
+import fr.leroideskiwis.mapgame.Location;
 
 public class OnMove extends Event {
 
-    private Position oldPosition;
-    private Position newPosition;
+    private Location oldLocation;
+    private Location newLocation;
 
-    public OnMove(Position oldPosition, Position newPosition) {
-        this.oldPosition = oldPosition;
-        this.newPosition = newPosition;
+    public OnMove(Location oldLocation, Location newLocation) {
+        this.oldLocation = oldLocation;
+        this.newLocation = newLocation;
     }
 
-    public Position getOldPosition() {
-        return oldPosition;
+    public Location getOldLocation() {
+        return oldLocation;
     }
 
-    public Position getNewPosition() {
-        return newPosition;
+    public Location getNewLocation() {
+        return newLocation;
     }
 }

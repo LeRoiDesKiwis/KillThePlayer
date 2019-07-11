@@ -1,7 +1,9 @@
 package fr.leroideskiwis.mapgame.specialobjects;
 
 import com.badlogic.gdx.graphics.Texture;
-import fr.leroideskiwis.mapgame.*;
+import fr.leroideskiwis.mapgame.Game;
+import fr.leroideskiwis.mapgame.Location;
+import fr.leroideskiwis.mapgame.Map;
 import fr.leroideskiwis.mapgame.entities.Enemy;
 import fr.leroideskiwis.mapgame.entities.Player;
 import fr.leroideskiwis.mapgame.entities.SpecialObj;
@@ -14,17 +16,14 @@ public class ClearEnnemies extends SpecialObj {
     }
 
     @Override
-    public void execute(Game main, Map map, Player player) {
+    public void execute(Game game, Map map, Player player) {
 
-        for(Entity[] array : map.getContent()){
-            for(Entity o : array){
-                if(o instanceof Enemy){
-                    map.deleteObject(map.getPositionByObject(o));
-                }
-            }
-        }
+        map.getEntities()
+                .stream()
+                .filter(entity -> entity instanceof Enemy)
+                .forEach(map::deleteEntity);
 
-        main.sendMessage("MAP CLEARED");
+        game.sendMessage("MAP CLEARED");
 
     }
 
@@ -44,10 +43,10 @@ public class ClearEnnemies extends SpecialObj {
     }
 
     @Override
-    public Position spawn(Game main, Map map, Player player) {
+    public Location spawn(Game main, Map map, Player player) {
         if(Math.random() < 0.10)
             return super.spawn(main, map, player);
         else
-            return new Position(0, 0);
+            return new Location(0, 0);
     }
 }
