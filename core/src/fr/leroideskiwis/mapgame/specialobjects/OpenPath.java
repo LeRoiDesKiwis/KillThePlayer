@@ -10,7 +10,7 @@ import fr.leroideskiwis.utils.Interval;
 
 public class OpenPath extends SpecialObj {
     public OpenPath(Game game) {
-        super(game, "openpath");
+        super(game, "openpath.png");
     }
 
     @Override

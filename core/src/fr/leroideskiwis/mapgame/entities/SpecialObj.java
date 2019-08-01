@@ -11,14 +11,12 @@ import fr.leroideskiwis.mapgame.Map;
 public abstract class SpecialObj extends Entity{
 
     protected final Game game;
-    private final Texture texture;
 
     public abstract void execute(Game game, Map map, Player player);
 
     public SpecialObj(Game game, String path) {
         super(path);
         this.game = game;
-        this.texture = Main.getTexture(path+".png");
     }
 
     public SpecialObj(Game game){
@@ -30,9 +28,6 @@ public abstract class SpecialObj extends Entity{
     }
 
     public abstract String name();
-    public Texture texture(){
-        return texture == null ? new Texture(Gdx.files.internal("defaultobj.png")) : texture;
-    }
     public abstract double chance();
 
     public Location spawn(Game main, Map map, Player player){

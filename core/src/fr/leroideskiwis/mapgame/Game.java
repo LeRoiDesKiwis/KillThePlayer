@@ -6,6 +6,7 @@ import fr.leroideskiwis.mapgame.entities.Enemy;
 import fr.leroideskiwis.mapgame.entities.Obstacle;
 import fr.leroideskiwis.mapgame.entities.Player;
 import fr.leroideskiwis.mapgame.entities.SpecialObj;
+import fr.leroideskiwis.mapgame.managers.TextureManager;
 import fr.leroideskiwis.mapgame.specialobjects.ClearEnnemies;
 import fr.leroideskiwis.mapgame.specialobjects.InvinciblePlayer;
 import fr.leroideskiwis.mapgame.specialobjects.OpenPath;
@@ -34,6 +35,7 @@ public final class Game {
     //private JSONConfiguration configuration;
     private KtpPluginManager pluginManager = new KtpPluginManager(this);
     private boolean lock = false;
+    private TextureManager textureManager;
 
     public void setScore(int score){
         this.score = score;
@@ -76,8 +78,9 @@ public final class Game {
             this.map = map;
     }
 
-    public Game() {
-        this.size = randomInt(30, 37);
+    public Game(TextureManager textureManager) {
+        this.textureManager = textureManager;
+        this.size = randomInt(28, 32);
         //this.size = configuration.getInt("size", 30);
         Gdx.app.log("INFO", "new instance of game");
         debugMode = false;
@@ -116,11 +119,6 @@ public final class Game {
 
     public boolean update() throws IllegalAccessException, InstantiationException, InvocationTargetException {
 
-        if(player.hasLose()) {
-            sendMessage("You are dead. Please press enter.");
-            return false;
-        }
-
         if (map.getEntitiesByType(Coin.class).size() == 0) map.generateRandom(new Coin(randomInt(5, 10)));
 
         for (int i = 0, rand = randomInt(1, 2); i < rand; i++) {
@@ -151,14 +149,17 @@ public final class Game {
 
         }
 
-        if (player.hasLose() || map.getEmptyCases().size() == 0) return false;
+        if (player.hasLose() || map.getEmptyCases().size() == 0){
+            sendMessage("Game is finish. Please press enter.");
+            return false;
+        }
         score++;
         this.lock = false;
         return true;
     }
 
     public int randomInt(int min, int max){
-        return (int)(Math.random()*max-min)+min;
+        return (int)(Math.random()*(max-min))+min;
     }
 
 

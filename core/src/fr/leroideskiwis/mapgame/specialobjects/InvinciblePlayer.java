@@ -10,7 +10,7 @@ import java.util.Random;
 
 public class InvinciblePlayer extends SpecialObj {
     public InvinciblePlayer(Game game) {
-        super(game, "invincible");
+        super(game, "invincible.png");
     }
 
     @Override

@@ -16,6 +16,7 @@ import com.badlogic.gdx.math.Rectangle;
 import fr.leroideskiwis.mapgame.Entity;
 import fr.leroideskiwis.mapgame.Game;
 import fr.leroideskiwis.mapgame.Location;
+import fr.leroideskiwis.mapgame.managers.TextureManager;
 
 import java.util.Optional;
 
@@ -26,24 +27,24 @@ public class Main extends ApplicationAdapter {
 	private float multiplicatorX;
 	private long started;
 	private Texture emptyCase;
+	private TextureManager textureManager = new TextureManager();
+	private BitmapFont font;
 
 	@Override
 	public void resize(int width, int height) {
+		multiplicatorY = (1050f/1.75f)/game.getMap().getHeight();
+		multiplicatorX = (1050f/1.75f)/game.getMap().getWidth();
     }
-
 
 	private void initGame(){
 		Gdx.app.log("INFO", "starting game...");
 		try {
-			this.game = new Game();
+			this.game = new Game(textureManager);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
 		Gdx.app.log("INFO", "game is started !");
-
-		multiplicatorY = (1050f/1.75f)/game.getMap().getHeight();
-		multiplicatorX = (1050f/1.75f)/game.getMap().getWidth();
 
 	}
 
@@ -51,11 +52,13 @@ public class Main extends ApplicationAdapter {
 	public void create () {
 		initGame();
 		Gdx.graphics.setContinuousRendering(false);
-		emptyCase = getTexture("emptycase.png");
+		emptyCase = textureManager.getTexture("emptycase.png");
 
 		this.started = System.currentTimeMillis();
+		this.font = new BitmapFont();
+		this.font.setColor(new Color(1, 1, 1, 1));
 
-		batch = new SpriteBatch();
+		this.batch = new SpriteBatch();
 
 		//DiscordEventHandlers handlers = new DiscordEventHandlers.Builder().setReadyEventHandler((user) -> System.out.println(user.username+"#"+user.discriminator+" played the version "+game.version)).build();
 
@@ -105,8 +108,6 @@ public class Main extends ApplicationAdapter {
 		updateGame();
 		batch.begin();
 
-
-
 		drawText("Your score is "+game.getScore(), 750, 500);
 
 		for(int i = 0; i < game.getBuffer().size(); i++) {
@@ -136,7 +137,7 @@ public class Main extends ApplicationAdapter {
 			update(0, -1);
 			return;
 		}
-		if(Gdx.input.isKeyPressed(Input.Keys.ENTER) && game.getPlayer().hasLose()) {
+		if(game.getPlayer().hasLose() && Gdx.input.isKeyPressed(Input.Keys.ENTER)) {
 			try {
 				game.getPluginManager().unloadPlugins();
 				initGame();
@@ -154,20 +155,15 @@ public class Main extends ApplicationAdapter {
 
 			Rectangle rectangle = new Rectangle(location.getX()*multiplicatorX+1, location.getY()*multiplicatorY+1, multiplicatorX, multiplicatorY);
 
-			if(entity.isPresent()) drawTexture(rectangle, entity.get().texture());
+			if(entity.isPresent()) {
+				Texture texture = entity.get().texture(textureManager);
+				if(texture != null) drawTexture(rectangle, texture);
+			}
 			else drawTexture(rectangle, emptyCase);
 		}
 	}
 
-	public static Texture getTexture(String path){
-		try {
-			Texture texture = new Texture(getAsset(path));
-			texture.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
-			return texture;
-		}catch(Exception exception){
-			return null;
-		}
-	}
+
 
 	/*public static void playSound(String key){
 		playSound(key, 0.5f);
@@ -179,21 +175,9 @@ public class Main extends ApplicationAdapter {
 		sound.play(volume);
 	}*/
 
-	private static FileHandle getAsset(String path){
-	    if(path.endsWith(".png.png")) path = path.substring(0, path.length()-4);
 
-		path = "textures/"+path;
-		FileHandle handle = Gdx.files.internal(path);
-		if (handle.exists())
-			return handle;
-		else
-			handle = Gdx.files.classpath(path);
-		return handle.exists() ? handle : null;
-	}
 
 	private void drawText(String s, int x, int y){
-		BitmapFont font = new BitmapFont();
-		font.setColor(new Color(1, 1, 1, 1));
 
 		font.draw(batch, s, x, y);
 	}
@@ -204,6 +188,9 @@ public class Main extends ApplicationAdapter {
 		batch.dispose();
 		if(game != null && game.getPluginManager() != null) game.getPluginManager().unloadPlugins();
 		Gdx.app.log("INFO", "game stopped.");
+		font.dispose();
+		textureManager.dispose();
+		emptyCase.dispose();
 	}
 
 	private void drawTexture(Rectangle rectangle, Texture texture){

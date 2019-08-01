@@ -3,11 +3,13 @@ package fr.leroideskiwis.mapgame;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import fr.leroideskiwis.ktp.Main;
+import fr.leroideskiwis.mapgame.managers.TextureManager;
 
 public class Entity {
 
-    private Texture texture;
     private Location location;
+    private String path;
+
 
     public Entity(Location location, String path){
         this(location.getX(), location.getY(), path);
@@ -15,6 +17,11 @@ public class Entity {
 
     public Entity(String path){
         this(0, 0, path);
+    }
+
+    public Entity(int x, int y, String path) {
+        this.path = path;
+        this.location = new Location(x,y);
     }
 
     public Entity setLocation(Location location){
@@ -30,13 +37,14 @@ public class Entity {
         return location.getY();
     }
 
-    public Entity(int x, int y, String path) {
-        this.texture = Main.getTexture(path+".png");
-        this.location = new Location(x,y);
-    }
+    public Texture texture(TextureManager manager){
 
-    public Texture texture(){
-        return texture == null ? new Texture(Gdx.files.internal("defaultobj.png")) : texture;
+        if(manager.has(this))
+            return manager.getTexture(this);
+        else {
+            manager.register(this, manager.getTexture(path));
+            return texture(manager);
+        }
     }
 
     public Location getLocation(){

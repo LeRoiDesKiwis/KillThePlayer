@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 public class Reparator extends SpecialObj {
 
     public Reparator(Game game) {
-        super(game, "reparator");
+        super(game, "reparator.png");
     }
 
     @Override

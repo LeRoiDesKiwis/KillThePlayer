@@ -7,7 +7,7 @@ import fr.leroideskiwis.mapgame.entities.SpecialObj;
 
 public class TriggerAllSpecial extends SpecialObj {
     public TriggerAllSpecial(Game game) {
-        super(game, "trigger");
+        super(game, "trigger.png");
     }
 
     @Override

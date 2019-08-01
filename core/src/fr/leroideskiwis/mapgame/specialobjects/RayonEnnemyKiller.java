@@ -10,7 +10,7 @@ import fr.leroideskiwis.utils.Interval;
 
 public class RayonEnnemyKiller extends SpecialObj {
     public RayonEnnemyKiller(Game game) {
-        super(game, "rayonkiller");
+        super(game, "rayonkiller.png");
     }
 
     @Override

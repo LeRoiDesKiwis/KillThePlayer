@@ -12,7 +12,7 @@ public class ClearEnnemies extends SpecialObj {
 
 
     public ClearEnnemies(Game game) {
-        super(game, "clearennemis");
+        super(game, "clearennemis.png");
     }
 
     @Override
@@ -30,11 +30,6 @@ public class ClearEnnemies extends SpecialObj {
     @Override
     public String name() {
         return "clear map !";
-    }
-
-    @Override
-    public Texture texture() {
-        return super.texture();//new Texture(Gdx.files.internal("obj/clearenn.png"));
     }
 
     @Override
