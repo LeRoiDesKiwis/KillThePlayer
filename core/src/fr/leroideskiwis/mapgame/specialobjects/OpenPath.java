@@ -38,6 +38,6 @@ public class OpenPath extends SpecialObj {
 
     @Override
     public double chance() {
-        return 0.05;
+        return 0.15;
     }
 }

@@ -202,7 +202,7 @@ public final class Game {
 
     private void spawnEnnemy(Map map) {
         if(debugMode) return;
-        if(Math.random() < 0.05){
+        if(Math.random() < 0.01){
 
             Enemy enemy = new Enemy();
             map.generateRandom(enemy);

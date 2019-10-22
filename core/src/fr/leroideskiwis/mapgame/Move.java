@@ -21,7 +21,6 @@ public class Move {
 
         if(Gdx.input.isKeyPressed(key)) {
             time++;
-            System.out.println("Key pressed ! "+time);
         }
         else time = 0;
 
