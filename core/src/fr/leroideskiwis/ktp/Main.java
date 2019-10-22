@@ -16,8 +16,13 @@ import com.badlogic.gdx.math.Rectangle;
 import fr.leroideskiwis.mapgame.Entity;
 import fr.leroideskiwis.mapgame.Game;
 import fr.leroideskiwis.mapgame.Location;
+import fr.leroideskiwis.mapgame.Move;
 import fr.leroideskiwis.mapgame.managers.TextureManager;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 public class Main extends ApplicationAdapter {
@@ -29,6 +34,7 @@ public class Main extends ApplicationAdapter {
 	private Texture emptyCase;
 	private TextureManager textureManager = new TextureManager();
 	private BitmapFont font;
+	private List<Move> moves = new ArrayList<>();
 
 	@Override
 	public void resize(int width, int height) {
@@ -38,6 +44,7 @@ public class Main extends ApplicationAdapter {
 
 	private void initGame(){
 		Gdx.app.log("INFO", "starting game...");
+
 		try {
 			this.game = new Game(textureManager);
 		} catch (Exception e) {
@@ -50,8 +57,13 @@ public class Main extends ApplicationAdapter {
 
 	@Override
 	public void create () {
+
+		moves.add(new Move(Input.Keys.UP, 0, 1));
+		moves.add(new Move(Input.Keys.DOWN, 0, -1));
+		moves.add(new Move(Input.Keys.RIGHT, 1, 0));
+		moves.add(new Move(Input.Keys.LEFT, -1, 0));
+
 		initGame();
-		Gdx.graphics.setContinuousRendering(false);
 		emptyCase = textureManager.getTexture("emptycase.png");
 
 		this.started = System.currentTimeMillis();
@@ -81,7 +93,7 @@ public class Main extends ApplicationAdapter {
 	}
 
 	private void updatePresence(){
-		DiscordRichPresence presence = new DiscordRichPresence();//setDetails();
+		DiscordRichPresence presence = new DiscordRichPresence();
 		if(game != null) {
 			presence.state = "score : " + game.getScore();
 			presence.details = "size of the map : " + game.getSize();
@@ -91,8 +103,8 @@ public class Main extends ApplicationAdapter {
 		DiscordRPC.INSTANCE.Discord_UpdatePresence(presence);
 	}
 
-	private void update(int x, int y){
-		if(!game.getPlayer().move(x, y)) return;
+	private void update(boolean hasFail){
+		if(hasFail) return;
 		updatePresence();
 		try {
 			game.update();
@@ -124,19 +136,8 @@ public class Main extends ApplicationAdapter {
 
 	private void updateGame(){
 
-		if(Gdx.input.isKeyJustPressed(Input.Keys.LEFT)) {
-			update(-1, 0);
-			return;
-		} else if(Gdx.input.isKeyJustPressed(Input.Keys.RIGHT)) {
-			update(1, 0);
-			return;
-		} else if(Gdx.input.isKeyJustPressed(Input.Keys.UP)) {
-			update(0, 1);
-			return;
-		} else if(Gdx.input.isKeyJustPressed(Input.Keys.DOWN)) {
-			update(0, -1);
-			return;
-		}
+		moves.stream().filter(Move::canMove).limit(1).forEach(move -> update(!game.movePlayer(move.x, move.y)));
+
 		if(game.getPlayer().hasLose() && Gdx.input.isKeyPressed(Input.Keys.ENTER)) {
 			try {
 				game.getPluginManager().unloadPlugins();
@@ -163,8 +164,6 @@ public class Main extends ApplicationAdapter {
 		}
 	}
 
-
-
 	/*public static void playSound(String key){
 		playSound(key, 0.5f);
 	}
@@ -174,8 +173,6 @@ public class Main extends ApplicationAdapter {
 		if(sound == null) return;
 		sound.play(volume);
 	}*/
-
-
 
 	private void drawText(String s, int x, int y){
 

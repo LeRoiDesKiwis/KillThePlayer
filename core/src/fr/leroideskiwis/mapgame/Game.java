@@ -37,6 +37,10 @@ public final class Game {
     private boolean lock = false;
     private TextureManager textureManager;
 
+    public boolean movePlayer(int x, int y){
+        return player.move(x, y);
+    }
+
     public void setScore(int score){
         this.score = score;
     }
@@ -111,6 +115,8 @@ public final class Game {
         for(int i = 0, rand = randomInt(3, 7); i < rand; i++){
             map.generateRandom(new Obstacle());
         }
+
+        Gdx.graphics.setTitle("KillThePlayer (created by LeRoiDesKiwis) map size : "+size);
 
         //TODO round it System.out.println("% of empty cases : "+(int)((double)map.getEmptyCases().size()/(double)map.getTotalSize()*100.0)+"%");
 

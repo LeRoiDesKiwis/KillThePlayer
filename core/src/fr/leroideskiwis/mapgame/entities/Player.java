@@ -4,6 +4,7 @@ import fr.leroideskiwis.mapgame.Entity;
 import fr.leroideskiwis.mapgame.Game;
 import fr.leroideskiwis.mapgame.Location;
 import fr.leroideskiwis.mapgame.Map;
+import fr.leroideskiwis.mapgame.Move;
 import fr.leroideskiwis.plugins.events.OnMove;
 import fr.leroideskiwis.plugins.events.OnPlayerTakeObject;
 import fr.leroideskiwis.plugins.events.OnTakeCoin;
