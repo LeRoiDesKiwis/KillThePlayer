@@ -85,7 +85,7 @@ public class Map implements Cloneable{
             game.getPluginManager().callEvent(event);
             if(event.isCancelled()) return false;
             entity.setLocation(pos);
-            entities.add(entity);
+            if(!entities.contains(entity)) entities.add(entity);
         }
         else return false;
         return true;
@@ -94,8 +94,6 @@ public class Map implements Cloneable{
     public boolean setEntity(int x, int y, Entity o){
         return setEntity(new Location(x, y), o);
     }
-
-
 
     public void deleteEntity(Location location){
         deleteEntity(location.getX(), location.getY());
@@ -169,7 +167,6 @@ public class Map implements Cloneable{
 
     public Location getRandomPositionSurrounding(Location location){
         int choice = game.randomInt(1, 4);
-
 
         switch(choice){
             case 1:
