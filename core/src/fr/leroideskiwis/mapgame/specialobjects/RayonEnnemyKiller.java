@@ -39,7 +39,7 @@ public class RayonEnnemyKiller extends SpecialObj {
 
     @Override
     public double chance() {
-        return 0.712;
+        return 0.706;
     }
 
     /*

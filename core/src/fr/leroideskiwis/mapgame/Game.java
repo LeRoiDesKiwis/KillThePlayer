@@ -15,6 +15,7 @@ import fr.leroideskiwis.mapgame.specialobjects.InvinciblePlayer;
 import fr.leroideskiwis.mapgame.specialobjects.OpenPath;
 import fr.leroideskiwis.mapgame.specialobjects.RayonEnnemyKiller;
 import fr.leroideskiwis.mapgame.specialobjects.Reparator;
+import fr.leroideskiwis.mapgame.specialobjects.Respawn;
 import fr.leroideskiwis.mapgame.specialobjects.TriggerAllSpecial;
 import fr.leroideskiwis.plugins.KtpPluginManager;
 import fr.leroideskiwis.plugins.events.OnObjectDeath;
@@ -76,7 +77,7 @@ public final class Game {
 
     public <T> T getRandomList(List<T> list){
 
-        return list.get(randomInt(list.size()));
+        return list.get(randomInt(list.size()-1));
 
     }
 
@@ -100,6 +101,7 @@ public final class Game {
         specialObjs.add(ClearEnnemies.class);
         specialObjs.add(Reparator.class);
         specialObjs.add(OpenPath.class);
+        specialObjs.add(Respawn.class);
 
         map = new Map(this, size, size);
 
@@ -128,7 +130,7 @@ public final class Game {
 
         if (map.getEntitiesByType(Coin.class).size() == 0) map.generateRandom(new Coin(randomInt(5, 10)));
 
-        for (int i = 0, rand = randomInt(1, 2); i < rand; i++) {
+        for (int i = 0, rand = 1; i < rand; i++) {
             spawnEnnemy(map);
         }
 
@@ -166,7 +168,7 @@ public final class Game {
     }
 
     public int randomInt(int min, int max){
-        return (int)(Math.random()*(max-min))+min;
+        return (int)(Math.random()*(max+1-min))+min;
     }
 
 
@@ -206,7 +208,7 @@ public final class Game {
 
     private void spawnEnnemy(Map map) {
         if(debugMode) return;
-        if(Math.random() < 0.01){
+        if(Math.random() < 0.001){
 
             Enemy enemy = new Enemy();
             map.generateRandom(enemy);
