@@ -16,7 +16,7 @@ public class OpenPath extends SpecialObj {
     @Override
     public void execute(Game game, Map map, Player player) {
 
-        int rayon = 2;
+        int rayon = game.randomInt(2, 4);
 
         game.getEntities()
                 .stream()

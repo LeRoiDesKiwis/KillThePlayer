@@ -17,7 +17,7 @@ public class RayonEnnemyKiller extends SpecialObj {
     public void execute(Game game, Map map, Player player) {
         Location location = getLocation();
 
-        int rayon = game.randomInt(3, 4);
+        int rayon = game.randomInt(2, 5);
 
         game.sendMessage("All ennemies in a radius of " + rayon + " has been killed");
         int minX = location.getX()-rayon;
