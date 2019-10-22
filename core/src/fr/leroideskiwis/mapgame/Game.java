@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 public final class Game {
 
@@ -76,6 +77,8 @@ public final class Game {
     }
 
     public <T> T getRandomList(List<T> list){
+
+        if(list.isEmpty()) return null;
 
         return list.get(randomInt(list.size()-1));
 
@@ -142,6 +145,16 @@ public final class Game {
             getPluginManager().callEvent(event);
             if(!event.isCancelled())
                 map.setEntity(location, event.getSpecialObj());
+        }
+
+        if(Math.random() > 0.01){
+
+            SpecialObj obj = getRandomList(map.getEntitiesByType(SpecialObj.class)
+                    .stream()
+                    .filter(specialObj -> map.hasFullSurrounding(specialObj))
+                    .collect(Collectors.toList()));
+            if(obj != null) obj.kill();
+
         }
 
         for (Entity entity : map.getEntitiesByType(SpecialObj.class)) {

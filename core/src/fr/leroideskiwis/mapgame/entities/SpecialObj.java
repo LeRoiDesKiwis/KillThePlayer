@@ -35,4 +35,9 @@ public abstract class SpecialObj extends Entity{
         return game.getRandomList(map.getEmptyCases());
 
     }
+
+    public void kill(){
+        game.getMap().deleteEntity(getLocation());
+        game.getMap().setEntity(getLocation(), new Obstacle(this));
+    }
 }

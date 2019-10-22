@@ -136,6 +136,7 @@ public class Map implements Cloneable{
             }
 
             entities.remove(entity);
+            if(!entities.contains(newObject)) entities.add(newObject);
             newObject.setLocation(x, y);
 
         });
@@ -223,5 +224,14 @@ public class Map implements Cloneable{
             }
             else batch.draw(emptyCase, rectangle.x, rectangle.y, rectangle.width, rectangle.height);
         }
+    }
+
+    public boolean hasFullSurrounding(Entity entity){
+        for(int x = entity.getX()-1; x <= entity.getX()+1; x++){
+            for(int y = entity.getY()-1; y <= entity.getY()+1; y++){
+                if(isEmpty(new Location(x, y))) return false;
+            }
+        }
+        return true;
     }
 }
