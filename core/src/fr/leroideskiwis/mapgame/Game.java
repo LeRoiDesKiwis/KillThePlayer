@@ -1,6 +1,9 @@
 package fr.leroideskiwis.mapgame;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Rectangle;
 import fr.leroideskiwis.mapgame.entities.Coin;
 import fr.leroideskiwis.mapgame.entities.Enemy;
 import fr.leroideskiwis.mapgame.entities.Obstacle;
@@ -20,6 +23,7 @@ import fr.leroideskiwis.plugins.events.OnObjectSpawn;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Random;
 
 public final class Game {
@@ -249,4 +253,10 @@ public final class Game {
     /*public JSONConfiguration getConfig() {
         return configuration;
     }*/
+
+    public void drawMap(TextureManager manager, SpriteBatch batch, float multiplicatorX, float multiplicatorY, Texture emptyCase){
+        map.draw(manager, batch, multiplicatorX, multiplicatorY, emptyCase);
+
+    }
+
 }

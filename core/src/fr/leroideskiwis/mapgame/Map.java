@@ -1,9 +1,13 @@
 package fr.leroideskiwis.mapgame;
 
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Rectangle;
 import com.sun.istack.internal.NotNull;
 import fr.leroideskiwis.mapgame.entities.Enemy;
 import fr.leroideskiwis.mapgame.entities.Obstacle;
 import fr.leroideskiwis.mapgame.entities.Player;
+import fr.leroideskiwis.mapgame.managers.TextureManager;
 import fr.leroideskiwis.plugins.events.OnEnnemyDeath;
 import fr.leroideskiwis.plugins.events.OnEntitySpawn;
 
@@ -208,5 +212,19 @@ public class Map implements Cloneable{
     @Deprecated
     public Location getPositionByObject(Entity entity) {
         return entity.getLocation();
+    }
+
+    public void draw(TextureManager manager, SpriteBatch batch, float multiplicatorX, float multiplicatorY, Texture emptyCase) {
+
+        for(Location location : getLocations()){
+            Optional<Entity> entity = getEntity(location);
+
+            Rectangle rectangle = new Rectangle(location.getX()*multiplicatorX+1, location.getY()*multiplicatorY+1, multiplicatorX, multiplicatorY);
+
+            if(entity.isPresent()) {
+                entity.get().draw(manager, batch, rectangle);
+            }
+            else batch.draw(emptyCase, rectangle.x, rectangle.y, rectangle.width, rectangle.height);
+        }
     }
 }

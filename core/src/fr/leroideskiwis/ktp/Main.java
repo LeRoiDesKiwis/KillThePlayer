@@ -47,6 +47,7 @@ public class Main extends ApplicationAdapter {
 
 		try {
 			this.game = new Game(textureManager);
+			resize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -127,7 +128,7 @@ public class Main extends ApplicationAdapter {
 			drawText(s, 650, 460-i*20);
 		}
 
-		drawMap(game.getMap());
+		game.drawMap(textureManager, batch, multiplicatorX, multiplicatorY, emptyCase);
 
 		batch.flush();
 		batch.end();
@@ -149,20 +150,6 @@ public class Main extends ApplicationAdapter {
 
 	}
 
-	private void drawMap(fr.leroideskiwis.mapgame.Map map){
-
-		for(Location location : map.getLocations()){
-			Optional<Entity> entity = map.getEntity(location);
-
-			Rectangle rectangle = new Rectangle(location.getX()*multiplicatorX+1, location.getY()*multiplicatorY+1, multiplicatorX, multiplicatorY);
-
-			if(entity.isPresent()) {
-				Texture texture = entity.get().texture(textureManager);
-				if(texture != null) drawTexture(rectangle, texture);
-			}
-			else drawTexture(rectangle, emptyCase);
-		}
-	}
 
 	/*public static void playSound(String key){
 		playSound(key, 0.5f);
@@ -188,11 +175,5 @@ public class Main extends ApplicationAdapter {
 		font.dispose();
 		textureManager.dispose();
 		emptyCase.dispose();
-	}
-
-	private void drawTexture(Rectangle rectangle, Texture texture){
-
-		batch.draw(texture, rectangle.x, rectangle.y, rectangle.width, rectangle.height);
-
 	}
 }

@@ -2,6 +2,8 @@ package fr.leroideskiwis.mapgame;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Rectangle;
 import fr.leroideskiwis.ktp.Main;
 import fr.leroideskiwis.mapgame.managers.TextureManager;
 
@@ -37,7 +39,7 @@ public class Entity {
         return location.getY();
     }
 
-    public Texture texture(TextureManager manager){
+    private Texture texture(TextureManager manager){
 
         if(manager.has(this))
             return manager.getTexture(this);
@@ -53,5 +55,9 @@ public class Entity {
 
     public Entity setLocation(int x, int y) {
         return setLocation(new Location(x, y));
+    }
+
+    public void draw(TextureManager manager, SpriteBatch batch, Rectangle rectangle) {
+        batch.draw(texture(manager), rectangle.x, rectangle.y, rectangle.width, rectangle.height);
     }
 }
