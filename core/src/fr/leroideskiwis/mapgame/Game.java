@@ -85,20 +85,17 @@ public final class Game {
     public Game(TextureManager textureManager) {
         this.textureManager = textureManager;
         this.size = randomInt(28, 32);
-        //this.size = configuration.getInt("size", 30);
         Gdx.app.log("INFO", "new instance of game");
         debugMode = false;
         this.pluginManager = new KtpPluginManager(this);
 
-        //tryLoadFile(new File("./map.ktp"), true);
 
         specialObjs.add(RayonEnnemyKiller.class);
-        specialObjs.add(InvinciblePlayer.class);
+        //specialObjs.add(InvinciblePlayer.class);
         specialObjs.add(TriggerAllSpecial.class);
         specialObjs.add(ClearEnnemies.class);
         specialObjs.add(Reparator.class);
         specialObjs.add(OpenPath.class);
-        //Not added because chiant specialObjs.add(new Teleporter());
 
         map = new Map(this, size, size);
 
