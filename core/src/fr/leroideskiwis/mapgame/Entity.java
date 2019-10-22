@@ -12,7 +12,6 @@ public class Entity {
     private Location location;
     private String path;
 
-
     public Entity(Location location, String path){
         this(location.getX(), location.getY(), path);
     }

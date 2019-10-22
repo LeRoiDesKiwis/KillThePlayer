@@ -34,6 +34,6 @@ public class InvinciblePlayer extends SpecialObj {
 
     @Override
     public double chance() {
-        return 0.06;
+        return 0; //0.06 before but 0 now because disabled
     }
 }
