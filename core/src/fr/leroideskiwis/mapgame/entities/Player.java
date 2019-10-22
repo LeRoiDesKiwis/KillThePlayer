@@ -32,27 +32,18 @@ public class Player extends Entity {
      * @param y the y coordinate
      * @return <b>false</b> if there already an object in the coordinate x and y
      */
-    private boolean setPosition(int x, int y){
-        Location before = getLocation();
+    private boolean moveTo(int x, int y){
         Optional<Entity> entityOpt = map.getEntity(x, y);
 
-        if(entityOpt.isPresent()) {
-            Entity entity = entityOpt.get();
-            if(entity.onCollide(new ExecutionData(this, map, game))) map.deleteEntity(entity);
-        }
+        entityOpt.filter(entity -> entity.onCollide(new ExecutionData(this, map, game))).ifPresent(map::deleteEntity);
 
         if(invincibility.isInvincible()) {
-            if(!entityOpt.isPresent() || entityOpt.get().isRemovable()) {
+            entityOpt.filter(Entity::isRemovable).ifPresent(entity -> {
                 map.replaceEntity(x, y, this);
                 invincibility.removeOne();
                 invincibility.display(game);
-            }
+            });
         } else if(!map.setEntity(x, y, this)) return false;
-
-        if(!getLocation().equals(before)) {
-            map.deleteEntity(before);
-            return true;
-        }
 
         return false;
     }
@@ -67,7 +58,7 @@ public class Player extends Entity {
     public boolean move(int x, int y){
         if(x == 0 && y == 0) return true;
         Location location = getLocation();
-        return setPosition(location.x+x, location.y+y);
+        return moveTo(location.x+x, location.y+y);
     }
 
     /**

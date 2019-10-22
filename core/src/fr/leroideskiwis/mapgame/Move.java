@@ -17,9 +17,7 @@ public class Move {
 
     public boolean canMove(){
 
-        if(Gdx.input.isKeyPressed(key)) {
-            time++;
-        }
+        if(Gdx.input.isKeyPressed(key)) time++;
         else time = 0;
 
         if(time >= 4){
