@@ -59,4 +59,8 @@ public class Entity {
     public void draw(TextureManager manager, SpriteBatch batch, Rectangle rectangle) {
         batch.draw(texture(manager), rectangle.x, rectangle.y, rectangle.width, rectangle.height);
     }
+
+    public boolean isInvulnerable(){
+        return false;
+    }
 }

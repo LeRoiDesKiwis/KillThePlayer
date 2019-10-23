@@ -65,15 +65,19 @@ public class Player extends Entity {
         if(event.isCancelled()) return false;
 
         if(invincibility.isInvincible()) {
-            map.replaceEntity(x, y, this);
-            invincibility.removeOne();
-            invincibility.display(game);
+            if(!entityOpt.isPresent() || !entityOpt.get().isInvulnerable()) {
+                map.replaceEntity(x, y, this);
+                invincibility.removeOne();
+                invincibility.display(game);
+            }
+        } else if(!map.setEntity(x, y, this)) return false;
+
+        if(!getLocation().equals(before)) {
+            map.deleteEntity(before);
+            return true;
         }
-        else if(!map.setEntity(x, y, this)) return false;
 
-        map.deleteEntity(before);
-
-        return true;
+        return false;
     }
 
     private void executeSpecialObj(SpecialObj special){

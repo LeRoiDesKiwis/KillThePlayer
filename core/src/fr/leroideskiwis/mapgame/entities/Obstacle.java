@@ -26,4 +26,9 @@ public class Obstacle extends Entity {
     public String toString(){
         return "O";
     }
+
+    @Override
+    public boolean isInvulnerable() {
+        return true;
+    }
 }
