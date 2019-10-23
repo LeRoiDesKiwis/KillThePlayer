@@ -24,6 +24,7 @@ import fr.leroideskiwis.plugins.events.OnObjectSpawn;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Random;
 import java.util.stream.Collectors;
 
@@ -75,11 +76,11 @@ public final class Game {
         specialObjs.add(specialObj);
     }
 
-    public <T> T getRandomList(List<T> list){
+    public <T> Optional<T> getRandomList(List<T> list){
 
-        if(list.isEmpty()) return null;
+        if(list.isEmpty()) return Optional.empty();
 
-        return list.get(randomInt(list.size()-1));
+        return Optional.of(list.get(randomInt(list.size()-1)));
 
     }
 
@@ -149,12 +150,11 @@ public final class Game {
         }
 
         if(Math.random() < 0.01){
-
-            SpecialObj obj = getRandomList(map.getEntitiesByType(SpecialObj.class)
-                    .stream()
-                    .filter(specialObj -> map.hasFullSurrounding(specialObj, Enemy.class))
-                    .collect(Collectors.toList()));
-            if(obj != null) obj.kill();
+            getRandomList(map.getEntitiesByType(SpecialObj.class)
+                        .stream()
+                        .filter(specialObj -> map.hasFullSurrounding(specialObj, Enemy.class))
+                        .collect(Collectors.toList()))
+                    .ifPresent(SpecialObj::kill);
 
         }
 
@@ -208,15 +208,19 @@ public final class Game {
 
     public Location getLocationNearEnemy(){
         List<Enemy> enemyList = map.getEntitiesByType(Enemy.class);
-        Location pos;
+        /*Location pos;
         Enemy enemy;
         do {
             enemy = getRandomList(enemyList);
+
             pos = map.getRandomPositionSurrounding(enemy.getLocation());
 
         } while (pos.isOutOfMap(map) || !map.isEmpty(pos));
-
-        return pos;
+*/
+        return getRandomList(enemyList.stream()
+                .filter(enemy1 -> !map.hasFullSurrounding(enemy1))
+                .flatMap(enemy -> map.getSurroudingWithoutCorners(enemy).stream())
+                .filter(location -> !location.isOutOfMap(map) && map.isEmpty(location)).collect(Collectors.toList())).orElse(new Location(1, 1));
 
     }
 

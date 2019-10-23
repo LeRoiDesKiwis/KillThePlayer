@@ -32,7 +32,7 @@ public abstract class SpecialObj extends Entity{
 
     public Location spawn(Game main, Map map, Player player){
 
-        return game.getRandomList(map.getEmptyCases());
+        return map.getRandomLocation();
 
     }
 

@@ -157,8 +157,12 @@ public class Map implements Cloneable{
 
     public void generateRandom(Entity entity){
 
-        setEntity(game.getRandomList(getEmptyCases()), entity);
+        setEntity(getRandomLocation(), entity);
 
+    }
+
+    public Location getRandomLocation(){
+        return game.getRandomList(getEmptyCases()).orElse(new Location(1, 1));
     }
 
     public List<Location> getEmptyCases(){
@@ -230,13 +234,21 @@ public class Map implements Cloneable{
     }
 
     public List<Entity> getSurrounding(Entity entity){
-        List<Entity> entities = new ArrayList<>();
+        return getLocationsSurrounding(entity).stream().map(location -> getEntity(location).orElse(null)).collect(Collectors.toList());
+    }
+
+    public List<Location> getLocationsSurrounding(Entity entity){
+        List<Location> locations = new ArrayList<>();
         for(int x = entity.getX()-1; x <= entity.getX()+1; x++){
             for(int y = entity.getY()-1; y <= entity.getY()+1; y++){
-                entities.add(getEntity(x, y).orElse(null));
+                locations.add(new Location(x, y));
             }
         }
-        return entities;
+        return locations;
+    }
+
+    public List<Location> getSurroudingWithoutCorners(Entity entity){
+        return getLocationsSurrounding(entity).stream().filter(location -> location.getX() != location.getY()).collect(Collectors.toList());
     }
 
     public boolean hasFullSurrounding(Entity entity){
