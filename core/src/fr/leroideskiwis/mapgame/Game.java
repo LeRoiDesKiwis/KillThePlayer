@@ -3,7 +3,6 @@ package fr.leroideskiwis.mapgame;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.math.Rectangle;
 import fr.leroideskiwis.mapgame.entities.Coin;
 import fr.leroideskiwis.mapgame.entities.Enemy;
 import fr.leroideskiwis.mapgame.entities.Obstacle;
@@ -12,20 +11,19 @@ import fr.leroideskiwis.mapgame.entities.SpecialObj;
 import fr.leroideskiwis.mapgame.managers.TextureManager;
 import fr.leroideskiwis.mapgame.specialobjects.ClearEnnemies;
 import fr.leroideskiwis.mapgame.specialobjects.InvinciblePlayer;
-import fr.leroideskiwis.mapgame.specialobjects.OpenPath;
+import fr.leroideskiwis.mapgame.specialobjects.HorizontalOpenPath;
 import fr.leroideskiwis.mapgame.specialobjects.RayonEnnemyKiller;
 import fr.leroideskiwis.mapgame.specialobjects.Reparator;
 import fr.leroideskiwis.mapgame.specialobjects.Respawn;
 import fr.leroideskiwis.mapgame.specialobjects.TriggerAllSpecial;
+import fr.leroideskiwis.mapgame.specialobjects.VerticalOpenPath;
 import fr.leroideskiwis.plugins.KtpPluginManager;
 import fr.leroideskiwis.plugins.events.OnObjectDeath;
 import fr.leroideskiwis.plugins.events.OnObjectSpawn;
 
 import java.lang.reflect.InvocationTargetException;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.Random;
 import java.util.stream.Collectors;
 
@@ -104,7 +102,8 @@ public final class Game {
         specialObjs.add(TriggerAllSpecial.class);
         specialObjs.add(ClearEnnemies.class);
         specialObjs.add(Reparator.class);
-        specialObjs.add(OpenPath.class);
+        specialObjs.add(HorizontalOpenPath.class);
+        specialObjs.add(VerticalOpenPath.class);
         specialObjs.add(Respawn.class);
         specialObjs.add(InvinciblePlayer.class);
 

@@ -8,9 +8,9 @@ import fr.leroideskiwis.mapgame.entities.Player;
 import fr.leroideskiwis.mapgame.entities.SpecialObj;
 import fr.leroideskiwis.utils.Interval;
 
-public class OpenPath extends SpecialObj {
-    public OpenPath(Game game) {
-        super(game, "openpath.png");
+public class HorizontalOpenPath extends SpecialObj {
+    public HorizontalOpenPath(Game game) {
+        super(game, "openpathH.png");
     }
 
     @Override
@@ -38,6 +38,6 @@ public class OpenPath extends SpecialObj {
 
     @Override
     public double chance() {
-        return 0.15;
+        return 0.075;
     }
 }

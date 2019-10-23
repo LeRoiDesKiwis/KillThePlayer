@@ -134,7 +134,7 @@ public class Map implements Cloneable{
             Entity entity = optionalEntity.get();
 
             if(entity instanceof Enemy){
-                OnEnnemyDeath event = new OnEnnemyDeath(new Location(x, y), (Enemy) optionalEntity.get());
+                OnEnnemyDeath event = new OnEnnemyDeath(new Location(x, y), (Enemy) entity);
                 game.getPluginManager().callEvent(event);
                 if(event.isCancelled()) return;
             }
