@@ -219,7 +219,7 @@ public final class Game {
 */
         return getRandomList(enemyList.stream()
                 .filter(enemy1 -> !map.hasFullSurrounding(enemy1))
-                .flatMap(enemy -> map.getSurroudingWithoutCorners(enemy).stream())
+                .flatMap(enemy -> map.getSurroundingWithoutCorners(enemy).stream())
                 .filter(location -> !location.isOutOfMap(map) && map.isEmpty(location)).collect(Collectors.toList())).orElse(new Location(1, 1));
 
     }

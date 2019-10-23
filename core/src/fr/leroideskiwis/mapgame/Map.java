@@ -173,22 +173,6 @@ public class Map implements Cloneable{
         return new ArrayList<>(entities);
     }
 
-    public Location getRandomPositionSurrounding(Location location){
-        int choice = game.randomInt(1, 4);
-
-        switch(choice){
-            case 1:
-                return location.add(1, 0);
-            case 2:
-                return location.add(0, 1);
-            case 3:
-                return location.add(-1, 0);
-            default:
-                return location.add(0, -1);
-        }
-
-    }
-
     public boolean isEmpty(Location location){
         return !getEntity(location).isPresent();
     }
@@ -247,8 +231,8 @@ public class Map implements Cloneable{
         return locations;
     }
 
-    public List<Location> getSurroudingWithoutCorners(Entity entity){
-        return getLocationsSurrounding(entity).stream().filter(location -> location.getX() != location.getY()).collect(Collectors.toList());
+    public List<Location> getSurroundingWithoutCorners(Entity entity){
+        return getLocationsSurrounding(entity).stream().filter(location -> Math.abs(entity.getX()-location.getX()) != Math.abs(entity.getY()-location.getY())).collect(Collectors.toList());
     }
 
     public boolean hasFullSurrounding(Entity entity){
