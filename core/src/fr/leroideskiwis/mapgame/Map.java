@@ -13,6 +13,7 @@ import fr.leroideskiwis.plugins.events.OnEntitySpawn;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -226,12 +227,23 @@ public class Map implements Cloneable{
         }
     }
 
-    public boolean hasFullSurrounding(Entity entity){
+    public List<Entity> getSurrounding(Entity entity){
+        List<Entity> entities = new ArrayList<>();
         for(int x = entity.getX()-1; x <= entity.getX()+1; x++){
             for(int y = entity.getY()-1; y <= entity.getY()+1; y++){
-                if(isEmpty(new Location(x, y))) return false;
+                entities.add(getEntity(x, y).orElse(null));
             }
         }
-        return true;
+        return entities;
+    }
+
+    public boolean hasFullSurrounding(Entity entity){
+        return getSurrounding(entity).stream().noneMatch(Objects::isNull);
+    }
+
+    public boolean hasFullSurrounding(Entity entity, Class<? extends Entity> clazz){
+
+        return getSurrounding(entity).stream().allMatch(entity -> entity.getClass().equals(clazz));
+
     }
 }

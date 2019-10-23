@@ -147,11 +147,11 @@ public final class Game {
                 map.setEntity(location, event.getSpecialObj());
         }
 
-        if(Math.random() > 0.01){
+        if(Math.random() < 0.01){
 
             SpecialObj obj = getRandomList(map.getEntitiesByType(SpecialObj.class)
                     .stream()
-                    .filter(specialObj -> map.hasFullSurrounding(specialObj))
+                    .filter(specialObj -> map.hasFullSurrounding(specialObj, Enemy.class))
                     .collect(Collectors.toList()));
             if(obj != null) obj.kill();
 
