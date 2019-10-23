@@ -2,6 +2,7 @@ package fr.leroideskiwis.mapgame.entities;
 
 import fr.leroideskiwis.mapgame.Entity;
 import fr.leroideskiwis.mapgame.Game;
+import fr.leroideskiwis.mapgame.Invincibility;
 import fr.leroideskiwis.mapgame.Location;
 import fr.leroideskiwis.mapgame.Map;
 import fr.leroideskiwis.mapgame.Move;
@@ -15,31 +16,21 @@ public class Player extends Entity {
 
     private Map map;
     private Game game;
-    private int invincibleTour;
+    private final Invincibility invincibility;
 
     public Player(Game game, Map map){
         super("player.png");
         this.map = map;
         this.game = game;
+        this.invincibility = new Invincibility();
     }
 
-    public void setInvincible(int invincible){
-        this.invincibleTour = invincible;
-    }
-
-    public int getInvincible(){
-        return invincibleTour;
+    public void addInvincility(){
+        invincibility.addInvincility();
     }
 
     public boolean move(Location location){
         return setPosition(location.getX(), location.getY());
-    }
-
-    private void passOneInvincibleMove(){
-        invincibleTour--;
-        if(invincibleTour > 0)
-            game.sendMessage("You're invincible mode will be disabled in "+invincibleTour+" moves");
-        else game.sendMessage("You're invincible mode was been disabled");
     }
 
     /**
@@ -69,14 +60,18 @@ public class Player extends Entity {
             }
         }
 
-        //TODO système d'invincibilité
-
         OnMove event = new OnMove(before, new Location(x,y));
         game.getPluginManager().callEvent(event);
         if(event.isCancelled()) return false;
 
-        if(!map.setEntity(x, y, this)) return false;
-        map.replaceEntity(before.getX(), before.getY(), null);
+        if(invincibility.isInvincible()) {
+            map.replaceEntity(x, y, this);
+            invincibility.removeOne();
+            invincibility.display(game);
+        }
+        else if(!map.setEntity(x, y, this)) return false;
+
+        map.deleteEntity(before);
 
         return true;
     }

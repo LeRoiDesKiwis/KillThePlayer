@@ -22,6 +22,7 @@ import fr.leroideskiwis.plugins.events.OnObjectDeath;
 import fr.leroideskiwis.plugins.events.OnObjectSpawn;
 
 import java.lang.reflect.InvocationTargetException;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -105,6 +106,7 @@ public final class Game {
         specialObjs.add(Reparator.class);
         specialObjs.add(OpenPath.class);
         specialObjs.add(Respawn.class);
+        specialObjs.add(InvinciblePlayer.class);
 
         map = new Map(this, size, size);
 

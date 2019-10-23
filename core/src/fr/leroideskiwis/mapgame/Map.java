@@ -128,19 +128,21 @@ public class Map implements Cloneable{
 
     public void replaceEntity(int x, int y, @NotNull Entity newObject){
 
-        getEntity(x, y).ifPresent(entity -> {
+        Optional<Entity> optionalEntity = getEntity(x, y);
+
+        if(optionalEntity.isPresent()){
+            Entity entity = optionalEntity.get();
 
             if(entity instanceof Enemy){
-                OnEnnemyDeath event = new OnEnnemyDeath(new Location(x, y), (Enemy) entity);
+                OnEnnemyDeath event = new OnEnnemyDeath(new Location(x, y), (Enemy) optionalEntity.get());
                 game.getPluginManager().callEvent(event);
                 if(event.isCancelled()) return;
             }
-
             entities.remove(entity);
-            if(!entities.contains(newObject)) entities.add(newObject);
-            newObject.setLocation(x, y);
+        }
 
-        });
+        if(!entities.contains(newObject)) entities.add(newObject);
+        newObject.setLocation(x, y);
 
     }
 
@@ -243,7 +245,7 @@ public class Map implements Cloneable{
 
     public boolean hasFullSurrounding(Entity entity, Class<? extends Entity> clazz){
 
-        return getSurrounding(entity).stream().allMatch(entity -> entity.getClass().equals(clazz));
+        return getSurrounding(entity).stream().allMatch(entity1 -> entity1 != null && entity1.getClass().equals(clazz));
 
     }
 }

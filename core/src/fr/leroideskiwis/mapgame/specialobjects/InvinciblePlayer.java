@@ -17,8 +17,8 @@ public class InvinciblePlayer extends SpecialObj {
     public void execute(Game game, Map map, Player player) {
 
         int invincibleTour = new Random().nextInt(3)+3;
-        player.setInvincible(player.getInvincible()+invincibleTour);
-        game.sendMessage("You are now invicible for "+invincibleTour+" moves");
+        player.addInvincility();
+        game.sendMessage("You got "+invincibleTour+" invincible moves");
 
     }
 
@@ -34,6 +34,6 @@ public class InvinciblePlayer extends SpecialObj {
 
     @Override
     public double chance() {
-        return 0; //0.06 before but 0 now because disabled
+        return 0.06;
     }
 }
