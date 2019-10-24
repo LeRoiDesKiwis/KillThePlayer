@@ -239,9 +239,11 @@ public class Map implements Cloneable{
         return getSurrounding(entity).stream().noneMatch(Objects::isNull);
     }
 
-    public boolean hasFullSurrounding(Entity entity, Class<? extends Entity> clazz){
+    /*public <T> boolean hasFullSurrounding(Entity entity, Class<T> clazz){
 
-        return getSurrounding(entity).stream().allMatch(entity1 -> entity1 != null && entity1.getClass().equals(clazz));
+        List<T> all = getEntitiesByType(clazz);
 
-    }
+        return getSurrounding(entity).stream().allMatch(entity1 -> entity1 != null && all.contains(entity1));
+
+    }*/
 }

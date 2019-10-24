@@ -149,28 +149,15 @@ public final class Game {
                 map.setEntity(location, event.getSpecialObj());
         }
 
-        if(Math.random() < 0.01){
+        if(Math.random() < 0.001){
             getRandomList(map.getEntitiesByType(SpecialObj.class)
                         .stream()
-                        .filter(specialObj -> map.hasFullSurrounding(specialObj, Enemy.class))
+                        .filter(specialObj -> map.hasFullSurrounding(specialObj))
                         .collect(Collectors.toList()))
                     .ifPresent(SpecialObj::kill);
 
         }
 
-        for (Entity entity : map.getEntitiesByType(SpecialObj.class)) {
-
-            if (Math.random() < 0.001) {
-
-                if (entity.getLocation().getSurroundingsObjects(map).stream().allMatch(o -> o instanceof Enemy)) {
-                    OnObjectDeath event = new OnObjectDeath(entity.getLocation(), (SpecialObj) entity);
-                    getPluginManager().callEvent(event);
-                    if(!event.isCancelled())
-                        map.replaceEntity(entity.getLocation(), new Obstacle((SpecialObj) entity));
-                }
-            }
-
-        }
 
         if (player.hasLose() || map.getEmptyCases().size() == 0){
             sendMessage("Game is finish. Please press enter.");
