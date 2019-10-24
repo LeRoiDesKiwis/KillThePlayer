@@ -12,8 +12,8 @@ public class Invincibility {
         tour--;
     }
 
-    public void addInvincility(){
-        tour += 3;
+    public void addInvincility(int invincibleTour){
+        tour += invincibleTour;
     }
 
     public void display(Game game){

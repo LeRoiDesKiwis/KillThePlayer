@@ -25,8 +25,8 @@ public class Player extends Entity {
         this.invincibility = new Invincibility();
     }
 
-    public void addInvincility(){
-        invincibility.addInvincility();
+    public void addInvincility(int invincibleTour){
+        invincibility.addInvincility(invincibleTour);
     }
 
     public boolean move(Location location){

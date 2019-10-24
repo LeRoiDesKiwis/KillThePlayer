@@ -17,7 +17,7 @@ public class InvinciblePlayer extends SpecialObj {
     public void execute(Game game, Map map, Player player) {
 
         int invincibleTour = game.randomInt(5, 6);
-        player.addInvincility();
+        player.addInvincility(invincibleTour);
         game.sendMessage("You got "+invincibleTour+" invincible moves");
 
     }
