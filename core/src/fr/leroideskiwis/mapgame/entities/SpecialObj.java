@@ -40,4 +40,9 @@ public abstract class SpecialObj extends Entity{
         game.getMap().deleteEntity(getLocation());
         game.getMap().setEntity(getLocation(), new Obstacle(this));
     }
+
+    @Override
+    public void onCollide(Game game, Map map, Player player) {
+        execute(game, map, player);
+    }
 }

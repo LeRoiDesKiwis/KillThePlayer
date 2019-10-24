@@ -45,19 +45,7 @@ public class Player extends Entity {
 
         if(entityOpt.isPresent()) {
             Entity entity = entityOpt.get();
-
-            if (entity instanceof SpecialObj) {
-                SpecialObj special = (SpecialObj) entity;
-                executeSpecialObj(special);
-
-            } else if (entity instanceof Coin) {
-
-                game.addScore(((Coin) entity).getAmount());
-                OnTakeCoin event = new OnTakeCoin(new Location(x, y), (Coin) entity);
-                game.getPluginManager().callEvent(event);
-                if (event.isCancelled()) return false;
-                map.deleteEntity(x, y);
-            }
+            entity.onCollide(game, map, this);
         }
 
         OnMove event = new OnMove(before, new Location(x,y));

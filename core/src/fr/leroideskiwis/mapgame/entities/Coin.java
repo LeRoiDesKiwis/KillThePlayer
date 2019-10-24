@@ -1,6 +1,10 @@
 package fr.leroideskiwis.mapgame.entities;
 
 import fr.leroideskiwis.mapgame.Entity;
+import fr.leroideskiwis.mapgame.Game;
+import fr.leroideskiwis.mapgame.Location;
+import fr.leroideskiwis.mapgame.Map;
+import fr.leroideskiwis.plugins.events.OnTakeCoin;
 
 public class Coin extends Entity {
 
@@ -19,4 +23,12 @@ public class Coin extends Entity {
         return "*";
     }
 
+    @Override
+    public void onCollide(Game game, Map map, Player player) {
+        game.addScore(amount);
+        OnTakeCoin event = new OnTakeCoin(getLocation(), this);
+        game.getPluginManager().callEvent(event);
+        if (event.isCancelled()) return;
+        map.deleteEntity(getLocation());
+    }
 }

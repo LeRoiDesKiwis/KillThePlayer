@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
 import fr.leroideskiwis.ktp.Main;
+import fr.leroideskiwis.mapgame.entities.Player;
 import fr.leroideskiwis.mapgame.managers.TextureManager;
 
 public class Entity {
@@ -62,5 +63,9 @@ public class Entity {
 
     public boolean isInvulnerable(){
         return false;
+    }
+
+    public void onCollide(Game game, Map map, Player player){
+
     }
 }
