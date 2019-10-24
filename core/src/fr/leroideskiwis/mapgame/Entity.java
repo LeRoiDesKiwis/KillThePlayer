@@ -65,7 +65,8 @@ public class Entity {
         return false;
     }
 
-    public void onCollide(Game game, Map map, Player player){
+    public boolean onCollide(Game game, Map map, Player player){
+        return false;
 
     }
 }

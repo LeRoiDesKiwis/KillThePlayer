@@ -1,6 +1,8 @@
 package fr.leroideskiwis.mapgame.entities;
 
 import fr.leroideskiwis.mapgame.Entity;
+import fr.leroideskiwis.mapgame.Game;
+import fr.leroideskiwis.mapgame.Map;
 
 public class Obstacle extends Entity {
 
@@ -29,6 +31,12 @@ public class Obstacle extends Entity {
 
     @Override
     public boolean isInvulnerable() {
-        return true;
+        return lostObject == null;
+    }
+
+    @Override
+    public boolean onCollide(Game game, Map map, Player player) {
+        if(!isInvulnerable()) return lostObject.onCollide(game, map, player);
+        return false;
     }
 }

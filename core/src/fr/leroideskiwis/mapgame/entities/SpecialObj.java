@@ -42,7 +42,8 @@ public abstract class SpecialObj extends Entity{
     }
 
     @Override
-    public void onCollide(Game game, Map map, Player player) {
+    public boolean onCollide(Game game, Map map, Player player) {
         execute(game, map, player);
+        return true;
     }
 }

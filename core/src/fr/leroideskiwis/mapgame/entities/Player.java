@@ -45,7 +45,7 @@ public class Player extends Entity {
 
         if(entityOpt.isPresent()) {
             Entity entity = entityOpt.get();
-            entity.onCollide(game, map, this);
+            if(entity.onCollide(game, map, this)) map.deleteEntity(entity);
         }
 
         OnMove event = new OnMove(before, new Location(x,y));
