@@ -47,7 +47,7 @@ public class TextureManager {
     }
 
     public void dispose(){
-        textures.values().forEach(texture -> texture.dispose());
+        textures.values().forEach(Texture::dispose);
     }
 
 }

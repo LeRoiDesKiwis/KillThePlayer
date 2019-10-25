@@ -6,24 +6,17 @@ import club.minnced.discord.rpc.DiscordRichPresence;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.math.Rectangle;
-import fr.leroideskiwis.mapgame.Entity;
 import fr.leroideskiwis.mapgame.Game;
-import fr.leroideskiwis.mapgame.Location;
 import fr.leroideskiwis.mapgame.Move;
 import fr.leroideskiwis.mapgame.managers.TextureManager;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 
 public class Main extends ApplicationAdapter {
 	private SpriteBatch batch;
