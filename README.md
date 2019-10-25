@@ -1,3 +1,5 @@
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/af2ddef96e8b48dd9537a7dca25ff21f)](https://www.codacy.com/manual/LeRoiDesKiwis/KillThePlayer?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=LeRoiDesKiwis/KillThePlayer&amp;utm_campaign=Badge_Grade)
+
 # KillThePlayer
 Le code d'un petit jeu sympa
 
