@@ -39,9 +39,9 @@ public class Reparator extends SpecialObj {
     }
 
     @Override
-    public double chance() {
+    public float chance() {
         if(game.getMap().getEntitiesByType(Obstacle.class).stream().anyMatch(Obstacle::wasObject))
-            return 0.06;
-        return 0;
+            return 0.06f;
+        return 0f;
     }
 }

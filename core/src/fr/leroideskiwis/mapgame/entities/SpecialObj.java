@@ -28,7 +28,7 @@ public abstract class SpecialObj extends Entity{
     }
 
     public abstract String name();
-    public abstract double chance();
+    public abstract float chance();
 
     public Location spawn(Game main, Map map, Player player){
 

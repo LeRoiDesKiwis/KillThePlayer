@@ -33,8 +33,8 @@ public class ClearEnnemies extends SpecialObj {
     }
 
     @Override
-    public double chance() {
-        return 0.004;
+    public float chance() {
+        return 0.004f;
     }
 
     @Override

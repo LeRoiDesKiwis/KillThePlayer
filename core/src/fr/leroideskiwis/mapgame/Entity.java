@@ -39,26 +39,12 @@ public class Entity {
         return location.getY();
     }
 
-    private Texture texture(TextureManager manager){
-
-        if(manager.has(this))
-            return manager.getTexture(this);
-        else {
-            manager.register(this, manager.getTexture(path));
-            return texture(manager);
-        }
-    }
-
     public Location getLocation(){
         return location;
     }
 
     public Entity setLocation(int x, int y) {
         return setLocation(new Location(x, y));
-    }
-
-    public void draw(TextureManager manager, SpriteBatch batch, Rectangle rectangle) {
-        batch.draw(texture(manager), rectangle.x, rectangle.y, rectangle.width, rectangle.height);
     }
 
     public boolean isInvulnerable(){
@@ -68,5 +54,18 @@ public class Entity {
     public boolean onCollide(Game game, Map map, Player player){
         return false;
 
+    }
+
+    public void draw(TextureManager manager, SpriteBatch batch, Rectangle rectangle) {
+        batch.draw(texture(manager), rectangle.x, rectangle.y, rectangle.width, rectangle.height);
+    }
+
+    private Texture texture(TextureManager manager) {
+        if(manager.has(this)){
+            return manager.getTexture(this);
+        } else {
+            manager.register(this, path);
+            return texture(manager);
+        }
     }
 }

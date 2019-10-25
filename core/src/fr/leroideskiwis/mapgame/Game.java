@@ -20,6 +20,7 @@ import fr.leroideskiwis.mapgame.specialobjects.VerticalOpenPath;
 import fr.leroideskiwis.plugins.KtpPluginManager;
 import fr.leroideskiwis.plugins.events.OnObjectDeath;
 import fr.leroideskiwis.plugins.events.OnObjectSpawn;
+import fr.leroideskiwis.utils.SpecialObjects;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -32,7 +33,7 @@ public final class Game {
 
     private boolean noClearingScreen;
     private boolean debugMode;
-    private List<Class<? extends SpecialObj>> specialObjs = new ArrayList<>();
+
     private List<String> bufferSysout = new ArrayList<>();
     private int score;
     private Map map;
@@ -42,6 +43,7 @@ public final class Game {
     private KtpPluginManager pluginManager = new KtpPluginManager(this);
     private boolean lock = false;
     private TextureManager textureManager;
+    private List<Class<? extends SpecialObj>> specialObjs = new ArrayList<>();
 
     public boolean movePlayer(int x, int y){
         return player.move(x, y);
@@ -62,14 +64,6 @@ public final class Game {
     public void addScore(int score){
         this.score+= score;
         sendMessage("You win "+score+"pt"+(score == 1 ? "" : "s"));
-    }
-
-    private SpecialObj getRandomObj() throws IllegalAccessException, InstantiationException,  InvocationTargetException {
-        SpecialObj special;
-        do {
-            special = (SpecialObj) specialObjs.get(new Random().nextInt(specialObjs.size())).getConstructors()[0].newInstance(this);
-        }while(Math.random() > special.chance());
-        return special;
     }
 
     public void registerObject(Class<? extends SpecialObj> specialObj){
@@ -141,7 +135,15 @@ public final class Game {
 
         if (Math.random() < 0.05) {
 
-            SpecialObj special = getRandomObj();
+            SpecialObj special = SpecialObjects.randomItem(specialObjs.stream().map(specialObj -> {
+                try {
+                    return (SpecialObj)specialObj.getConstructors()[0].newInstance(this);
+                } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
+                    e.printStackTrace();
+                }
+                return new RayonEnnemyKiller(this);
+            }).collect(Collectors.toList()));
+
             Location location = special.spawn(this, map, player);
             OnObjectSpawn event = new OnObjectSpawn(location, special);
             getPluginManager().callEvent(event);

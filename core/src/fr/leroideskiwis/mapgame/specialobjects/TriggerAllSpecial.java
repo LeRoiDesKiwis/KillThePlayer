@@ -23,8 +23,8 @@ public class TriggerAllSpecial extends SpecialObj {
     }
 
     @Override
-    public double chance() {
-        return 0.01;
+    public float chance() {
+        return 0.01f;
     }
 
 }

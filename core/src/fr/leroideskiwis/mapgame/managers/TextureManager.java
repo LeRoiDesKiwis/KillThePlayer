@@ -12,6 +12,10 @@ public class TextureManager {
 
     private Map<Class<? extends Entity>, Texture> textures = new HashMap<>();
 
+    public void register(Entity entity, String path){
+        register(entity, new Texture(getAsset(path)));
+    }
+
     public void register(Entity entity, Texture texture){
         textures.put(entity.getClass(), texture);
     }

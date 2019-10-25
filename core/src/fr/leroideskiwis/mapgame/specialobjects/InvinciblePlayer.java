@@ -33,7 +33,7 @@ public class InvinciblePlayer extends SpecialObj {
     }
 
     @Override
-    public double chance() {
-        return 0.06;
+    public float chance() {
+        return 0.06f;
     }
 }
