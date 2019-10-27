@@ -1,4 +1,6 @@
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/af2ddef96e8b48dd9537a7dca25ff21f)](https://www.codacy.com/manual/LeRoiDesKiwis/KillThePlayer?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=LeRoiDesKiwis/KillThePlayer&amp;utm_campaign=Badge_Grade)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/af2ddef96e8b48dd9537a7dca25ff21f)]
+
+[![Discord](https://img.shields.io/discord/559414587263418378.svg)](https://discord.gg/S7S4DDq)
 
 # KillThePlayer
 Le code d'un petit jeu sympa
