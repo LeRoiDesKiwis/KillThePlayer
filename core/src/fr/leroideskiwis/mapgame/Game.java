@@ -92,15 +92,14 @@ public final class Game {
         this.pluginManager = new KtpPluginManager(this);
 
 
-        specialObjs.add(RayonEnnemyKiller.class);
-        //specialObjs.add(InvinciblePlayer.class);
-        specialObjs.add(TriggerAllSpecial.class);
-        specialObjs.add(ClearEnnemies.class);
-        specialObjs.add(Reparator.class);
-        specialObjs.add(HorizontalOpenPath.class);
-        specialObjs.add(VerticalOpenPath.class);
+//        specialObjs.add(RayonEnnemyKiller.class);
+//        specialObjs.add(TriggerAllSpecial.class);
+//        specialObjs.add(ClearEnnemies.class);
+//        specialObjs.add(Reparator.class);
+//        specialObjs.add(HorizontalOpenPath.class);
+//        specialObjs.add(VerticalOpenPath.class);
         specialObjs.add(Respawn.class);
-        specialObjs.add(InvinciblePlayer.class);
+        //specialObjs.add(InvinciblePlayer.class);
 
         map = new Map(this, size, size);
 
@@ -208,7 +207,7 @@ public final class Game {
 */
         return getRandomList(enemyList.stream()
                 .filter(enemy1 -> !map.hasFullSurrounding(enemy1))
-                .flatMap(enemy -> map.getSurroundingWithoutCorners(enemy).stream())
+                .flatMap(enemy -> enemy.getSurroundingWithoutCorners().stream())
                 .filter(location -> !location.isOutOfMap(map) && map.isEmpty(location)).collect(Collectors.toList())).orElse(new Location(1, 1));
 
     }

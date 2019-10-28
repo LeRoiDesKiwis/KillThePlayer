@@ -24,4 +24,9 @@ public class Respawn extends SpecialObj {
     public float chance() {
         return 0.06f;
     }
+
+    @Override
+    public int size() {
+        return 1;
+    }
 }

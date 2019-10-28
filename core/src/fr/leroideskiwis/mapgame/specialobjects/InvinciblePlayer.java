@@ -36,4 +36,5 @@ public class InvinciblePlayer extends SpecialObj {
     public float chance() {
         return 0.06f;
     }
+
 }

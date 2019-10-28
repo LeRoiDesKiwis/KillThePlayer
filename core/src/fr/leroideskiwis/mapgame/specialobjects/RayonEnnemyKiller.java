@@ -15,20 +15,20 @@ public class RayonEnnemyKiller extends SpecialObj {
 
     @Override
     public void execute(Game game, Map map, Player player) {
-        Location location = getLocation();
+        Location location = getFirstLocation();
 
         int rayon = game.randomInt(3, 4);
 
         game.sendMessage("All ennemies in a radius of " + rayon + " has been killed");
-        int minX = location.getX()-rayon;
-        int maxX = location.getX()+rayon;
+        int minX = location.x-rayon;
+        int maxX = location.x+rayon;
 
-        int minY = location.getY()-rayon;
-        int maxY = location.getY()+rayon;
+        int minY = location.y-rayon;
+        int maxY = location.y+rayon;
 
         game.getEntities()
                 .stream()
-                .filter(entity -> entity instanceof Enemy && Interval.of(minX, maxX).contains(entity.getX()) && Interval.of(minY, maxY).contains(entity.getY())).forEach(entity -> game.getMap().deleteEntity(entity));
+                .filter(entity -> entity instanceof Enemy && Interval.of(minX, maxX).contains(entity.getFirstLocation().x) && Interval.of(minY, maxY).contains(entity.getFirstLocation().y)).forEach(entity -> game.getMap().deleteEntity(entity));
     }
 
 

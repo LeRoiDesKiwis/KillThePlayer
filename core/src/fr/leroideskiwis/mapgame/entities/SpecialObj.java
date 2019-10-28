@@ -1,8 +1,5 @@
 package fr.leroideskiwis.mapgame.entities;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Texture;
-import fr.leroideskiwis.ktp.Main;
 import fr.leroideskiwis.mapgame.Entity;
 import fr.leroideskiwis.mapgame.Game;
 import fr.leroideskiwis.mapgame.Location;
@@ -32,13 +29,13 @@ public abstract class SpecialObj extends Entity{
 
     public Location spawn(Game main, Map map, Player player){
 
-        return map.getRandomLocation();
+        return map.getRandomLocationWithSize(size());
 
     }
 
     public void kill(){
-        game.getMap().deleteEntity(getLocation());
-        game.getMap().setEntity(getLocation(), new Obstacle(this));
+        delete(game.getMap());
+        game.getMap().setEntity(getFirstLocation(), new Obstacle(this));
     }
 
     @Override

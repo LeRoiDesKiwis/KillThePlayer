@@ -7,17 +7,12 @@ import java.util.stream.Collectors;
 
 public class Location {
 
-    private int x;
-    private int y;
+    public final int x;
+    public final int y;
 
     public Location(int x, int y){
         this.x = x;
         this.y = y;
-    }
-
-    public static Location getRandomPosition(Map map){
-        List<Location> locations = map.getLocations().stream().filter(pos -> !pos.isOutOfMap(map)).collect(Collectors.toList());
-        return locations.get(new Random().nextInt(locations.size()));
     }
 
     /**
@@ -29,46 +24,6 @@ public class Location {
 
     public Location add(int x, int y){
         return new Location(this.x+x, this.y+y);
-    }
-
-    public List<Object> getSurroundingsObjects(Map map){
-
-        List<Object> objs = new ArrayList<>();
-
-        for(int x = getX()-1; x <= getX()+1; x++){
-
-            for(int y = getY()-1 ; y <= getY()+1 ;y++){
-
-                if(new Location(x, y).isOutOfMap(map)) continue;
-                if(y == getY() && x == getX())
-                    continue;
-                Object obj = map.getEntity(x, y);
-                objs.add(obj);
-
-            }
-
-        }
-
-        return objs;
-
-    }
-
-    /**
-     *
-     * @return the x coordinate
-     */
-
-    public int getX(){
-        return x;
-    }
-
-    /**
-     *
-     * @return the y coordinate
-     */
-
-    public int getY(){
-        return y;
     }
 
     public String toString(){
@@ -89,7 +44,7 @@ public class Location {
         if(!(obj instanceof Location)) return false;
         Location pos = (Location)obj;
 
-        return equals(pos.getY(), pos.getX());
+        return equals(pos.x, pos.y);
 
     }
 }

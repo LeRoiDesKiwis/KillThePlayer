@@ -30,7 +30,7 @@ public class Player extends Entity {
     }
 
     public boolean move(Location location){
-        return setPosition(location.getX(), location.getY());
+        return setPosition(location.x, location.y);
     }
 
     /**
@@ -40,7 +40,7 @@ public class Player extends Entity {
      * @return <b>false</b> if there already an object in the coordinate x and y
      */
     private boolean setPosition(int x, int y){
-        Location before = getLocation();
+        Location before = getFirstLocation();
         Optional<Entity> entityOpt = map.getEntity(x, y);
 
         if(entityOpt.isPresent()) {
@@ -60,7 +60,7 @@ public class Player extends Entity {
             }
         } else if(!map.setEntity(x, y, this)) return false;
 
-        if(!getLocation().equals(before)) {
+        if(!getFirstLocation().equals(before)) {
             map.deleteEntity(before);
             return true;
         }
@@ -73,13 +73,13 @@ public class Player extends Entity {
     }
 
     public void executeSpecialObj(SpecialObj special, boolean message){
-        OnPlayerTakeObject event = new OnPlayerTakeObject(special.getLocation(), special);
+        OnPlayerTakeObject event = new OnPlayerTakeObject(special.getFirstLocation(), special);
         game.getPluginManager().callEvent(event);
         if(event.isCancelled()) return;
 
         if(message) game.sendMessage("You have found the special object \"" + special.name() + "\" ");
         special.execute(game, map, this);
-        map.deleteEntity(special.getLocation());
+        map.deleteEntity(special.getFirstLocation());
     }
 
     /**
@@ -91,7 +91,8 @@ public class Player extends Entity {
 
     public boolean move(int x, int y){
         if(x == 0 && y == 0) return true;
-        return setPosition(getLocation().getX()+x, getLocation().getY()+y);
+        Location location = getFirstLocation();
+        return setPosition(location.x+x, location.y+y);
     }
 
     /**
@@ -101,10 +102,10 @@ public class Player extends Entity {
 
     public boolean hasLose(){
 
-        return (!map.isEmpty(getLocation().add(1, 0)) &&
-                !map.isEmpty(getLocation().add(0, 1)) &&
-                !map.isEmpty(getLocation().add(-1, 0)) &&
-                !map.isEmpty(getLocation().add(0, -1)));
+        return (!map.isEmpty(getFirstLocation().add(1, 0)) &&
+                !map.isEmpty(getFirstLocation().add(0, 1)) &&
+                !map.isEmpty(getFirstLocation().add(-1, 0)) &&
+                !map.isEmpty(getFirstLocation().add(0, -1)));
 
     }
 

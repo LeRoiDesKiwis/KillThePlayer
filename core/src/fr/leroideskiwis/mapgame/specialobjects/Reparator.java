@@ -25,7 +25,7 @@ public class Reparator extends SpecialObj {
         for(int i = 0, rand = game.randomInt(1, 2); i < rand; i++) {
 
             Obstacle obstacle = lostObstacle.get(0);
-            map.replaceEntity(obstacle.getLocation(), obstacle.getLostObject());
+            map.replaceEntity(obstacle.getFirstLocation(), obstacle.getLostObject());
             game.sendMessage("You restore a " + obstacle.getLostObject().getClass().getSimpleName());
             i++;
 
@@ -44,4 +44,5 @@ public class Reparator extends SpecialObj {
             return 0.06f;
         return 0f;
     }
+
 }

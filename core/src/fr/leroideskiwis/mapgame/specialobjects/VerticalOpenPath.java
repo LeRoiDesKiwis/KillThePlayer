@@ -20,7 +20,7 @@ public class VerticalOpenPath extends SpecialObj {
 
         game.getEntities()
                 .stream()
-                .filter(entity -> entity instanceof Enemy && Interval.of(getLocation().getX()-rayon, getLocation().getX()+rayon).contains(entity.getX()))
+                .filter(entity -> entity instanceof Enemy && Interval.of(getFirstLocation().x-rayon, getFirstLocation().x+rayon).contains(entity.getFirstLocation().x))
                 .forEach(map::deleteEntity);
     }
 
