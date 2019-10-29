@@ -91,8 +91,8 @@ public class Entity {
         List<Location> surroundingLocations = new ArrayList<>();
         Location location = locations.get(0);
 
-        for(int x = location.x - 1; x <= location.x+1; x++){
-            for(int y = location.y - 1; y <= location.y+1; y++){
+        for(int x = location.x - 1; x <= location.x + 1; x++){
+            for(int y = location.y - 1; y <= location.y + 1; y++){
                 Location currentLocation = new Location(x, y);
                 surroundingLocations.add(currentLocation);
             }
@@ -103,7 +103,7 @@ public class Entity {
 
     public List<Location> getSurroundingWithoutCorners(){
         Location location = locations.get(0);
-        return getSurroundingLocations().stream().filter(location1 -> Math.abs(location1.x-location.x) != Math.abs(location.x-location1.y)).collect(Collectors.toList());
+        return getSurroundingLocations().stream().filter(location1 -> Math.abs(location1.x-location.x) != Math.abs(location.y-location1.y)).collect(Collectors.toList());
     }
 
     public Location getFirstLocation(){
