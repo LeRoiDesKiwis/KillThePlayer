@@ -1,8 +1,6 @@
 package fr.leroideskiwis.mapgame;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
-import fr.leroideskiwis.mapgame.entities.Player;
 
 public class Move {
 

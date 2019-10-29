@@ -16,7 +16,7 @@ public class TextureManager {
         register(entity, new Texture(getAsset(path)));
     }
 
-    public void register(Entity entity, Texture texture){
+    private void register(Entity entity, Texture texture){
         textures.put(entity.getClass(), texture);
     }
 

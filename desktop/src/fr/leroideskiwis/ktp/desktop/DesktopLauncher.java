@@ -1,12 +1,8 @@
 package fr.leroideskiwis.ktp.desktop;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
-import com.badlogic.gdx.graphics.GL20;
 import fr.leroideskiwis.ktp.Main;
-
-import java.io.File;
 
 public class DesktopLauncher {
 	public static void main (String[] arg) {

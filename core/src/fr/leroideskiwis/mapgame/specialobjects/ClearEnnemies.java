@@ -1,6 +1,5 @@
 package fr.leroideskiwis.mapgame.specialobjects;
 
-import com.badlogic.gdx.graphics.Texture;
 import fr.leroideskiwis.mapgame.Game;
 import fr.leroideskiwis.mapgame.Location;
 import fr.leroideskiwis.mapgame.Map;

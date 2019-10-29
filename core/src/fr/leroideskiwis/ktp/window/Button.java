@@ -64,7 +64,7 @@ public class Button {
 
     }
 
-    public boolean hasTouch(){
+    private boolean hasTouch(){
 
         return (Gdx.input.getX() > x && Gdx.input.getX() < x+width) && (getBottomLeftY() > y && getBottomLeftY() < y+height);
 
@@ -74,11 +74,11 @@ public class Button {
         return predicate.call();
     }
 
-    public int getBottomLeftY(){
+    private int getBottomLeftY(){
        return Gdx.graphics.getHeight()-Gdx.input.getY();
     }
 
-    public boolean checkClick(){
+    private boolean checkClick(){
         return Gdx.input.isButtonPressed(Input.Keys.LEFT) && hasTouch();
     }
 

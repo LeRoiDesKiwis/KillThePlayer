@@ -14,7 +14,7 @@ public class TriggerAllSpecial extends SpecialObj {
     public void execute(Game game, Map map, Player player) {
 
         game.sendMessage("All special objects are been triggered");
-        map.getEntitiesByType(SpecialObj.class).stream().filter(entity -> !(entity instanceof ClearEnnemies) && !(entity instanceof TriggerAllSpecial) && !(entity instanceof Respawn)).forEach(entity -> player.executeSpecialObj(entity, false));
+        map.getEntitiesByType(SpecialObj.class).stream().filter(entity -> !(entity instanceof ClearEnnemies) && !(entity instanceof TriggerAllSpecial) && !(entity instanceof Respawn)).forEach(entity -> entity.onCollide(game, map, player));
     }
     
     @Override

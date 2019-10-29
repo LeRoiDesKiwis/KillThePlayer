@@ -2,7 +2,6 @@ package fr.leroideskiwis.mapgame.entities;
 
 import fr.leroideskiwis.mapgame.Entity;
 import fr.leroideskiwis.mapgame.Game;
-import fr.leroideskiwis.mapgame.Location;
 import fr.leroideskiwis.mapgame.Map;
 import fr.leroideskiwis.plugins.events.OnTakeCoin;
 

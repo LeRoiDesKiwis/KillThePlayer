@@ -16,11 +16,11 @@ public class Entity {
     private List<Location> locations;
     private String path;
 
-    public Entity(String path){
+    protected Entity(String path){
         this(0, 0, path);
     }
 
-    public Entity(int x, int y, String path) {
+    private Entity(int x, int y, String path) {
         this.path = path;
         this.locations = new ArrayList<>();
         setLocation(x, y);
@@ -99,10 +99,6 @@ public class Entity {
         }
 
         return surroundingLocations;
-    }
-
-    public List<Location> getLocations(){
-        return locations;
     }
 
     public List<Location> getSurroundingWithoutCorners(){

@@ -75,7 +75,7 @@ public class KtpPluginManager {
 
     }
 
-    public KtpPlugin loadPlugin(File file) throws IOException, ClassNotFoundException, IllegalAccessException, InstantiationException {
+    private KtpPlugin loadPlugin(File file) throws IOException, ClassNotFoundException, IllegalAccessException, InstantiationException {
 
         if(file.getName().endsWith(".jar")) {
             KtpPlugin plugin = null;

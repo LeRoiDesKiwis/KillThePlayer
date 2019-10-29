@@ -9,16 +9,9 @@ import fr.leroideskiwis.mapgame.entities.Obstacle;
 import fr.leroideskiwis.mapgame.entities.Player;
 import fr.leroideskiwis.mapgame.entities.SpecialObj;
 import fr.leroideskiwis.mapgame.managers.TextureManager;
-import fr.leroideskiwis.mapgame.specialobjects.ClearEnnemies;
-import fr.leroideskiwis.mapgame.specialobjects.InvinciblePlayer;
-import fr.leroideskiwis.mapgame.specialobjects.HorizontalOpenPath;
 import fr.leroideskiwis.mapgame.specialobjects.RayonEnnemyKiller;
-import fr.leroideskiwis.mapgame.specialobjects.Reparator;
 import fr.leroideskiwis.mapgame.specialobjects.Respawn;
-import fr.leroideskiwis.mapgame.specialobjects.TriggerAllSpecial;
-import fr.leroideskiwis.mapgame.specialobjects.VerticalOpenPath;
 import fr.leroideskiwis.plugins.KtpPluginManager;
-import fr.leroideskiwis.plugins.events.OnObjectDeath;
 import fr.leroideskiwis.plugins.events.OnObjectSpawn;
 import fr.leroideskiwis.utils.SpecialObjects;
 
@@ -26,12 +19,10 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.Random;
 import java.util.stream.Collectors;
 
 public final class Game {
 
-    private boolean noClearingScreen;
     private boolean debugMode;
 
     private List<String> bufferSysout = new ArrayList<>();
@@ -40,7 +31,7 @@ public final class Game {
     private Player player;
     private final int size;
     //private JSONConfiguration configuration;
-    private KtpPluginManager pluginManager = new KtpPluginManager(this);
+    private KtpPluginManager pluginManager;
     private boolean lock = false;
     private TextureManager textureManager;
     private List<Class<? extends SpecialObj>> specialObjs = new ArrayList<>();
@@ -49,10 +40,6 @@ public final class Game {
         return player.move(x, y);
     }
 
-    public void setScore(int score){
-        this.score = score;
-    }
-    
     public int getScore(){
         return score;
     }
@@ -66,10 +53,6 @@ public final class Game {
         sendMessage("You win "+score+"pt"+(score == 1 ? "" : "s"));
     }
 
-    public void registerObject(Class<? extends SpecialObj> specialObj){
-        specialObjs.add(specialObj);
-    }
-
     public <T> Optional<T> getRandomList(List<T> list){
 
         if(list.isEmpty()) return Optional.empty();
@@ -78,11 +61,6 @@ public final class Game {
 
     }
 
-
-    public void setMap(Map map){
-        if(map != null)
-            this.map = map;
-    }
 
     public Game(TextureManager textureManager) {
         this.textureManager = textureManager;
@@ -124,7 +102,7 @@ public final class Game {
         pluginManager.loadPlugins();
     }
 
-    public boolean update() throws IllegalAccessException, InstantiationException, InvocationTargetException {
+    public boolean update() {
 
         if (map.getEntitiesByType(Coin.class).size() == 0) map.generateRandom(new Coin(randomInt(5, 10)));
 

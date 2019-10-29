@@ -5,10 +5,7 @@ import fr.leroideskiwis.mapgame.Game;
 import fr.leroideskiwis.mapgame.Invincibility;
 import fr.leroideskiwis.mapgame.Location;
 import fr.leroideskiwis.mapgame.Map;
-import fr.leroideskiwis.mapgame.Move;
 import fr.leroideskiwis.plugins.events.OnMove;
-import fr.leroideskiwis.plugins.events.OnPlayerTakeObject;
-import fr.leroideskiwis.plugins.events.OnTakeCoin;
 
 import java.util.Optional;
 
@@ -66,20 +63,6 @@ public class Player extends Entity {
         }
 
         return false;
-    }
-
-    private void executeSpecialObj(SpecialObj special){
-        executeSpecialObj(special, true);
-    }
-
-    public void executeSpecialObj(SpecialObj special, boolean message){
-        OnPlayerTakeObject event = new OnPlayerTakeObject(special.getFirstLocation(), special);
-        game.getPluginManager().callEvent(event);
-        if(event.isCancelled()) return;
-
-        if(message) game.sendMessage("You have found the special object \"" + special.name() + "\" ");
-        special.execute(game, map, this);
-        map.deleteEntity(special.getFirstLocation());
     }
 
     /**

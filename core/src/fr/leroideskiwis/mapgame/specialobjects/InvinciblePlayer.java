@@ -6,8 +6,6 @@ import fr.leroideskiwis.mapgame.Map;
 import fr.leroideskiwis.mapgame.entities.Player;
 import fr.leroideskiwis.mapgame.entities.SpecialObj;
 
-import java.util.Random;
-
 public class InvinciblePlayer extends SpecialObj {
     public InvinciblePlayer(Game game) {
         super(game, "invincible.png");

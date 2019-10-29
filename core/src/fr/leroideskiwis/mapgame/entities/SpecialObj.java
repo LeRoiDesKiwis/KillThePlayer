@@ -9,7 +9,7 @@ public abstract class SpecialObj extends Entity{
 
     protected final Game game;
 
-    public abstract void execute(Game game, Map map, Player player);
+    protected abstract void execute(Game game, Map map, Player player);
 
     public SpecialObj(Game game, String path) {
         super(path);
@@ -40,6 +40,7 @@ public abstract class SpecialObj extends Entity{
 
     @Override
     public boolean onCollide(Game game, Map map, Player player) {
+        game.sendMessage("You found a "+name());
         execute(game, map, player);
         return true;
     }

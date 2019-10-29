@@ -52,11 +52,11 @@ public class Map implements Cloneable{
         return entities.stream().filter(entity -> entity.isLocatedAt(x, y)).findAny();
     }
 
-    public Optional<Entity> getEntity(Location location){
+    private Optional<Entity> getEntity(Location location){
         return getEntity(location.x, location.y);
     }
 
-    public List<Location> getLocations() {
+    private List<Location> getLocations() {
         List<Location> locations = new ArrayList<>();
 
         for(int x = 0; x < width; x++){
@@ -110,7 +110,7 @@ public class Map implements Cloneable{
      * @param x the x coordinate
      * @param y the y coordinate
      */
-    public void deleteEntity(int x, int y) {
+    private void deleteEntity(int x, int y) {
         getEntity(x, y).ifPresent(entity -> {
             if(!(entity instanceof Player))
                 entities.remove(entity);
@@ -224,7 +224,7 @@ public class Map implements Cloneable{
         }
     }
 
-    public List<Entity> getSurrounding(Entity entity){
+    private List<Entity> getSurrounding(Entity entity){
         return getLocationsSurrounding(entity).stream().map(location -> getEntity(location).orElse(null)).collect(Collectors.toList());
     }
 
