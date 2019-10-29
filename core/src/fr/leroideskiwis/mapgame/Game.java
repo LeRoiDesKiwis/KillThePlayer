@@ -9,8 +9,14 @@ import fr.leroideskiwis.mapgame.entities.Obstacle;
 import fr.leroideskiwis.mapgame.entities.Player;
 import fr.leroideskiwis.mapgame.entities.SpecialObj;
 import fr.leroideskiwis.mapgame.managers.TextureManager;
+import fr.leroideskiwis.mapgame.specialobjects.ClearEnnemies;
+import fr.leroideskiwis.mapgame.specialobjects.HorizontalOpenPath;
+import fr.leroideskiwis.mapgame.specialobjects.InvinciblePlayer;
 import fr.leroideskiwis.mapgame.specialobjects.RayonEnnemyKiller;
+import fr.leroideskiwis.mapgame.specialobjects.Reparator;
 import fr.leroideskiwis.mapgame.specialobjects.Respawn;
+import fr.leroideskiwis.mapgame.specialobjects.TriggerAllSpecial;
+import fr.leroideskiwis.mapgame.specialobjects.VerticalOpenPath;
 import fr.leroideskiwis.plugins.KtpPluginManager;
 import fr.leroideskiwis.plugins.events.OnObjectSpawn;
 import fr.leroideskiwis.utils.SpecialObjects;
@@ -70,14 +76,14 @@ public final class Game {
         this.pluginManager = new KtpPluginManager(this);
 
 
-//        specialObjs.add(RayonEnnemyKiller.class);
-//        specialObjs.add(TriggerAllSpecial.class);
-//        specialObjs.add(ClearEnnemies.class);
-//        specialObjs.add(Reparator.class);
-//        specialObjs.add(HorizontalOpenPath.class);
-//        specialObjs.add(VerticalOpenPath.class);
+        specialObjs.add(RayonEnnemyKiller.class);
+        specialObjs.add(TriggerAllSpecial.class);
+        specialObjs.add(ClearEnnemies.class);
+        specialObjs.add(Reparator.class);
+        specialObjs.add(HorizontalOpenPath.class);
+        specialObjs.add(VerticalOpenPath.class);
         specialObjs.add(Respawn.class);
-        //specialObjs.add(InvinciblePlayer.class);
+        specialObjs.add(InvinciblePlayer.class);
 
         map = new Map(this, size, size);
 
