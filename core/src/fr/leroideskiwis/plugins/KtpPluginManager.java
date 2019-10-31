@@ -34,6 +34,10 @@ public class KtpPluginManager {
 
     }
 
+    public void addPluginManually(KtpPlugin ktpPlugin){
+        plugins.add(ktpPlugin);
+    }
+
     public void callEvent(Event event){
 
         plugins.forEach(plugin -> plugin.listeners.forEach(listener -> {
