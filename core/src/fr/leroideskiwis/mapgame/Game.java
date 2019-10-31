@@ -56,7 +56,7 @@ public final class Game {
 
     public void addScore(int score){
         this.score+= score;
-        sendMessage("You win "+score+"pt"+(score == 1 ? "" : "s"));
+        sendMessage("You won "+score+"pt"+(score == 1 ? "" : "s"));
     }
 
     public <T> Optional<T> getRandomList(List<T> list){
