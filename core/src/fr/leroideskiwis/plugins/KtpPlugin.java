@@ -2,6 +2,7 @@ package fr.leroideskiwis.plugins;
 
 import fr.leroideskiwis.mapgame.Game;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,7 +14,7 @@ public abstract class KtpPlugin {
         listeners.add(listener);
     }
 
-    public void onEnable(Game game){}
+    public void onEnable(Game game) throws IOException {}
     public void onDisable(Game game){}
 
     public abstract String getName();

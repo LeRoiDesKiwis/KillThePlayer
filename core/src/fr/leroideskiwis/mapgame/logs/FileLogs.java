@@ -1,16 +1,40 @@
 package fr.leroideskiwis.mapgame.logs;
 
-import fr.leroideskiwis.mapgame.Game;
 import fr.leroideskiwis.plugins.KtpPlugin;
-import fr.leroideskiwis.plugins.KtpPluginManager;
+import fr.leroideskiwis.utils.Utils;
+import fr.leroideskiwis.mapgame.Game;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
 
 public class FileLogs extends KtpPlugin {
 
+    private File file;
+    private PrintWriter writer;
+
     @Override
     public void onEnable(Game game) {
+        try {
+            print("File loaded");
+            listeners.add(new FileLogsListener(this, game));
+            this.writer = new PrintWriter(file);
+            this.file = new File(Utils.formatDate("hh:mm:ss-d/MM/yyyy"));
+            if(!file.exists()) file.createNewFile();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
-        listeners.add(new FileLogsListener(this, game));
+    }
 
+    @Override
+    public void onDisable(Game game) {
+        print("File unloaded");
+        writer.flush();
+    }
+
+    public void print(String line){
+        writer.println(Utils.formatDate("hh::mm:ss")+" > "+line);
     }
 
     @Override

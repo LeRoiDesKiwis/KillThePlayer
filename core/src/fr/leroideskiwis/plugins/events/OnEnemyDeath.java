@@ -3,12 +3,12 @@ package fr.leroideskiwis.plugins.events;
 import fr.leroideskiwis.mapgame.Location;
 import fr.leroideskiwis.mapgame.entities.Enemy;
 
-public class OnEnnemyDeath extends Event {
+public class OnEnemyDeath extends Event {
 
     private Location location;
     private Enemy enemy;
 
-    public OnEnnemyDeath(Location location, Enemy enemy) {
+    public OnEnemyDeath(Location location, Enemy enemy) {
         this.location = location;
         this.enemy = enemy;
     }
