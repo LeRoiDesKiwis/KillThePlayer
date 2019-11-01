@@ -15,7 +15,7 @@ public class RayonEnnemyKiller extends SpecialObj {
 
     @Override
     public void execute(Game game, Map map, Player player) {
-        Location location = getFirstLocation();
+        Location location = getLocation();
 
         int rayon = game.randomInt(3, 4);
 
@@ -28,7 +28,7 @@ public class RayonEnnemyKiller extends SpecialObj {
 
         game.getEntities()
                 .stream()
-                .filter(entity -> entity instanceof Enemy && Interval.of(minX, maxX).contains(entity.getFirstLocation().x) && Interval.of(minY, maxY).contains(entity.getFirstLocation().y)).forEach(entity -> game.getMap().deleteEntity(entity));
+                .filter(entity -> entity instanceof Enemy && Interval.of(minX, maxX).contains(entity.getLocation().x) && Interval.of(minY, maxY).contains(entity.getLocation().y)).forEach(entity -> game.getMap().deleteEntity(entity));
     }
 
 

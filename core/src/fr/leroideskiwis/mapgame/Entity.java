@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 
 public class Entity {
 
-    private List<Location> locations;
+    private Location location;
     private String path;
 
     protected Entity(String path){
@@ -22,29 +22,15 @@ public class Entity {
 
     private Entity(int x, int y, String path) {
         this.path = path;
-        this.locations = new ArrayList<>();
         setLocation(x, y);
     }
 
     public Entity setLocation(int x, int y){
-
-        locations.clear();
-
-        for(int x1 = 0; x1 < size(); x1++){
-
-            for(int y1 = 0; y1 < size(); y1++){
-
-                Location currentLocation = new Location(x + x1, y + y1);
-                locations.add(currentLocation);
-
-            }
-
-        }
+        this.location = new Location(x, y);
         return this;
     }
 
     public void delete(Map map){
-        Location location = locations.get(0);
         map.deleteEntity(location);
     }
 
@@ -79,14 +65,12 @@ public class Entity {
     }
 
     public boolean isLocatedAt(int x, int y) {
-        return locations.stream()
-                .anyMatch(location -> location.equals(x, y));
+        return location.equals(x, y);
     }
 
     public List<Location> getSurroundingLocations(){
 
         List<Location> surroundingLocations = new ArrayList<>();
-        Location location = locations.get(0);
 
         for(int x = location.x - 1; x <= location.x + 1; x++){
             for(int y = location.y - 1; y <= location.y + 1; y++){
@@ -99,11 +83,10 @@ public class Entity {
     }
 
     public List<Location> getSurroundingWithoutCorners(){
-        Location location = locations.get(0);
         return getSurroundingLocations().stream().filter(location1 -> Math.abs(location1.x-location.x) != Math.abs(location.y-location1.y)).collect(Collectors.toList());
     }
 
-    public Location getFirstLocation(){
-        return locations.get(0);
+    public Location getLocation(){
+        return location;
     }
 }

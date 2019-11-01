@@ -38,7 +38,7 @@ public class Player extends Entity {
      * @return <b>false</b> if there already an object in the coordinate x and y
      */
     private boolean setPosition(int x, int y){
-        Location before = getFirstLocation();
+        Location before = getLocation();
         Optional<Entity> entityOpt = map.getEntity(x, y);
 
         if(entityOpt.isPresent()) {
@@ -60,7 +60,7 @@ public class Player extends Entity {
 
         } else return false;
 
-        if(!getFirstLocation().equals(before)) {
+        if(!getLocation().equals(before)) {
             map.deleteEntity(before);
             return true;
         }
@@ -77,7 +77,7 @@ public class Player extends Entity {
 
     public boolean move(int x, int y){
         if(x == 0 && y == 0) return true;
-        Location location = getFirstLocation();
+        Location location = getLocation();
         return setPosition(location.x+x, location.y+y);
     }
 
@@ -88,10 +88,10 @@ public class Player extends Entity {
 
     public boolean hasLose(){
 
-        return (!map.isEmpty(getFirstLocation().add(1, 0)) &&
-                !map.isEmpty(getFirstLocation().add(0, 1)) &&
-                !map.isEmpty(getFirstLocation().add(-1, 0)) &&
-                !map.isEmpty(getFirstLocation().add(0, -1)));
+        return (!map.isEmpty(getLocation().add(1, 0)) &&
+                !map.isEmpty(getLocation().add(0, 1)) &&
+                !map.isEmpty(getLocation().add(-1, 0)) &&
+                !map.isEmpty(getLocation().add(0, -1)));
 
     }
 

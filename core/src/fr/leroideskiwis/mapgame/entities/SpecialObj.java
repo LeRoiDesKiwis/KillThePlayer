@@ -36,12 +36,12 @@ public abstract class SpecialObj extends Entity{
 
     public void kill(){
         delete(game.getMap());
-        game.getMap().setEntity(getFirstLocation(), new Obstacle(this));
+        game.getMap().setEntity(getLocation(), new Obstacle(this));
     }
 
     @Override
     public boolean onCollide(Game game, Map map, Player player) {
-        OnPlayerTakeObject event = new OnPlayerTakeObject(getFirstLocation(), this);
+        OnPlayerTakeObject event = new OnPlayerTakeObject(getLocation(), this);
         game.getPluginManager().callEvent(event);
         if(event.isCancelled()) return false;
         game.sendMessage("You found a "+name());

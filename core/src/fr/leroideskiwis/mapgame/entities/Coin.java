@@ -25,9 +25,9 @@ public class Coin extends Entity {
     @Override
     public boolean onCollide(Game game, Map map, Player player) {
         game.addScore(amount);
-        OnTakeCoin event = new OnTakeCoin(getFirstLocation(), this);
+        OnTakeCoin event = new OnTakeCoin(getLocation(), this);
         game.getPluginManager().callEvent(event);
-        if (!event.isCancelled()) map.deleteEntity(getFirstLocation());
+        if (!event.isCancelled()) map.deleteEntity(getLocation());
         return false;
     }
 }

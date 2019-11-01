@@ -20,7 +20,7 @@ public class HorizontalOpenPath extends SpecialObj {
 
         game.getEntities()
                 .stream()
-                .filter(entity -> entity instanceof Enemy && Interval.of(getFirstLocation().y-rayon, getFirstLocation().y+rayon).contains(entity.getFirstLocation().y))
+                .filter(entity -> entity instanceof Enemy && Interval.of(getLocation().y-rayon, getLocation().y+rayon).contains(entity.getLocation().y))
                 .forEach(map::deleteEntity);
 
     }

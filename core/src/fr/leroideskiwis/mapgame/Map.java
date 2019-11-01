@@ -196,7 +196,7 @@ public class Map implements Cloneable{
      */
 
     public List<Location> getLocationsByType(Class<? extends Entity> clazz){
-        return getEntitiesByType(clazz).stream().map(Entity::getFirstLocation).collect(Collectors.toList());
+        return getEntitiesByType(clazz).stream().map(Entity::getLocation).collect(Collectors.toList());
     }
 
     public <T> List<T> getEntitiesByType(Class<T> clazz) {
@@ -207,7 +207,7 @@ public class Map implements Cloneable{
 
     private Optional<Entity> getEntityWithoutSize(int x, int y){
         return entities.stream()
-                .filter(entity -> entity.getFirstLocation().equals(x, y)).findAny();
+                .filter(entity -> entity.getLocation().equals(x, y)).findAny();
     }
 
     public void draw(TextureManager manager, SpriteBatch batch, float multiplicatorX, float multiplicatorY, Texture emptyCase) {
