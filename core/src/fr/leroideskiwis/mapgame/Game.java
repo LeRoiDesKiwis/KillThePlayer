@@ -21,6 +21,7 @@ import fr.leroideskiwis.mapgame.specialobjects.VerticalOpenPath;
 import fr.leroideskiwis.plugins.KtpPluginManager;
 import fr.leroideskiwis.plugins.events.OnObjectSpawn;
 import fr.leroideskiwis.utils.SpecialObjects;
+import fr.leroideskiwis.utils.Utils;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -56,8 +57,8 @@ public final class Game {
     }
 
     public void addScore(int score){
-        this.score+= score;
-        sendMessage("You won "+score+"pt"+(score == 1 ? "" : "s"));
+        this.score += score;
+        sendMessage(Utils.format("score.win", score));
     }
 
     public <T> Optional<T> getRandomList(List<T> list){
@@ -147,7 +148,7 @@ public final class Game {
 
 
         if (player.hasLose() || map.getEmptyCases().size() == 0){
-            sendMessage("Game is finish. Please press enter.");
+            sendMessage(Utils.getText("game.finish"));
             return false;
         }
         score++;

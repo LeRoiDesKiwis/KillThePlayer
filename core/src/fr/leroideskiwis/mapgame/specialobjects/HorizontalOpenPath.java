@@ -7,6 +7,7 @@ import fr.leroideskiwis.mapgame.entities.Enemy;
 import fr.leroideskiwis.mapgame.entities.Player;
 import fr.leroideskiwis.mapgame.entities.SpecialObj;
 import fr.leroideskiwis.utils.Interval;
+import fr.leroideskiwis.utils.Utils;
 
 public class HorizontalOpenPath extends SpecialObj {
     public HorizontalOpenPath(Game game) {
@@ -33,7 +34,7 @@ public class HorizontalOpenPath extends SpecialObj {
 
     @Override
     public String name() {
-        return "open path";
+        return Utils.getText("objects.openpath.name");
     }
 
     @Override

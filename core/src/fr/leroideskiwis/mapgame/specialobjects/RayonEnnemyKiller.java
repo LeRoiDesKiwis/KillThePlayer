@@ -7,6 +7,7 @@ import fr.leroideskiwis.mapgame.entities.Enemy;
 import fr.leroideskiwis.mapgame.entities.Player;
 import fr.leroideskiwis.mapgame.entities.SpecialObj;
 import fr.leroideskiwis.utils.Interval;
+import fr.leroideskiwis.utils.Utils;
 
 public class RayonEnnemyKiller extends SpecialObj {
     public RayonEnnemyKiller(Game game) {
@@ -19,7 +20,7 @@ public class RayonEnnemyKiller extends SpecialObj {
 
         int rayon = game.randomInt(3, 4);
 
-        game.sendMessage("All ennemies in a radius of " + rayon + " has been killed");
+        game.sendMessage(Utils.format("objects.rayonennemykiller.killed", rayon));
         int minX = location.x-rayon;
         int maxX = location.x+rayon;
 
@@ -34,7 +35,7 @@ public class RayonEnnemyKiller extends SpecialObj {
 
     @Override
     public String name() {
-        return "ennemy rayon killer";
+        return Utils.getText("objects.rayonennemykiller.name");
     }
 
     @Override

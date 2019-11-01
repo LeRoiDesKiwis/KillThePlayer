@@ -5,6 +5,7 @@ import fr.leroideskiwis.mapgame.Game;
 import fr.leroideskiwis.mapgame.Location;
 import fr.leroideskiwis.mapgame.Map;
 import fr.leroideskiwis.plugins.events.OnPlayerTakeObject;
+import fr.leroideskiwis.utils.Utils;
 
 public abstract class SpecialObj extends Entity{
 
@@ -22,7 +23,7 @@ public abstract class SpecialObj extends Entity{
     }
 
     public String toString(){
-        return "!";
+        return name();
     }
 
     public abstract String name();
@@ -44,8 +45,8 @@ public abstract class SpecialObj extends Entity{
         OnPlayerTakeObject event = new OnPlayerTakeObject(getLocation(), this);
         game.getPluginManager().callEvent(event);
         if(event.isCancelled()) return false;
-        game.sendMessage("You found a "+name());
-        execute(game, map, player);
+        game.sendMessage(Utils.format("objects.found", event.getSpecialObj().name()));
+        event.getSpecialObj().execute(game, map, player);
         return true;
     }
 }

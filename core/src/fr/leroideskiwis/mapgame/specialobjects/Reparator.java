@@ -5,6 +5,7 @@ import fr.leroideskiwis.mapgame.Map;
 import fr.leroideskiwis.mapgame.entities.Obstacle;
 import fr.leroideskiwis.mapgame.entities.Player;
 import fr.leroideskiwis.mapgame.entities.SpecialObj;
+import fr.leroideskiwis.utils.Utils;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -26,7 +27,7 @@ public class Reparator extends SpecialObj {
 
             Obstacle obstacle = lostObstacle.get(0);
             map.replaceEntity(obstacle.getLocation(), obstacle.getLostObject());
-            game.sendMessage("You restore a " + obstacle.getLostObject().getClass().getSimpleName());
+            game.sendMessage(Utils.format("objects.reparator.restore", obstacle.getLostObject().name()));
             i++;
 
         }
@@ -35,7 +36,7 @@ public class Reparator extends SpecialObj {
 
     @Override
     public String name() {
-        return "obstacle reparator";
+        return Utils.getText("objects.reparator.name");
     }
 
     @Override

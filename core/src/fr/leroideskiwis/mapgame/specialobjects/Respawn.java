@@ -4,6 +4,7 @@ import fr.leroideskiwis.mapgame.Game;
 import fr.leroideskiwis.mapgame.Map;
 import fr.leroideskiwis.mapgame.entities.Player;
 import fr.leroideskiwis.mapgame.entities.SpecialObj;
+import fr.leroideskiwis.utils.Utils;
 
 public class Respawn extends SpecialObj {
     public Respawn(Game game) {
@@ -17,7 +18,7 @@ public class Respawn extends SpecialObj {
 
     @Override
     public String name() {
-        return "Respawn objects";
+        return Utils.getText("objects.respawn.name");
     }
 
     @Override

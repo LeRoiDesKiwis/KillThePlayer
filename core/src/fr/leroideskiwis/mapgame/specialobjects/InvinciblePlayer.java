@@ -5,6 +5,7 @@ import fr.leroideskiwis.mapgame.Location;
 import fr.leroideskiwis.mapgame.Map;
 import fr.leroideskiwis.mapgame.entities.Player;
 import fr.leroideskiwis.mapgame.entities.SpecialObj;
+import fr.leroideskiwis.utils.Utils;
 
 public class InvinciblePlayer extends SpecialObj {
     public InvinciblePlayer(Game game) {
@@ -16,13 +17,13 @@ public class InvinciblePlayer extends SpecialObj {
 
         int invincibleTour = game.randomInt(5, 6);
         player.addInvincility(invincibleTour);
-        game.sendMessage("You got "+invincibleTour+" invincible moves");
+        game.sendMessage(Utils.format("objects.invincibility.got", invincibleTour));
 
     }
 
     @Override
     public String name() {
-        return "player invincible";
+        return Utils.getText("objects.invincibility.name");
     }
 
     @Override

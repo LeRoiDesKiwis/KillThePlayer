@@ -1,5 +1,7 @@
 package fr.leroideskiwis.mapgame;
 
+import fr.leroideskiwis.utils.Utils;
+
 public class Invincibility {
 
     private int tour;
@@ -17,6 +19,6 @@ public class Invincibility {
     }
 
     public void display(Game game){
-        game.sendMessage("You're invincible mode will be disabled in "+tour+" moves");
+        game.sendMessage(Utils.format("objects.invincibility.moves", tour));
     }
 }

@@ -6,17 +6,21 @@ import club.minnced.discord.rpc.DiscordRichPresence;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.utils.I18NBundle;
 import fr.leroideskiwis.mapgame.Game;
 import fr.leroideskiwis.mapgame.Move;
 import fr.leroideskiwis.mapgame.managers.TextureManager;
+import fr.leroideskiwis.utils.Utils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public class Main extends ApplicationAdapter {
 	private SpriteBatch batch;
@@ -51,6 +55,10 @@ public class Main extends ApplicationAdapter {
 
 	@Override
 	public void create () {
+
+		Locale locale = new Locale("en");
+		FileHandle fileHandle = Gdx.files.internal("bundles/bundle");
+		Utils.resourceBundle = I18NBundle.createBundle(fileHandle, locale);
 
 		moves.add(new Move(Input.Keys.UP, 0, 1));
 		moves.add(new Move(Input.Keys.DOWN, 0, -1));
@@ -90,7 +98,7 @@ public class Main extends ApplicationAdapter {
 		DiscordRichPresence presence = new DiscordRichPresence();
 		if(game != null) {
 			presence.state = "score : " + game.getScore();
-			presence.details = "size of the map : " + game.getSize();
+			presence.details = Utils.format("presence.sizemap", game.getSize());
 		}
 		presence.startTimestamp = started;
         presence.largeImageKey = "new_high_score_";
@@ -114,7 +122,7 @@ public class Main extends ApplicationAdapter {
 		updateGame();
 		batch.begin();
 
-		drawText("Your score is "+game.getScore(), 750, 500);
+		drawText(Utils.format("score.show", game.getScore()), 750, 500);
 
 		for(int i = 0; i < game.getBuffer().size(); i++) {
 			String s = game.getBuffer().get(i);

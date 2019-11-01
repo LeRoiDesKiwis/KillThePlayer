@@ -9,6 +9,7 @@ import fr.leroideskiwis.plugins.events.OnObjectDeath;
 import fr.leroideskiwis.plugins.events.OnObjectSpawn;
 import fr.leroideskiwis.plugins.events.OnPlayerTakeObject;
 import fr.leroideskiwis.plugins.events.OnTakeCoin;
+import fr.leroideskiwis.utils.Utils;
 
 public class FileLogsListener implements Listener {
 
@@ -21,32 +22,32 @@ public class FileLogsListener implements Listener {
     @EventHandler
     public void onCoin(OnTakeCoin event){
 
-        fileLogs.print("player took coin on location "+event.getLocation());
+        fileLogs.print(Utils.format("logs.ontakecoin", event.getLocation()));
 
     }
 
     @EventHandler
     public void onMove(OnMove event){
-        fileLogs.print("Player moved at "+event.direction.toString().toLowerCase()+" at "+event.newLocation);
+        fileLogs.print(Utils.format("logs.onmove", event.direction, event.newLocation));
     }
 
     @EventHandler
     public void onObjectSpawn(OnObjectSpawn event){
-        fileLogs.print("A "+event.getSpecialObj().name()+" spawned at "+event.getLocation());
+        fileLogs.print(Utils.format("logs.onobjectspawn", event.getSpecialObj().name(), event.getLocation()));
     }
 
     @EventHandler
     public void onEnemyDeath(OnEnemyDeath event){
-        fileLogs.print("A enemy is die at "+event.getLocation());
+        fileLogs.print(Utils.format("logs.onenemydeath", event.getLocation()));
     }
 
     @EventHandler
     public void onObjectDeath(OnObjectDeath event){
-        fileLogs.print("A object is die at "+event.getLocation());
+        fileLogs.print(Utils.format("logs.onobjectdeath", event.getLocation()));
     }
 
     @EventHandler
     public void onPlayerTakeObject(OnPlayerTakeObject event){
-        fileLogs.print("A player has take object at "+ event.getLocation() + " : "+event.getSpecialObj().name());
+        fileLogs.print(Utils.format("logs.playertakeobject", event.getLocation(), event.getSpecialObj()));
     }
 }

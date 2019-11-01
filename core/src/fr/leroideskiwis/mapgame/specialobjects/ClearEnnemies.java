@@ -6,6 +6,7 @@ import fr.leroideskiwis.mapgame.Map;
 import fr.leroideskiwis.mapgame.entities.Enemy;
 import fr.leroideskiwis.mapgame.entities.Player;
 import fr.leroideskiwis.mapgame.entities.SpecialObj;
+import fr.leroideskiwis.utils.Utils;
 
 public class ClearEnnemies extends SpecialObj {
 
@@ -22,13 +23,13 @@ public class ClearEnnemies extends SpecialObj {
                 .filter(entity -> entity instanceof Enemy)
                 .forEach(map::deleteEntity);
 
-        game.sendMessage("MAP CLEARED");
+        game.sendMessage(Utils.getText("objects.clearennemies.cleared"));
 
     }
 
     @Override
     public String name() {
-        return "clear map !";
+        return Utils.getText("objects.clearennemies.name");
     }
 
     @Override
