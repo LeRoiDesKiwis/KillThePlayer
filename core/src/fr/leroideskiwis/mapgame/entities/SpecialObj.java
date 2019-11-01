@@ -4,6 +4,7 @@ import fr.leroideskiwis.mapgame.Entity;
 import fr.leroideskiwis.mapgame.Game;
 import fr.leroideskiwis.mapgame.Location;
 import fr.leroideskiwis.mapgame.Map;
+import fr.leroideskiwis.plugins.events.OnPlayerTakeObject;
 
 public abstract class SpecialObj extends Entity{
 
@@ -40,6 +41,9 @@ public abstract class SpecialObj extends Entity{
 
     @Override
     public boolean onCollide(Game game, Map map, Player player) {
+        OnPlayerTakeObject event = new OnPlayerTakeObject(getFirstLocation(), this);
+        game.getPluginManager().callEvent(event);
+        if(event.isCancelled()) return false;
         game.sendMessage("You found a "+name());
         execute(game, map, player);
         return true;

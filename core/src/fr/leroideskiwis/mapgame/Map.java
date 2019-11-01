@@ -8,7 +8,7 @@ import fr.leroideskiwis.mapgame.entities.Enemy;
 import fr.leroideskiwis.mapgame.entities.Obstacle;
 import fr.leroideskiwis.mapgame.entities.Player;
 import fr.leroideskiwis.mapgame.managers.TextureManager;
-import fr.leroideskiwis.plugins.events.OnEnnemyDeath;
+import fr.leroideskiwis.plugins.events.OnEnemyDeath;
 import fr.leroideskiwis.plugins.events.OnEntitySpawn;
 
 import java.util.ArrayList;
@@ -134,7 +134,7 @@ public class Map implements Cloneable{
             Entity entity = optionalEntity.get();
 
             if(entity instanceof Enemy){
-                OnEnnemyDeath event = new OnEnnemyDeath(new Location(x, y), (Enemy) entity);
+                OnEnemyDeath event = new OnEnemyDeath(new Location(x, y), (Enemy) entity);
                 game.getPluginManager().callEvent(event);
                 if(event.isCancelled()) return;
             }

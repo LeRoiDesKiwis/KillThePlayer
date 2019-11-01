@@ -1,22 +1,17 @@
 package fr.leroideskiwis.plugins.events;
 
 import fr.leroideskiwis.mapgame.Location;
+import fr.leroideskiwis.utils.Direction;
 
 public class OnMove extends Event {
 
-    private Location oldLocation;
-    private Location newLocation;
+    public final Location oldLocation;
+    public final Location newLocation;
+    public final Direction direction;
 
-    public OnMove(Location oldLocation, Location newLocation) {
+    public OnMove(Direction direction, Location oldLocation, Location newLocation) {
         this.oldLocation = oldLocation;
         this.newLocation = newLocation;
-    }
-
-    public Location getOldLocation() {
-        return oldLocation;
-    }
-
-    public Location getNewLocation() {
-        return newLocation;
+        this.direction = direction;
     }
 }

@@ -34,6 +34,10 @@ public class KtpPluginManager {
 
     }
 
+    public void addPluginManually(KtpPlugin ktpPlugin){
+        plugins.add(ktpPlugin);
+    }
+
     public void callEvent(Event event){
 
         plugins.forEach(plugin -> plugin.listeners.forEach(listener -> {
@@ -63,7 +67,6 @@ public class KtpPluginManager {
                 KtpPlugin plugin = loadPlugin(file);
                 if(plugin != null) {
                     plugins.add(plugin);
-                    plugin.onEnable(game);
                     game.debug("Plugin "+plugin.getName()+"v"+plugin.getVersion()+" de "+plugin.getAuthor()+" à été chargé");
 
                 }
@@ -72,6 +75,14 @@ public class KtpPluginManager {
             }
 
         }
+
+        plugins.forEach(ktpPlugin -> {
+            try {
+                ktpPlugin.onEnable(game);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
 
     }
 
