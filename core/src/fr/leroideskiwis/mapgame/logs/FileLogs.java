@@ -43,7 +43,7 @@ public class FileLogs extends KtpPlugin {
     }
 
     public void print(String line){
-        if(writer != null) writer.println(Utils.formatDate("hh::mm:ss")+" > "+line);
+        if(writer != null) writer.println(Utils.formatDate("hh:mm:ss")+" > "+line);
     }
 
     @Override
