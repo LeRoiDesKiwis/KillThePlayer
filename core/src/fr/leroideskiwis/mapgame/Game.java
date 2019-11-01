@@ -8,6 +8,7 @@ import fr.leroideskiwis.mapgame.entities.Enemy;
 import fr.leroideskiwis.mapgame.entities.Obstacle;
 import fr.leroideskiwis.mapgame.entities.Player;
 import fr.leroideskiwis.mapgame.entities.SpecialObj;
+import fr.leroideskiwis.mapgame.logs.FileLogs;
 import fr.leroideskiwis.mapgame.managers.TextureManager;
 import fr.leroideskiwis.mapgame.specialobjects.ClearEnnemies;
 import fr.leroideskiwis.mapgame.specialobjects.HorizontalOpenPath;
@@ -75,6 +76,7 @@ public final class Game {
         debugMode = false;
         this.pluginManager = new KtpPluginManager(this);
 
+        pluginManager.addPluginManually(new FileLogs());
 
         specialObjs.add(RayonEnnemyKiller.class);
         specialObjs.add(TriggerAllSpecial.class);

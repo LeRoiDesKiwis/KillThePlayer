@@ -10,17 +10,23 @@ import java.io.PrintWriter;
 
 public class FileLogs extends KtpPlugin {
 
-    private File file;
     private PrintWriter writer;
 
     @Override
     public void onEnable(Game game) {
         try {
             print("File loaded");
-            listeners.add(new FileLogsListener(this, game));
+            listeners.add(new FileLogsListener(this));
+
+            File folder = new File(System.getProperty("user.home") + "/.ktp/");
+            if(!folder.exists() && !folder.mkdirs()) throw new IOException();
+
+            File file = new File(folder + "/"+Utils.formatDate("hh_mm_ss-d_MM_yyyy")+".log");
+            System.out.println(folder + "\\"+Utils.formatDate("hh_mm_ss-d_MM_yyyy"));
+            if(!file.exists() && !file.createNewFile()) throw new IOException();
+
             this.writer = new PrintWriter(file);
-            this.file = new File(Utils.formatDate("hh:mm:ss-d/MM/yyyy"));
-            if(!file.exists()) file.createNewFile();
+
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -29,12 +35,15 @@ public class FileLogs extends KtpPlugin {
 
     @Override
     public void onDisable(Game game) {
-        print("File unloaded");
-        writer.flush();
+        if(writer != null) {
+            print("File unloaded");
+            writer.flush();
+            writer.close();
+        }
     }
 
     public void print(String line){
-        writer.println(Utils.formatDate("hh::mm:ss")+" > "+line);
+        if(writer != null) writer.println(Utils.formatDate("hh::mm:ss")+" > "+line);
     }
 
     @Override

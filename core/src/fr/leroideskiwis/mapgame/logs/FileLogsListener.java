@@ -12,11 +12,9 @@ import fr.leroideskiwis.plugins.events.OnTakeCoin;
 
 public class FileLogsListener implements Listener {
 
-    private Game game;
     private FileLogs fileLogs;
 
-    public FileLogsListener(FileLogs logs, Game game) {
-        this.game = game;
+    public FileLogsListener(FileLogs logs) {
         this.fileLogs = logs;
     }
 
@@ -29,7 +27,7 @@ public class FileLogsListener implements Listener {
 
     @EventHandler
     public void onMove(OnMove event){
-        fileLogs.print("Player moved ");
+        fileLogs.print("Player moved at "+event.direction.toString().toLowerCase()+" at "+event.newLocation);
     }
 
     @EventHandler
@@ -49,6 +47,6 @@ public class FileLogsListener implements Listener {
 
     @EventHandler
     public void onPlayerTakeObject(OnPlayerTakeObject event){
-        fileLogs.print("A player has take object at"+ event.getLocation() + " : "+event.getSpecialObj().name());
+        fileLogs.print("A player has take object at "+ event.getLocation() + " : "+event.getSpecialObj().name());
     }
 }

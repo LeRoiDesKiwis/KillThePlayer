@@ -6,6 +6,7 @@ import fr.leroideskiwis.mapgame.Invincibility;
 import fr.leroideskiwis.mapgame.Location;
 import fr.leroideskiwis.mapgame.Map;
 import fr.leroideskiwis.plugins.events.OnMove;
+import fr.leroideskiwis.utils.Direction;
 
 import java.util.Optional;
 
@@ -45,17 +46,19 @@ public class Player extends Entity {
             if(entity.onCollide(game, map, this)) map.deleteEntity(entity);
         }
 
-        OnMove event = new OnMove(before, new Location(x,y));
-        game.getPluginManager().callEvent(event);
-        if(event.isCancelled()) return false;
-
         if(invincibility.isInvincible()) {
             if(!entityOpt.isPresent() || !entityOpt.get().isInvulnerable()) {
                 map.replaceEntity(x, y, this);
                 invincibility.removeOne();
                 invincibility.display(game);
             }
-        } else if(!map.setEntity(x, y, this)) return false;
+        } else if(map.setEntity(x, y, this)){
+            Direction direction = Direction.getDirection(x-before.x, y-before.y);
+            OnMove event = new OnMove(direction,before, new Location(x,y));
+            game.getPluginManager().callEvent(event);
+            if(event.isCancelled()) return false;
+
+        } else return false;
 
         if(!getFirstLocation().equals(before)) {
             map.deleteEntity(before);

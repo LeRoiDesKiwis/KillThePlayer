@@ -27,9 +27,6 @@ public class Entity {
     }
 
     public Entity setLocation(int x, int y){
-        if(getClass() == InvinciblePlayer.class){
-            System.out.println("t");
-        }
 
         locations.clear();
 
