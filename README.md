@@ -5,3 +5,5 @@ Le code d'un petit jeu sympa
 
 # lien de présentation du jeu
 https://youtu.be/75RM-e4wNiA
+
+Licensed under [GNU GPL 3.0](https://github.com/LeRoiDesKiwis/KillThePlayer/blob/master/LICENSE) or later
