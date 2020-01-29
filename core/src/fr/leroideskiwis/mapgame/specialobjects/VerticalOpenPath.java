@@ -38,6 +38,6 @@ public class VerticalOpenPath extends SpecialObj {
 
     @Override
     public float chance() {
-        return 0.075f;
+        return 0.123f;
     }
 }
