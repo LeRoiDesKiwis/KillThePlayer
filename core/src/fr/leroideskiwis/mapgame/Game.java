@@ -70,7 +70,7 @@ public final class Game {
     }
 
 
-    public Game(TextureManager textureManager) {
+    public Game(TextureManager textureManager) throws IllegalAccessException, InstantiationException, InvocationTargetException {
         this.textureManager = textureManager;
         this.size = randomInt(28, 32);
         Gdx.app.log("INFO", "new instance of game");
@@ -89,7 +89,6 @@ public final class Game {
         specialObjs.add(InvinciblePlayer.class);
 
         map = new Map(this, size, size);
-
         player = new Player(this, map);
         map.generateRandom(player);
 
@@ -123,7 +122,7 @@ public final class Game {
 
             SpecialObj special = SpecialObjects.randomItem(specialObjs.stream().map(specialObj -> {
                 try {
-                    return (SpecialObj)specialObj.getConstructors()[0].newInstance(this);
+                    return newObject(specialObj);
                 } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
                     e.printStackTrace();
                 }
@@ -154,6 +153,10 @@ public final class Game {
         score++;
         this.lock = false;
         return true;
+    }
+
+    public SpecialObj newObject(Class<? extends SpecialObj> specialObj) throws IllegalAccessException, InvocationTargetException, InstantiationException {
+        return (SpecialObj)specialObj.getConstructors()[0].newInstance(this);
     }
 
     public int randomInt(int min, int max){
