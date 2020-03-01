@@ -3,7 +3,6 @@ package fr.leroideskiwis.mapgame;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
-import com.sun.istack.internal.NotNull;
 import fr.leroideskiwis.mapgame.entities.Enemy;
 import fr.leroideskiwis.mapgame.entities.Obstacle;
 import fr.leroideskiwis.mapgame.entities.Player;
@@ -126,7 +125,7 @@ public class Map implements Cloneable{
      * @param newObject the object to replace with <b>don't accept null value ! Please with {@link #deleteEntity(int, int)} to delete an entity !</b>
      */
 
-    public void replaceEntity(int x, int y, @NotNull Entity newObject){
+    public void replaceEntity(int x, int y, Entity newObject){
 
         Optional<Entity> optionalEntity = getEntity(x, y);
 
