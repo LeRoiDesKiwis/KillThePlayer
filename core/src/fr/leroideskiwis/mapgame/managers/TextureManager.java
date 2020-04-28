@@ -3,32 +3,40 @@ package fr.leroideskiwis.mapgame.managers;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Texture;
-import fr.leroideskiwis.mapgame.Entity;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class TextureManager {
+public class TextureManager<T> {
 
-    private Map<Class<? extends Entity>, Texture> textures = new HashMap<>();
+    private final Map<T, Texture> textures = new HashMap<>();
 
-    public void register(Entity entity, String path){
-        register(entity, new Texture(getAsset(path)));
+    public void register(T name, String path){
+        register(name, new Texture(getAsset(path)));
     }
 
-    private void register(Entity entity, Texture texture){
-        textures.put(entity.getClass(), texture);
+    public Texture registerIfAbsent(T name, String path){
+        if(has(name)){
+            return getTexture(name);
+        } else {
+            register(name, path);
+            return registerIfAbsent(name, path);
+        }
     }
 
-    public Texture getTexture(Entity entity){
-        return textures.get(entity.getClass());
+    private void register(T name, Texture texture){
+        textures.put(name, texture);
     }
 
-    public boolean has(Entity entity){
-        return textures.containsKey(entity.getClass());
+    public Texture getTexture(T name){
+        return textures.get(name);
     }
 
-    public Texture getTexture(String path){
+    public boolean has(T name){
+        return textures.containsKey(name);
+    }
+
+    public Texture toTexture(String path){
         try {
             Texture texture = new Texture(getAsset(path));
             texture.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);

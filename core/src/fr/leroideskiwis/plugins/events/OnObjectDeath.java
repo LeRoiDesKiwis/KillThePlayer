@@ -1,14 +1,14 @@
 package fr.leroideskiwis.plugins.events;
 
 import fr.leroideskiwis.mapgame.Location;
-import fr.leroideskiwis.mapgame.entities.SpecialObj;
+import fr.leroideskiwis.mapgame.specialobjects.SpecialObject;
 
 public class OnObjectDeath extends Event {
 
     private Location location;
-    private SpecialObj object;
+    private SpecialObject object;
 
-    public OnObjectDeath(Location location, SpecialObj object) {
+    public OnObjectDeath(Location location, SpecialObject object) {
         this.location = location;
         this.object = object;
     }
@@ -17,7 +17,7 @@ public class OnObjectDeath extends Event {
         return location;
     }
 
-    public SpecialObj getObject() {
+    public SpecialObject getObject() {
         return object;
     }
 }

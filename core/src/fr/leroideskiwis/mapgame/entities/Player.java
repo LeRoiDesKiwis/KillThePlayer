@@ -1,5 +1,6 @@
 package fr.leroideskiwis.mapgame.entities;
 
+import fr.leroideskiwis.ktp.ExecutionData;
 import fr.leroideskiwis.mapgame.Entity;
 import fr.leroideskiwis.mapgame.Game;
 import fr.leroideskiwis.mapgame.Invincibility;
@@ -43,7 +44,7 @@ public class Player extends Entity {
 
         if(entityOpt.isPresent()) {
             Entity entity = entityOpt.get();
-            if(entity.onCollide(game, map, this)) map.deleteEntity(entity);
+            if(entity.onCollide(new ExecutionData(this, map, game))) map.deleteEntity(entity);
         }
 
         if(invincibility.isInvincible()) {

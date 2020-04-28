@@ -1,18 +1,18 @@
 package fr.leroideskiwis.mapgame.entities;
 
+import fr.leroideskiwis.ktp.ExecutionData;
 import fr.leroideskiwis.mapgame.Entity;
-import fr.leroideskiwis.mapgame.Game;
-import fr.leroideskiwis.mapgame.Map;
+import fr.leroideskiwis.mapgame.specialobjects.SpecialObject;
 
 public class Obstacle extends Entity {
 
-    private final SpecialObj lostObject;
+    private final SpecialObject lostObject;
 
     public Obstacle(){
         this(null);
     }
 
-    public Obstacle(SpecialObj obj){
+    public Obstacle(SpecialObject obj){
          super("obstacle.png");
          this.lostObject = obj;
     }
@@ -21,7 +21,7 @@ public class Obstacle extends Entity {
         return lostObject != null;
     }
 
-    public SpecialObj getLostObject() {
+    public SpecialObject getLostObject() {
         return lostObject;
     }
 
@@ -35,8 +35,8 @@ public class Obstacle extends Entity {
     }
 
     @Override
-    public boolean onCollide(Game game, Map map, Player player) {
-        if(!isInvulnerable()) return lostObject.onCollide(game, map, player);
+    public boolean onCollide(ExecutionData executionData) {
+        if(!isInvulnerable()) return lostObject.onCollide(executionData);
         return false;
     }
 }

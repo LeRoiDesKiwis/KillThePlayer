@@ -3,9 +3,8 @@ package fr.leroideskiwis.mapgame;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
-import fr.leroideskiwis.mapgame.entities.Player;
+import fr.leroideskiwis.ktp.ExecutionData;
 import fr.leroideskiwis.mapgame.managers.TextureManager;
-import fr.leroideskiwis.mapgame.specialobjects.InvinciblePlayer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,7 +13,7 @@ import java.util.stream.Collectors;
 public class Entity {
 
     private Location location;
-    private String path;
+    protected String path;
 
     protected Entity(String path){
         this(0, 0, path);
@@ -42,22 +41,13 @@ public class Entity {
         return false;
     }
 
-    public boolean onCollide(Game game, Map map, Player player){
+    public boolean onCollide(ExecutionData executionData){
         return false;
     }
 
-    public void draw(TextureManager manager, SpriteBatch batch, Rectangle rectangle) {
-        Texture texture = texture(manager);
+    public void draw(TextureManager<Entity> manager, SpriteBatch batch, Rectangle rectangle) {
+        Texture texture = manager.registerIfAbsent(this, path);
         batch.draw(texture, rectangle.x, rectangle.y, rectangle.width*size(), rectangle.height*size());
-    }
-
-    private Texture texture(TextureManager manager) {
-        if(manager.has(this)){
-            return manager.getTexture(this);
-        } else {
-            manager.register(this, path);
-            return texture(manager);
-        }
     }
 
     public int size(){

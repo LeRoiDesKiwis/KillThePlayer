@@ -1,6 +1,5 @@
 package fr.leroideskiwis.mapgame.logs;
 
-import fr.leroideskiwis.mapgame.Game;
 import fr.leroideskiwis.plugins.EventHandler;
 import fr.leroideskiwis.plugins.Listener;
 import fr.leroideskiwis.plugins.events.OnEnemyDeath;
@@ -33,7 +32,7 @@ public class FileLogsListener implements Listener {
 
     @EventHandler
     public void onObjectSpawn(OnObjectSpawn event){
-        fileLogs.print(Utils.format("logs.onobjectspawn", event.getSpecialObj().name(), event.getLocation()));
+        fileLogs.print(Utils.format("logs.onobjectspawn", event.getSpecialObject().getName(), event.getLocation()));
     }
 
     @EventHandler
@@ -48,6 +47,6 @@ public class FileLogsListener implements Listener {
 
     @EventHandler
     public void onPlayerTakeObject(OnPlayerTakeObject event){
-        fileLogs.print(Utils.format("logs.playertakeobject", event.getLocation(), event.getSpecialObj()));
+        fileLogs.print(Utils.format("logs.playertakeobject", event.getLocation(), event.getSpecialObject()));
     }
 }

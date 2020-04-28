@@ -1,24 +1,24 @@
 package fr.leroideskiwis.plugins.events;
 
 import fr.leroideskiwis.mapgame.Location;
-import fr.leroideskiwis.mapgame.entities.SpecialObj;
+import fr.leroideskiwis.mapgame.specialobjects.SpecialObject;
 
 public class OnPlayerTakeObject extends Event {
 
     private Location location;
-    private SpecialObj specialObj;
+    private SpecialObject specialObject;
 
-    public OnPlayerTakeObject(Location location, SpecialObj specialObj) {
+    public OnPlayerTakeObject(Location location, SpecialObject specialObject) {
         this.location = location;
-        this.specialObj = specialObj;
+        this.specialObject = specialObject;
     }
 
-    public SpecialObj getSpecialObj() {
-        return specialObj;
+    public SpecialObject getSpecialObject() {
+        return specialObject;
     }
 
-    public void setSpecialObj(SpecialObj specialObj) {
-        this.specialObj = specialObj;
+    public void setSpecialObject(SpecialObject specialObject) {
+        this.specialObject = specialObject;
     }
 
     public Location getLocation() {

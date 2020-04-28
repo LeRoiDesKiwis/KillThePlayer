@@ -3,30 +3,25 @@ package fr.leroideskiwis.mapgame;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import fr.leroideskiwis.ktp.ExecutionData;
 import fr.leroideskiwis.mapgame.entities.Coin;
 import fr.leroideskiwis.mapgame.entities.Enemy;
 import fr.leroideskiwis.mapgame.entities.Obstacle;
 import fr.leroideskiwis.mapgame.entities.Player;
-import fr.leroideskiwis.mapgame.entities.SpecialObj;
+import fr.leroideskiwis.mapgame.specialobjects.SpecialObject;
 import fr.leroideskiwis.mapgame.logs.FileLogs;
 import fr.leroideskiwis.mapgame.managers.TextureManager;
-import fr.leroideskiwis.mapgame.specialobjects.ClearEnnemies;
-import fr.leroideskiwis.mapgame.specialobjects.HorizontalOpenPath;
-import fr.leroideskiwis.mapgame.specialobjects.InvinciblePlayer;
-import fr.leroideskiwis.mapgame.specialobjects.RayonEnnemyKiller;
-import fr.leroideskiwis.mapgame.specialobjects.Reparator;
-import fr.leroideskiwis.mapgame.specialobjects.Respawn;
-import fr.leroideskiwis.mapgame.specialobjects.TriggerAllSpecial;
-import fr.leroideskiwis.mapgame.specialobjects.VerticalOpenPath;
+import fr.leroideskiwis.mapgame.specialobjects.SpecialObjects;
 import fr.leroideskiwis.plugins.KtpPluginManager;
 import fr.leroideskiwis.plugins.events.OnObjectSpawn;
-import fr.leroideskiwis.utils.SpecialObjects;
+import fr.leroideskiwis.utils.RandomerSpecialObject;
 import fr.leroideskiwis.utils.Utils;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 public final class Game {
@@ -42,7 +37,6 @@ public final class Game {
     private KtpPluginManager pluginManager;
     private boolean lock = false;
     private TextureManager textureManager;
-    private List<Class<? extends SpecialObj>> specialObjs = new ArrayList<>();
 
     public boolean movePlayer(int x, int y){
         return player.move(x, y);
@@ -79,15 +73,6 @@ public final class Game {
 
         pluginManager.addPluginManually(new FileLogs());
 
-        specialObjs.add(RayonEnnemyKiller.class);
-        specialObjs.add(TriggerAllSpecial.class);
-        specialObjs.add(ClearEnnemies.class);
-        specialObjs.add(Reparator.class);
-        specialObjs.add(HorizontalOpenPath.class);
-        specialObjs.add(VerticalOpenPath.class);
-        specialObjs.add(Respawn.class);
-        specialObjs.add(InvinciblePlayer.class);
-
         map = new Map(this, size, size);
         player = new Player(this, map);
         map.generateRandom(player);
@@ -120,28 +105,21 @@ public final class Game {
 
         if (Math.random() < 0.05) {
 
-            SpecialObj special = SpecialObjects.randomItem(specialObjs.stream().map(specialObj -> {
-                try {
-                    return newObject(specialObj);
-                } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
-                    e.printStackTrace();
-                }
-                return new RayonEnnemyKiller(this);
-            }).collect(Collectors.toList()));
+            SpecialObject special = RandomerSpecialObject.randomItem(SpecialObjects.ALL.stream().map(Supplier::get).filter(specialObject -> specialObject.canSpawn(new ExecutionData(player, map, this))).collect(Collectors.toList()));
 
-            Location location = special.spawn(this, map, player);
+            Location location = special.spawn(new ExecutionData(player, map, this));
             OnObjectSpawn event = new OnObjectSpawn(location, special);
             getPluginManager().callEvent(event);
             if(!event.isCancelled())
-                map.setEntity(location, event.getSpecialObj());
+                map.setEntity(location, event.getSpecialObject());
         }
 
         if(Math.random() < 0.001){
-            getRandomList(map.getEntitiesByType(SpecialObj.class)
+            getRandomList(map.getEntitiesByType(SpecialObject.class)
                         .stream()
                         .filter(specialObj -> map.hasFullSurrounding(specialObj))
                         .collect(Collectors.toList()))
-                    .ifPresent(SpecialObj::kill);
+                    .ifPresent(specialObject -> specialObject.kill(map));
 
         }
 
@@ -155,8 +133,8 @@ public final class Game {
         return true;
     }
 
-    public SpecialObj newObject(Class<? extends SpecialObj> specialObj) throws IllegalAccessException, InvocationTargetException, InstantiationException {
-        return (SpecialObj)specialObj.getConstructors()[0].newInstance(this);
+    public SpecialObject newObject(Class<? extends SpecialObject> specialObj) throws IllegalAccessException, InvocationTargetException, InstantiationException {
+        return (SpecialObject)specialObj.getConstructors()[0].newInstance(this);
     }
 
     public int randomInt(int min, int max){

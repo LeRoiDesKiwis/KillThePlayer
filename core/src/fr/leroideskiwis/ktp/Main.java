@@ -66,7 +66,7 @@ public class Main extends ApplicationAdapter {
 		moves.add(new Move(Input.Keys.LEFT, -1, 0));
 
 		initGame();
-		emptyCase = textureManager.getTexture("emptycase.png");
+		emptyCase = textureManager.toTexture("emptycase.png");
 
 		this.started = System.currentTimeMillis();
 		this.font = new BitmapFont();

@@ -1,26 +1,27 @@
 package fr.leroideskiwis.utils;
 
-import fr.leroideskiwis.mapgame.entities.SpecialObj;
+import fr.leroideskiwis.mapgame.specialobjects.SpecialObject;
 
 import java.util.List;
 import java.util.Random;
+import java.util.function.Supplier;
 
-public class SpecialObjects {
+public class RandomerSpecialObject {
 
     private static final Random random = new Random();
 
-    public static SpecialObj randomItem(List<SpecialObj> items) {
+    public static SpecialObject randomItem(List<SpecialObject> items) {
         float total = 0;
 
-        for (SpecialObj specialObject : items)
-            total += specialObject.chance();
+        for (SpecialObject specialObject : items)
+            total += specialObject.getChance();
 
         float rf = random.nextFloat();
         rf *= total;
 
         float cur = 0;
-        for(SpecialObj item : items) {
-            float proba = item.chance();
+        for(SpecialObject item : items) {
+            float proba = item.getChance();
 
             if(rf >= cur && rf < cur + proba)
                 return item;
