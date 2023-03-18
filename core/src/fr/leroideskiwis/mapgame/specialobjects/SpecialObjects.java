@@ -1,7 +1,6 @@
 package fr.leroideskiwis.mapgame.specialobjects;
 
 import fr.leroideskiwis.ktp.ExecutionData;
-import fr.leroideskiwis.mapgame.Entity;
 import fr.leroideskiwis.mapgame.Location;
 import fr.leroideskiwis.mapgame.entities.Enemy;
 import fr.leroideskiwis.mapgame.entities.Obstacle;
@@ -17,7 +16,6 @@ public class SpecialObjects {
 
     public static Supplier<SpecialObject> CLEAR_ENNEMIES, HORIZONTAL_OPEN_PATH, INVINCIBLE_PLAYER, RAYON_ENNEMY_KILLER,
     REPARATOR, RESPAWN, TRIGGER_ALL, VERTICAL_OPEN_PATH;
-    private static Random random = new Random();
     public static TextureManager<String> textureManager = new TextureManager<>();
 
     public static List<Supplier<SpecialObject>> ALL = new ArrayList<>(Arrays.asList(
@@ -98,11 +96,7 @@ public class SpecialObjects {
 
     private static void trigger(ExecutionData executionData, SpecialObject specialObject){
         executionData.getGame().sendMessage(Utils.getText("objects.trigger.message"));
-        executionData.getMap().getEntitiesByType(SpecialObject.class).stream().filter(entity -> !entity.isName("clearennemies") && !entity.isName("trigger") && !entity.isName("respawn")).forEach(entity -> entity.onCollide(executionData));
-    }
-
-    public static Supplier<SpecialObject> randomObject(){
-        return ALL.get(random.nextInt(ALL.size()));
+        executionData.getMap().getEntitiesByType(SpecialObject.class).stream().filter(SpecialObject::isTriggerable).forEach(entity -> entity.onCollide(executionData));
     }
 
 }

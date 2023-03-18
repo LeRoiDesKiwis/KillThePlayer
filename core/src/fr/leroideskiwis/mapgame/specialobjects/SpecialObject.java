@@ -23,13 +23,14 @@ public class SpecialObject extends Entity{
     private Predicate<ExecutionData> canSpawn = (data) -> true;
     private final String name;
     private final float chance;
+    private final boolean triggerable;
 
     protected void execute(ExecutionData executionData, SpecialObject specialObject){
         execute.accept(executionData, specialObject);
     }
 
     public SpecialObject(String name, float chance, BiConsumer<ExecutionData, SpecialObject> execute, Function<ExecutionData, Location> spawn,
-                         Predicate<ExecutionData> onCollide, Predicate<ExecutionData> canSpawn) {
+                         Predicate<ExecutionData> onCollide, Predicate<ExecutionData> canSpawn, boolean triggerable) {
         super(name+".png");
         this.name = Utils.getText("objects."+name+".name");
         this.chance = chance;
@@ -42,6 +43,12 @@ public class SpecialObject extends Entity{
         this.onCollide = onCollide != null ? onCollide : this.onCollide;
         this.spawn = spawn != null ? spawn : this.spawn;
         this.canSpawn = canSpawn != null ? canSpawn : this.canSpawn;
+        this.triggerable = triggerable;
+    }
+    public SpecialObject(String name, float chance, BiConsumer<ExecutionData, SpecialObject> execute, Function<ExecutionData, Location> spawn,
+                         Predicate<ExecutionData> onCollide, Predicate<ExecutionData> canSpawn){
+        this(name, chance, execute, spawn, onCollide, canSpawn, true);
+
     }
 
     public SpecialObject(String name, float chance, BiConsumer<ExecutionData, SpecialObject> execute){
@@ -70,16 +77,16 @@ public class SpecialObject extends Entity{
         return canSpawn.test(executionData);
     }
 
-    public boolean isName(String name){
-        return this.name.equals(name);
-    }
-
     public String getName() {
         return name;
     }
 
     public float getChance() {
         return chance;
+    }
+
+    public boolean isTriggerable(){
+        return triggerable;
     }
 
     @Override
