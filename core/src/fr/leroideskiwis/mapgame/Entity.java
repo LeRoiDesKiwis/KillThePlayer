@@ -37,10 +37,6 @@ public class Entity {
         return setLocation(location.x, location.y);
     }
 
-    public boolean isInvulnerable(){
-        return false;
-    }
-
     public boolean onCollide(ExecutionData executionData){
         return false;
     }
@@ -78,5 +74,9 @@ public class Entity {
 
     public Location getLocation(){
         return location;
+    }
+
+    public boolean isRemovable() {
+        return true;
     }
 }

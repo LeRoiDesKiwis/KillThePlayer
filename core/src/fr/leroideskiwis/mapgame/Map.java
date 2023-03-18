@@ -5,7 +5,6 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
 import fr.leroideskiwis.mapgame.entities.Enemy;
 import fr.leroideskiwis.mapgame.entities.Obstacle;
-import fr.leroideskiwis.mapgame.entities.Player;
 import fr.leroideskiwis.mapgame.managers.TextureManager;
 import fr.leroideskiwis.plugins.events.OnEnemyDeath;
 import fr.leroideskiwis.plugins.events.OnEntitySpawn;
@@ -16,12 +15,12 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-public class Map implements Cloneable{
+public class Map{
 
     private final List<Entity> entities = new ArrayList<>();
     private final Game game;
-    private int height;
-    private int width;
+    private final int height;
+    private final int width;
 
     public Map(Game main, int height, int width){
         this.game = main;
@@ -84,6 +83,7 @@ public class Map implements Cloneable{
             OnEntitySpawn event = new OnEntitySpawn(entity, pos);
             game.getPluginManager().callEvent(event);
             if(event.isCancelled()) return false;
+
             entity.setLocation(pos);
             if(!entities.contains(entity)) entities.add(entity);
         }
@@ -110,10 +110,7 @@ public class Map implements Cloneable{
      * @param y the y coordinate
      */
     private void deleteEntity(int x, int y) {
-        getEntity(x, y).ifPresent(entity -> {
-            if(!(entity instanceof Player))
-                entities.remove(entity);
-        });
+        getEntity(x, y).filter(Entity::isRemovable).ifPresent(entities::remove);
     }
 
     /**
@@ -223,28 +220,7 @@ public class Map implements Cloneable{
         }
     }
 
-    private List<Entity> getSurrounding(Entity entity){
-        return getLocationsSurrounding(entity).stream().map(location -> getEntity(location).orElse(null)).collect(Collectors.toList());
-    }
-
-    /**
-     * @deprecated Use Entity#getSurroundingLocations
-     * @param entity
-     * @return
-     */
-    private List<Location> getLocationsSurrounding(Entity entity) {
-        return entity.getSurroundingLocations();
-    }
-
     public boolean hasFullSurrounding(Entity entity){
-        return getSurrounding(entity).stream().noneMatch(Objects::isNull);
+        return entity.getSurroundingLocations().stream().noneMatch(Objects::isNull);
     }
-
-    /*public <T> boolean hasFullSurrounding(Entity entity, Class<T> clazz){
-
-        List<T> all = getEntitiesByType(clazz);
-
-        return getSurrounding(entity).stream().allMatch(entity1 -> entity1 != null && all.contains(entity1));
-
-    }*/
 }

@@ -30,13 +30,13 @@ public class Obstacle extends Entity {
     }
 
     @Override
-    public boolean isInvulnerable() {
-        return lostObject == null;
+    public boolean isRemovable() {
+        return lostObject != null;
     }
 
     @Override
     public boolean onCollide(ExecutionData executionData) {
-        if(!isInvulnerable()) return lostObject.onCollide(executionData);
+        if(isRemovable()) return lostObject.onCollide(executionData);
         return false;
     }
 }

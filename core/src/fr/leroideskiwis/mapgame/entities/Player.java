@@ -48,7 +48,7 @@ public class Player extends Entity {
         }
 
         if(invincibility.isInvincible()) {
-            if(!entityOpt.isPresent() || !entityOpt.get().isInvulnerable()) {
+            if(!entityOpt.isPresent() || entityOpt.get().isRemovable()) {
                 map.replaceEntity(x, y, this);
                 invincibility.removeOne();
                 invincibility.display(game);
@@ -96,4 +96,8 @@ public class Player extends Entity {
 
     }
 
+    @Override
+    public boolean isRemovable() {
+        return false;
+    }
 }
