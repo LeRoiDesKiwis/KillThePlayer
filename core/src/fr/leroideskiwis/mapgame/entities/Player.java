@@ -6,7 +6,6 @@ import fr.leroideskiwis.mapgame.Game;
 import fr.leroideskiwis.mapgame.Invincibility;
 import fr.leroideskiwis.mapgame.Location;
 import fr.leroideskiwis.mapgame.Map;
-import fr.leroideskiwis.plugins.events.OnMove;
 import fr.leroideskiwis.utils.Direction;
 
 import java.util.Optional;
@@ -53,13 +52,7 @@ public class Player extends Entity {
                 invincibility.removeOne();
                 invincibility.display(game);
             }
-        } else if(map.setEntity(x, y, this)){
-            Direction direction = Direction.getDirection(x-before.x, y-before.y);
-            OnMove event = new OnMove(direction,before, new Location(x,y));
-            game.getPluginManager().callEvent(event);
-            if(event.isCancelled()) return false;
-
-        } else return false;
+        } else if(!map.setEntity(x, y, this)) return false;
 
         if(!getLocation().equals(before)) {
             map.deleteEntity(before);

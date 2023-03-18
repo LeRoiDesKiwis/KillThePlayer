@@ -6,8 +6,6 @@ import com.badlogic.gdx.math.Rectangle;
 import fr.leroideskiwis.mapgame.entities.Enemy;
 import fr.leroideskiwis.mapgame.entities.Obstacle;
 import fr.leroideskiwis.mapgame.managers.TextureManager;
-import fr.leroideskiwis.plugins.events.OnEnemyDeath;
-import fr.leroideskiwis.plugins.events.OnEntitySpawn;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -80,9 +78,6 @@ public class Map{
      */
     public boolean setEntity(Location pos, Entity entity){
         if(!getEntity(pos.x, pos.y).isPresent()) {
-            OnEntitySpawn event = new OnEntitySpawn(entity, pos);
-            game.getPluginManager().callEvent(event);
-            if(event.isCancelled()) return false;
 
             entity.setLocation(pos);
             if(!entities.contains(entity)) entities.add(entity);
@@ -125,17 +120,7 @@ public class Map{
     public void replaceEntity(int x, int y, Entity newObject){
 
         Optional<Entity> optionalEntity = getEntity(x, y);
-
-        if(optionalEntity.isPresent()){
-            Entity entity = optionalEntity.get();
-
-            if(entity instanceof Enemy){
-                OnEnemyDeath event = new OnEnemyDeath(new Location(x, y), (Enemy) entity);
-                game.getPluginManager().callEvent(event);
-                if(event.isCancelled()) return;
-            }
-            deleteEntity(x, y);
-        }
+        optionalEntity.ifPresent(this::deleteEntity);
 
         if(!entities.contains(newObject)) entities.add(newObject);
         newObject.setLocation(x, y);

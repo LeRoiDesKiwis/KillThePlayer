@@ -142,7 +142,6 @@ public class Main extends ApplicationAdapter {
 
 		if(game.getPlayer().hasLose() && Gdx.input.isKeyPressed(Input.Keys.ENTER)) {
 			try {
-				game.getPluginManager().unloadPlugins();
 				initGame();
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -171,7 +170,6 @@ public class Main extends ApplicationAdapter {
 	public void dispose () {
 	    Gdx.app.log("INFO", "Stopping game...");
 		batch.dispose();
-		if(game != null && game.getPluginManager() != null) game.getPluginManager().unloadPlugins();
 		Gdx.app.log("INFO", "game stopped.");
 		font.dispose();
 		textureManager.dispose();

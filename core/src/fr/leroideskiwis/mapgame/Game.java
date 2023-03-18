@@ -9,11 +9,8 @@ import fr.leroideskiwis.mapgame.entities.Enemy;
 import fr.leroideskiwis.mapgame.entities.Obstacle;
 import fr.leroideskiwis.mapgame.entities.Player;
 import fr.leroideskiwis.mapgame.specialobjects.SpecialObject;
-import fr.leroideskiwis.mapgame.logs.FileLogs;
 import fr.leroideskiwis.mapgame.managers.TextureManager;
 import fr.leroideskiwis.mapgame.specialobjects.SpecialObjects;
-import fr.leroideskiwis.plugins.KtpPluginManager;
-import fr.leroideskiwis.plugins.events.OnObjectSpawn;
 import fr.leroideskiwis.utils.RandomerSpecialObject;
 import fr.leroideskiwis.utils.Utils;
 
@@ -34,7 +31,6 @@ public final class Game {
     private Player player;
     private final int size;
     //private JSONConfiguration configuration;
-    private KtpPluginManager pluginManager;
     private boolean lock = false;
     private TextureManager textureManager;
 
@@ -69,9 +65,6 @@ public final class Game {
         this.size = randomInt(28, 32);
         Gdx.app.log("INFO", "new instance of game");
         debugMode = false;
-        this.pluginManager = new KtpPluginManager(this);
-
-        pluginManager.addPluginManually(new FileLogs());
 
         map = new Map(this, size, size);
         player = new Player(this, map);
@@ -91,8 +84,6 @@ public final class Game {
         Gdx.graphics.setTitle("KillThePlayer (created by LeRoiDesKiwis) map size : "+size);
 
         //TODO round it System.out.println("% of empty cases : "+(int)((double)map.getEmptyCases().size()/(double)map.getTotalSize()*100.0)+"%");
-
-        pluginManager.loadPlugins();
     }
 
     public boolean update() {
@@ -108,10 +99,6 @@ public final class Game {
             SpecialObject special = RandomerSpecialObject.randomItem(SpecialObjects.ALL.stream().map(Supplier::get).filter(specialObject -> specialObject.canSpawn(new ExecutionData(player, map, this))).collect(Collectors.toList()));
 
             Location location = special.spawn(new ExecutionData(player, map, this));
-            OnObjectSpawn event = new OnObjectSpawn(location, special);
-            getPluginManager().callEvent(event);
-            if(!event.isCancelled())
-                map.setEntity(location, event.getSpecialObject());
         }
 
         if(Math.random() < 0.001){
@@ -144,10 +131,6 @@ public final class Game {
 
     private int randomInt(int max) {
         return randomInt(0, max);
-    }
-
-    public KtpPluginManager getPluginManager() {
-        return pluginManager;
     }
 
     /**

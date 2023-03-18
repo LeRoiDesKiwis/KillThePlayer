@@ -10,7 +10,6 @@ import fr.leroideskiwis.mapgame.Location;
 import fr.leroideskiwis.mapgame.Map;
 import fr.leroideskiwis.mapgame.entities.Obstacle;
 import fr.leroideskiwis.mapgame.managers.TextureManager;
-import fr.leroideskiwis.plugins.events.OnPlayerTakeObject;
 import fr.leroideskiwis.utils.Utils;
 
 import java.util.function.BiConsumer;
@@ -37,11 +36,7 @@ public class SpecialObject extends Entity{
         this.chance = chance;
 
         this.onCollide = data -> {
-            OnPlayerTakeObject event = new OnPlayerTakeObject(getLocation(), this);
-            data.getGame().getPluginManager().callEvent(event);
-            if(event.isCancelled()) return false;
-            data.getGame().sendMessage(Utils.format("objects.found", event.getSpecialObject().name));
-            event.getSpecialObject().execute(data, this);
+            execute(data, this);
             return true;
         };
         this.execute = execute != null ? execute : this.execute;
