@@ -29,9 +29,9 @@ public class Main extends ApplicationAdapter {
 	private float multiplicatorX;
 	private long started;
 	private Texture emptyCase;
-	private TextureManager textureManager = new TextureManager();
+	private final TextureManager textureManager = new TextureManager();
 	private BitmapFont font;
-	private List<Move> moves = new ArrayList<>();
+	private final List<Move> moves = new ArrayList<>();
 
 	@Override
 	public void resize(int width, int height) {

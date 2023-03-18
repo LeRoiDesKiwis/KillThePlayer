@@ -6,14 +6,13 @@ import fr.leroideskiwis.mapgame.Game;
 import fr.leroideskiwis.mapgame.Invincibility;
 import fr.leroideskiwis.mapgame.Location;
 import fr.leroideskiwis.mapgame.Map;
-import fr.leroideskiwis.utils.Direction;
 
 import java.util.Optional;
 
 public class Player extends Entity {
 
-    private Map map;
-    private Game game;
+    private final Map map;
+    private final Game game;
     private final Invincibility invincibility;
 
     public Player(Game game, Map map){
@@ -25,10 +24,6 @@ public class Player extends Entity {
 
     public void addInvincility(int invincibleTour){
         invincibility.addInvincility(invincibleTour);
-    }
-
-    public boolean move(Location location){
-        return setPosition(location.x, location.y);
     }
 
     /**

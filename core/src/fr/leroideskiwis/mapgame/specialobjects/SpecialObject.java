@@ -5,7 +5,6 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
 import fr.leroideskiwis.ktp.ExecutionData;
 import fr.leroideskiwis.mapgame.Entity;
-import fr.leroideskiwis.mapgame.Game;
 import fr.leroideskiwis.mapgame.Location;
 import fr.leroideskiwis.mapgame.Map;
 import fr.leroideskiwis.mapgame.entities.Obstacle;
@@ -22,8 +21,8 @@ public class SpecialObject extends Entity{
     private Function<ExecutionData, Location> spawn = data -> data.getMap().getRandomLocationWithSize(size());
     private Predicate<ExecutionData> onCollide;
     private Predicate<ExecutionData> canSpawn = (data) -> true;
-    private String name;
-    private float chance;
+    private final String name;
+    private final float chance;
 
     protected void execute(ExecutionData executionData, SpecialObject specialObject){
         execute.accept(executionData, specialObject);

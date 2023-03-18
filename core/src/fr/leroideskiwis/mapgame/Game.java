@@ -14,7 +14,6 @@ import fr.leroideskiwis.mapgame.specialobjects.SpecialObjects;
 import fr.leroideskiwis.utils.RandomerSpecialObject;
 import fr.leroideskiwis.utils.Utils;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -23,16 +22,16 @@ import java.util.stream.Collectors;
 
 public final class Game {
 
-    private boolean debugMode;
+    private final boolean debugMode;
 
-    private List<String> bufferSysout = new ArrayList<>();
+    private final List<String> bufferSysout = new ArrayList<>();
     private int score;
-    private Map map;
-    private Player player;
+    private final Map map;
+    private final Player player;
     private final int size;
     //private JSONConfiguration configuration;
     private boolean lock = false;
-    private TextureManager textureManager;
+    private final TextureManager textureManager;
 
     public boolean movePlayer(int x, int y){
         return player.move(x, y);
@@ -60,7 +59,7 @@ public final class Game {
     }
 
 
-    public Game(TextureManager textureManager) throws IllegalAccessException, InstantiationException, InvocationTargetException {
+    public Game(TextureManager textureManager) {
         this.textureManager = textureManager;
         this.size = randomInt(28, 32);
         Gdx.app.log("INFO", "new instance of game");
@@ -98,13 +97,13 @@ public final class Game {
 
             SpecialObject special = RandomerSpecialObject.randomItem(SpecialObjects.ALL.stream().map(Supplier::get).filter(specialObject -> specialObject.canSpawn(new ExecutionData(player, map, this))).collect(Collectors.toList()));
 
-            Location location = special.spawn(new ExecutionData(player, map, this));
+            special.spawn(new ExecutionData(player, map, this));
         }
 
         if(Math.random() < 0.001){
             getRandomList(map.getEntitiesByType(SpecialObject.class)
                         .stream()
-                        .filter(specialObj -> map.hasFullSurrounding(specialObj))
+                        .filter(map::hasFullSurrounding)
                         .collect(Collectors.toList()))
                     .ifPresent(specialObject -> specialObject.kill(map));
 
@@ -120,10 +119,6 @@ public final class Game {
         return true;
     }
 
-    public SpecialObject newObject(Class<? extends SpecialObject> specialObj) throws IllegalAccessException, InvocationTargetException, InstantiationException {
-        return (SpecialObject)specialObj.getConstructors()[0].newInstance(this);
-    }
-
     public int randomInt(int min, int max){
         return (int)(Math.random()*(max+1-min))+min;
     }
@@ -131,14 +126,6 @@ public final class Game {
 
     private int randomInt(int max) {
         return randomInt(0, max);
-    }
-
-    /**
-     * @see Map#setEntity(int, int, Entity)
-     */
-
-    public boolean spawn(int x, int y, Entity entity){
-        return map.setEntity(x, y, entity);
     }
 
     public void debug(String s){

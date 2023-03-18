@@ -3,7 +3,6 @@ package fr.leroideskiwis.mapgame;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
-import fr.leroideskiwis.mapgame.entities.Enemy;
 import fr.leroideskiwis.mapgame.entities.Obstacle;
 import fr.leroideskiwis.mapgame.managers.TextureManager;
 
