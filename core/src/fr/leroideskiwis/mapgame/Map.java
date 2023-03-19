@@ -8,7 +8,6 @@ import fr.leroideskiwis.mapgame.managers.TextureManager;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -201,11 +200,20 @@ public class Map{
         }
     }
 
-    public boolean hasFullSurrounding(Entity entity){
-        return entity.getSurroundingLocations().stream().noneMatch(Objects::isNull);
+    public List<Entity> getEntitiesSurrounding(List<Location> locations){
+        return entities.stream().filter(entity -> entity.isLocatedIn(locations)).collect(Collectors.toList());
     }
 
+    public boolean hasFullSurrounding(Entity entity){
+        return getEntitiesSurrounding(entity.getSurroundingLocations()).size() == 8;
+    }
+
+    /**
+     * stream the list of entities
+     * @return the stream of a copy of entities's list
+     */
+
     public Stream<Entity> streamEntities() {
-        return entities.stream();
+        return new ArrayList<>(entities).stream();
     }
 }

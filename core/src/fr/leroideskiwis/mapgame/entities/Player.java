@@ -43,9 +43,9 @@ public class Player extends Entity {
                 invincibility.removeOne();
                 invincibility.display(game);
             });
-        } else if(!map.setEntity(x, y, this)) return false;
+        } else return map.setEntity(x, y, this);
 
-        return false;
+        return true;
     }
 
     /**

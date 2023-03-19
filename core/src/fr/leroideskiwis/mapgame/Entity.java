@@ -60,6 +60,7 @@ public class Entity {
 
         for(int x = location.x - 1; x <= location.x + 1; x++){
             for(int y = location.y - 1; y <= location.y + 1; y++){
+                if(y == location.y && x == location.x) continue;
                 Location currentLocation = new Location(x, y);
                 surroundingLocations.add(currentLocation);
             }
@@ -78,5 +79,9 @@ public class Entity {
 
     public boolean isRemovable() {
         return true;
+    }
+
+    public boolean isLocatedIn(List<Location> locations) {
+        return locations.contains(location);
     }
 }

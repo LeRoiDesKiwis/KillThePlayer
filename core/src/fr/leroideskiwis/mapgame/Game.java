@@ -82,7 +82,7 @@ public final class Game {
                 .filter(specialObject -> specialObject.canSpawn(new ExecutionData(player, map, this)))
                 .collect(Collectors.toList()));
 
-        special.spawn(new ExecutionData(player, map, this));
+        map.setEntity(special.spawn(new ExecutionData(player, map, this)), special);
     }
 
     private void killObjectIfSurrounded(){
@@ -102,7 +102,7 @@ public final class Game {
 
         if (Math.random() < 0.05) spawnRandomObject();
 
-        if(Math.random() < 0.001) killObjectIfSurrounded();
+        if(Math.random() < 0.005) killObjectIfSurrounded();
 
         if (player.hasLose() || map.getEmptyCases().size() == 0){
             sendMessage(Utils.getText("game.finish"));

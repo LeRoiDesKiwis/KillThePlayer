@@ -19,6 +19,6 @@ public class Coin extends Entity {
     @Override
     public boolean onCollide(ExecutionData executionData) {
         executionData.game.addScore(amount);
-        return false;
+        return true;
     }
 }
