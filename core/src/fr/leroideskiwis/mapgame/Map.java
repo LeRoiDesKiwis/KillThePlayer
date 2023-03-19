@@ -28,7 +28,7 @@ public class Map{
             entities.add(new Obstacle(x, height-1));
         }
 
-        for(int y = 0; y < height; y++){
+        for(int y = 1; y < height - 1; y++){
             entities.add(new Obstacle(0, y));
             entities.add(new Obstacle(width-1, y));
         }
