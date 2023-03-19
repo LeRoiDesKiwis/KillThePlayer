@@ -199,12 +199,12 @@ public class Map{
         }
     }
 
-    public List<Entity> getEntitiesSurrounding(List<Location> locations){
+    public List<Entity> locationsToEntities(List<Location> locations){
         return entities.stream().filter(entity -> entity.isLocatedIn(locations)).collect(Collectors.toList());
     }
 
     public boolean hasFullSurrounding(Entity entity){
-        return getEntitiesSurrounding(entity.getSurroundingLocations()).size() == 8;
+        return locationsToEntities(entity.getSurroundingLocations()).size() == 8;
     }
 
     /**
