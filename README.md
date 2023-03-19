@@ -19,10 +19,9 @@ All others releases are available [here](https://github.com/LeRoiDesKiwis/KillTh
 https://youtu.be/75RM-e4wNiA
 
 ## If you need help
-You can join us on Discord by clicking [here](https://discord.gg/S7S4DDq)
+You can join us on Discord by clicking [here](https://discord.gg/SJ2tjtCErG)
 
-## Join us
-The development is slow down currently, so any pull request are welcome. Also, don't hesitate to leave a star or to join the discord, it will motivate me to continue the project :p
-
+## Contribute
+See the [Contribution guide](CONTRIBUTING.md) to see how to contribute
 ## License
-Licensed under [GNU GPL 3.0](https://github.com/LeRoiDesKiwis/KillThePlayer/blob/master/LICENSE) or later
+Licensed under [GNU GPL 3.0](LICENSE) or later
