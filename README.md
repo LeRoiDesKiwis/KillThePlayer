@@ -19,7 +19,7 @@ All others releases are available [here](https://github.com/LeRoiDesKiwis/KillTh
 https://youtu.be/75RM-e4wNiA
 
 ## If you need help
-You can join us on [Discord](https://discord.gg/S7S4DDq), or you can just open an issue [here](https://github.com/LeRoiDesKiwis/KillThePlayer/issues)
+You can join us on [Discord](https://discord.gg/SJ2tjtCErG), or you can just open an issue [here](https://github.com/LeRoiDesKiwis/KillThePlayer/issues)
 
 ## Contribute
 See the [Contribution guide](CONTRIBUTING.md) to see how to contribute
