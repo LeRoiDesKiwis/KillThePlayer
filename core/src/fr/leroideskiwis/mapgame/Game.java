@@ -19,7 +19,6 @@ import fr.leroideskiwis.utils.Utils;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -44,21 +43,13 @@ public final class Game {
         sendMessage(Utils.format("score.win", score));
     }
 
-    public <T> Optional<T> getRandomElement(List<T> list){
-
-        if(list.isEmpty()) return Optional.empty();
-
-        return Optional.of(list.get(randomInt(list.size()-1)));
-
-    }
-
     public Game(TextureManager<Entity> textureManager) {
         this.textureManager = textureManager;
         this.size = randomInt(28, 32);
         Gdx.app.log("INFO", "new instance of game");
         debugMode = false;
 
-        map = new Map(this, size, size);
+        map = new Map(size, size);
         player = new Player(this, map);
         map.generateRandom(player);
 
@@ -86,7 +77,7 @@ public final class Game {
     }
 
     private void killObjectIfSurrounded(){
-        getRandomElement(map.getEntitiesByType(SpecialObject.class)
+        Utils.getRandomElement(map.getEntitiesByType(SpecialObject.class)
                 .stream()
                 .filter(map::hasFullSurrounding)
                 .collect(Collectors.toList()))
@@ -117,10 +108,6 @@ public final class Game {
         return (int)(Math.random()*(max+1-min))+min;
     }
 
-    private int randomInt(int max) {
-        return randomInt(0, max);
-    }
-
     public void debug(String s){
         Gdx.app.log("[LOG] ", s);
     }
@@ -128,7 +115,7 @@ public final class Game {
     public Location getLocationNearEnemy(){
         List<Enemy> enemyList = map.getEntitiesByType(Enemy.class);
 
-        return getRandomElement(enemyList.stream()
+        return Utils.getRandomElement(enemyList.stream()
                 .filter(enemy1 -> !map.hasFullSurrounding(enemy1))
                 .flatMap(enemy -> enemy.getSurroundingWithoutCorners().stream())
                 .filter(location -> !location.isOutOfMap(map) && map.isEmpty(location)).collect(Collectors.toList())).orElse(new Location(1, 1));

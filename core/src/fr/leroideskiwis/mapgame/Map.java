@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
 import fr.leroideskiwis.mapgame.entities.Obstacle;
 import fr.leroideskiwis.mapgame.managers.TextureManager;
+import fr.leroideskiwis.utils.Utils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,12 +16,10 @@ import java.util.stream.Stream;
 public class Map{
 
     private final List<Entity> entities = new ArrayList<>();
-    private final Game game;
     private final int height;
     private final int width;
 
-    public Map(Game main, int height, int width){
-        this.game = main;
+    public Map(int height, int width){
         this.height = height;
         this.width = width;
 
@@ -142,7 +141,7 @@ public class Map{
     }
 
     public Location getRandomLocationWithSize(int size){
-        return game.getRandomElement(getEmptyCases().stream()
+        return Utils.getRandomElement(getEmptyCases().stream()
                 .filter(location -> {
                     for(int x = 0; x < size; x++){
 
