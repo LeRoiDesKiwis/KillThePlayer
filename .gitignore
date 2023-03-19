@@ -15,3 +15,5 @@
 
 .gradle/4.10/
 .gradle/buildOutputCleanup/
+
+local.properties
