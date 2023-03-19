@@ -1,7 +1,10 @@
 package fr.leroideskiwis.mapgame;
 
+import club.minnced.discord.rpc.DiscordRPC;
+import club.minnced.discord.rpc.DiscordRichPresence;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import fr.leroideskiwis.ktp.ExecutionData;
 import fr.leroideskiwis.mapgame.entities.Coin;
@@ -9,15 +12,11 @@ import fr.leroideskiwis.mapgame.entities.Enemy;
 import fr.leroideskiwis.mapgame.entities.Obstacle;
 import fr.leroideskiwis.mapgame.entities.Player;
 import fr.leroideskiwis.mapgame.specialobjects.SpecialObject;
-import fr.leroideskiwis.mapgame.logs.FileLogs;
 import fr.leroideskiwis.mapgame.managers.TextureManager;
 import fr.leroideskiwis.mapgame.specialobjects.SpecialObjects;
-import fr.leroideskiwis.plugins.KtpPluginManager;
-import fr.leroideskiwis.plugins.events.OnObjectSpawn;
 import fr.leroideskiwis.utils.RandomerSpecialObject;
 import fr.leroideskiwis.utils.Utils;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -26,28 +25,18 @@ import java.util.stream.Collectors;
 
 public final class Game {
 
-    private boolean debugMode;
-
-    private List<String> bufferSysout = new ArrayList<>();
+    private final boolean debugMode;
+    private final List<String> bufferSysout = new ArrayList<>();
     private int score;
-    private Map map;
-    private Player player;
+    private final Map map;
+    private final Player player;
     private final int size;
     //private JSONConfiguration configuration;
-    private KtpPluginManager pluginManager;
     private boolean lock = false;
-    private TextureManager textureManager;
+    private final TextureManager<Entity> textureManager;
 
     public boolean movePlayer(int x, int y){
         return player.move(x, y);
-    }
-
-    public int getScore(){
-        return score;
-    }
-
-    public List<String> getBuffer() {
-        return new ArrayList<>(bufferSysout);
     }
 
     public void addScore(int score){
@@ -55,7 +44,7 @@ public final class Game {
         sendMessage(Utils.format("score.win", score));
     }
 
-    public <T> Optional<T> getRandomList(List<T> list){
+    public <T> Optional<T> getRandomElement(List<T> list){
 
         if(list.isEmpty()) return Optional.empty();
 
@@ -63,15 +52,11 @@ public final class Game {
 
     }
 
-
-    public Game(TextureManager textureManager) throws IllegalAccessException, InstantiationException, InvocationTargetException {
+    public Game(TextureManager<Entity> textureManager) {
         this.textureManager = textureManager;
         this.size = randomInt(28, 32);
         Gdx.app.log("INFO", "new instance of game");
         debugMode = false;
-        this.pluginManager = new KtpPluginManager(this);
-
-        pluginManager.addPluginManually(new FileLogs());
 
         map = new Map(this, size, size);
         player = new Player(this, map);
@@ -89,73 +74,51 @@ public final class Game {
         }
 
         Gdx.graphics.setTitle("KillThePlayer (created by LeRoiDesKiwis) map size : "+size);
-
-        //TODO round it System.out.println("% of empty cases : "+(int)((double)map.getEmptyCases().size()/(double)map.getTotalSize()*100.0)+"%");
-
-        pluginManager.loadPlugins();
     }
 
-    public boolean update() {
+    private void spawnRandomObject(){
+        SpecialObject special = RandomerSpecialObject.randomItem(SpecialObjects.ALL.stream()
+                .map(Supplier::get)
+                .filter(specialObject -> specialObject.canSpawn(new ExecutionData(player, map, this)))
+                .collect(Collectors.toList()));
 
+        map.setEntity(special.spawn(new ExecutionData(player, map, this)), special);
+    }
+
+    private void killObjectIfSurrounded(){
+        getRandomElement(map.getEntitiesByType(SpecialObject.class)
+                .stream()
+                .filter(map::hasFullSurrounding)
+                .collect(Collectors.toList()))
+                .ifPresent(specialObject -> specialObject.kill(map));
+    }
+
+    public void update() {
         if (map.getEntitiesByType(Coin.class).size() == 0) map.generateRandom(new Coin(randomInt(5, 10)));
 
         for (int i = 0, rand = 1; i < rand; i++) {
             spawnEnnemy(map);
         }
 
-        if (Math.random() < 0.05) {
+        if (Math.random() < 0.05) spawnRandomObject();
 
-            SpecialObject special = RandomerSpecialObject.randomItem(SpecialObjects.ALL.stream().map(Supplier::get).filter(specialObject -> specialObject.canSpawn(new ExecutionData(player, map, this))).collect(Collectors.toList()));
-
-            Location location = special.spawn(new ExecutionData(player, map, this));
-            OnObjectSpawn event = new OnObjectSpawn(location, special);
-            getPluginManager().callEvent(event);
-            if(!event.isCancelled())
-                map.setEntity(location, event.getSpecialObject());
-        }
-
-        if(Math.random() < 0.001){
-            getRandomList(map.getEntitiesByType(SpecialObject.class)
-                        .stream()
-                        .filter(specialObj -> map.hasFullSurrounding(specialObj))
-                        .collect(Collectors.toList()))
-                    .ifPresent(specialObject -> specialObject.kill(map));
-
-        }
-
+        if(Math.random() < 0.005) killObjectIfSurrounded();
 
         if (player.hasLose() || map.getEmptyCases().size() == 0){
             sendMessage(Utils.getText("game.finish"));
-            return false;
+            return;
         }
-        score++;
+        addScore(1);
+        bufferSysout.add(0, Utils.format("score.show", score));
         this.lock = false;
-        return true;
-    }
-
-    public SpecialObject newObject(Class<? extends SpecialObject> specialObj) throws IllegalAccessException, InvocationTargetException, InstantiationException {
-        return (SpecialObject)specialObj.getConstructors()[0].newInstance(this);
     }
 
     public int randomInt(int min, int max){
         return (int)(Math.random()*(max+1-min))+min;
     }
 
-
     private int randomInt(int max) {
         return randomInt(0, max);
-    }
-
-    public KtpPluginManager getPluginManager() {
-        return pluginManager;
-    }
-
-    /**
-     * @see Map#setEntity(int, int, Entity)
-     */
-
-    public boolean spawn(int x, int y, Entity entity){
-        return map.setEntity(x, y, entity);
     }
 
     public void debug(String s){
@@ -164,16 +127,8 @@ public final class Game {
 
     public Location getLocationNearEnemy(){
         List<Enemy> enemyList = map.getEntitiesByType(Enemy.class);
-        /*Location pos;
-        Enemy enemy;
-        do {
-            enemy = getRandomList(enemyList);
 
-            pos = map.getRandomPositionSurrounding(enemy.getLocation());
-
-        } while (pos.isOutOfMap(map) || !map.isEmpty(pos));
-*/
-        return getRandomList(enemyList.stream()
+        return getRandomElement(enemyList.stream()
                 .filter(enemy1 -> !map.hasFullSurrounding(enemy1))
                 .flatMap(enemy -> enemy.getSurroundingWithoutCorners().stream())
                 .filter(location -> !location.isOutOfMap(map) && map.isEmpty(location)).collect(Collectors.toList())).orElse(new Location(1, 1));
@@ -182,14 +137,8 @@ public final class Game {
 
     private void spawnEnnemy(Map map) {
         if(debugMode) return;
-        if(Math.random() < 0.001){
 
-            Enemy enemy = new Enemy();
-            map.generateRandom(enemy);
-
-        }
-
-        if(map.getLocationsByType(Enemy.class).isEmpty()){
+        if(map.getLocationsByType(Enemy.class).isEmpty() || Math.random() < 0.001){
             Enemy enemy = new Enemy();
             map.generateRandom(enemy);
             return;
@@ -206,17 +155,6 @@ public final class Game {
         return map;
     }
 
-    public Player getPlayer(){
-        return player;
-    }
-
-    public List<Entity> getEntities(){
-        return map.getEntities();
-    }
-
-    public int getSize() {
-        return size;
-    }
     public void sendMessage(String message) {
 
         if (!lock) {
@@ -226,13 +164,28 @@ public final class Game {
         bufferSysout.add(message);
     }
 
-    /*public JSONConfiguration getConfig() {
-        return configuration;
-    }*/
-
-    public void drawMap(TextureManager manager, SpriteBatch batch, float multiplicatorX, float multiplicatorY, Texture emptyCase){
+    public void drawMap(TextureManager<Entity> manager, SpriteBatch batch, float multiplicatorX, float multiplicatorY, Texture emptyCase){
         map.draw(manager, batch, multiplicatorX, multiplicatorY, emptyCase);
 
     }
 
+    public void drawBuffer(SpriteBatch batch, BitmapFont font){
+        for(int i = 0; i < bufferSysout.size(); i++) {
+            String s = bufferSysout.get(i);
+            font.draw(batch, s, 650, 460-i*20);
+        }
+    }
+
+    public void updatePresence(long started){
+        DiscordRichPresence presence = new DiscordRichPresence();
+        presence.state = "score : " + score;
+        presence.details = Utils.format("presence.sizemap", size);
+        presence.startTimestamp = started;
+        presence.largeImageKey = "new_high_score_";
+        DiscordRPC.INSTANCE.Discord_UpdatePresence(presence);
+    }
+
+    public boolean hasLose() {
+        return player.hasLose();
+    }
 }

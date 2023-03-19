@@ -12,3 +12,6 @@
 
 *.jar
 */build
+
+.gradle/4.10/
+.gradle/buildOutputCleanup/

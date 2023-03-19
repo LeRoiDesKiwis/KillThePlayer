@@ -6,15 +6,13 @@ import fr.leroideskiwis.mapgame.Game;
 import fr.leroideskiwis.mapgame.Invincibility;
 import fr.leroideskiwis.mapgame.Location;
 import fr.leroideskiwis.mapgame.Map;
-import fr.leroideskiwis.plugins.events.OnMove;
-import fr.leroideskiwis.utils.Direction;
 
 import java.util.Optional;
 
 public class Player extends Entity {
 
-    private Map map;
-    private Game game;
+    private final Map map;
+    private final Game game;
     private final Invincibility invincibility;
 
     public Player(Game game, Map map){
@@ -28,45 +26,26 @@ public class Player extends Entity {
         invincibility.addInvincility(invincibleTour);
     }
 
-    public boolean move(Location location){
-        return setPosition(location.x, location.y);
-    }
-
     /**
      *
      * @param x the x coordinate
      * @param y the y coordinate
      * @return <b>false</b> if there already an object in the coordinate x and y
      */
-    private boolean setPosition(int x, int y){
-        Location before = getLocation();
+    private boolean moveTo(int x, int y){
         Optional<Entity> entityOpt = map.getEntity(x, y);
 
-        if(entityOpt.isPresent()) {
-            Entity entity = entityOpt.get();
-            if(entity.onCollide(new ExecutionData(this, map, game))) map.deleteEntity(entity);
-        }
+        entityOpt.filter(entity -> entity.onCollide(new ExecutionData(this, map, game))).ifPresent(map::deleteEntity);
 
         if(invincibility.isInvincible()) {
-            if(!entityOpt.isPresent() || !entityOpt.get().isInvulnerable()) {
+            entityOpt.filter(Entity::isRemovable).ifPresent(entity -> {
                 map.replaceEntity(x, y, this);
                 invincibility.removeOne();
                 invincibility.display(game);
-            }
-        } else if(map.setEntity(x, y, this)){
-            Direction direction = Direction.getDirection(x-before.x, y-before.y);
-            OnMove event = new OnMove(direction,before, new Location(x,y));
-            game.getPluginManager().callEvent(event);
-            if(event.isCancelled()) return false;
+            });
+        } else return map.setEntity(x, y, this);
 
-        } else return false;
-
-        if(!getLocation().equals(before)) {
-            map.deleteEntity(before);
-            return true;
-        }
-
-        return false;
+        return true;
     }
 
     /**
@@ -79,7 +58,7 @@ public class Player extends Entity {
     public boolean move(int x, int y){
         if(x == 0 && y == 0) return true;
         Location location = getLocation();
-        return setPosition(location.x+x, location.y+y);
+        return moveTo(location.x+x, location.y+y);
     }
 
     /**
@@ -96,4 +75,8 @@ public class Player extends Entity {
 
     }
 
+    @Override
+    public boolean isRemovable() {
+        return false;
+    }
 }

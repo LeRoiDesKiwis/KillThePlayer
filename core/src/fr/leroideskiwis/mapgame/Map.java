@@ -3,25 +3,21 @@ package fr.leroideskiwis.mapgame;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
-import fr.leroideskiwis.mapgame.entities.Enemy;
 import fr.leroideskiwis.mapgame.entities.Obstacle;
-import fr.leroideskiwis.mapgame.entities.Player;
 import fr.leroideskiwis.mapgame.managers.TextureManager;
-import fr.leroideskiwis.plugins.events.OnEnemyDeath;
-import fr.leroideskiwis.plugins.events.OnEntitySpawn;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-public class Map implements Cloneable{
+public class Map{
 
     private final List<Entity> entities = new ArrayList<>();
     private final Game game;
-    private int height;
-    private int width;
+    private final int height;
+    private final int width;
 
     public Map(Game main, int height, int width){
         this.game = main;
@@ -29,13 +25,13 @@ public class Map implements Cloneable{
         this.width = width;
 
         for(int x = 0; x < width; x++){
-            entities.add(new Obstacle().setLocation(x, 0));
-            entities.add(new Obstacle().setLocation(x, height-1));
+            entities.add(new Obstacle(x, 0));
+            entities.add(new Obstacle(x, height-1));
         }
 
         for(int y = 0; y < height; y++){
-            entities.add(new Obstacle().setLocation(0, y));
-            entities.add(new Obstacle().setLocation(width-1, y));
+            entities.add(new Obstacle(0, y));
+            entities.add(new Obstacle(width-1, y));
         }
     }
 
@@ -81,9 +77,7 @@ public class Map implements Cloneable{
      */
     public boolean setEntity(Location pos, Entity entity){
         if(!getEntity(pos.x, pos.y).isPresent()) {
-            OnEntitySpawn event = new OnEntitySpawn(entity, pos);
-            game.getPluginManager().callEvent(event);
-            if(event.isCancelled()) return false;
+
             entity.setLocation(pos);
             if(!entities.contains(entity)) entities.add(entity);
         }
@@ -110,10 +104,7 @@ public class Map implements Cloneable{
      * @param y the y coordinate
      */
     private void deleteEntity(int x, int y) {
-        getEntity(x, y).ifPresent(entity -> {
-            if(!(entity instanceof Player))
-                entities.remove(entity);
-        });
+        getEntity(x, y).filter(Entity::isRemovable).ifPresent(entities::remove);
     }
 
     /**
@@ -128,17 +119,7 @@ public class Map implements Cloneable{
     public void replaceEntity(int x, int y, Entity newObject){
 
         Optional<Entity> optionalEntity = getEntity(x, y);
-
-        if(optionalEntity.isPresent()){
-            Entity entity = optionalEntity.get();
-
-            if(entity instanceof Enemy){
-                OnEnemyDeath event = new OnEnemyDeath(new Location(x, y), (Enemy) entity);
-                game.getPluginManager().callEvent(event);
-                if(event.isCancelled()) return;
-            }
-            deleteEntity(x, y);
-        }
+        optionalEntity.ifPresent(this::deleteEntity);
 
         if(!entities.contains(newObject)) entities.add(newObject);
         newObject.setLocation(x, y);
@@ -161,7 +142,7 @@ public class Map implements Cloneable{
     }
 
     public Location getRandomLocationWithSize(int size){
-        return game.getRandomList(getEmptyCases().stream()
+        return game.getRandomElement(getEmptyCases().stream()
                 .filter(location -> {
                     for(int x = 0; x < size; x++){
 
@@ -177,10 +158,6 @@ public class Map implements Cloneable{
 
     public List<Location> getEmptyCases(){
         return getLocations().stream().filter(this::isEmpty).collect(Collectors.toList());
-    }
-
-    public List<Entity> getEntities(){
-        return new ArrayList<>(entities);
     }
 
     public boolean isEmpty(Location location){
@@ -209,7 +186,7 @@ public class Map implements Cloneable{
                 .filter(entity -> entity.getLocation().equals(x, y)).findAny();
     }
 
-    public void draw(TextureManager manager, SpriteBatch batch, float multiplicatorX, float multiplicatorY, Texture emptyCase) {
+    public void draw(TextureManager<Entity> manager, SpriteBatch batch, float multiplicatorX, float multiplicatorY, Texture emptyCase) {
 
         for(Location location : getLocations()){
             Optional<Entity> entity = getEntityWithoutSize(location.x, location.y);
@@ -223,28 +200,20 @@ public class Map implements Cloneable{
         }
     }
 
-    private List<Entity> getSurrounding(Entity entity){
-        return getLocationsSurrounding(entity).stream().map(location -> getEntity(location).orElse(null)).collect(Collectors.toList());
-    }
-
-    /**
-     * @deprecated Use Entity#getSurroundingLocations
-     * @param entity
-     * @return
-     */
-    private List<Location> getLocationsSurrounding(Entity entity) {
-        return entity.getSurroundingLocations();
+    public List<Entity> getEntitiesSurrounding(List<Location> locations){
+        return entities.stream().filter(entity -> entity.isLocatedIn(locations)).collect(Collectors.toList());
     }
 
     public boolean hasFullSurrounding(Entity entity){
-        return getSurrounding(entity).stream().noneMatch(Objects::isNull);
+        return getEntitiesSurrounding(entity.getSurroundingLocations()).size() == 8;
     }
 
-    /*public <T> boolean hasFullSurrounding(Entity entity, Class<T> clazz){
+    /**
+     * stream the list of entities
+     * @return the stream of a copy of entities's list
+     */
 
-        List<T> all = getEntitiesByType(clazz);
-
-        return getSurrounding(entity).stream().allMatch(entity1 -> entity1 != null && all.contains(entity1));
-
-    }*/
+    public Stream<Entity> streamEntities() {
+        return new ArrayList<>(entities).stream();
+    }
 }

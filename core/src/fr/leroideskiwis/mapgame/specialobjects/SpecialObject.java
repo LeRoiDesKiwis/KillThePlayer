@@ -5,12 +5,10 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
 import fr.leroideskiwis.ktp.ExecutionData;
 import fr.leroideskiwis.mapgame.Entity;
-import fr.leroideskiwis.mapgame.Game;
 import fr.leroideskiwis.mapgame.Location;
 import fr.leroideskiwis.mapgame.Map;
 import fr.leroideskiwis.mapgame.entities.Obstacle;
 import fr.leroideskiwis.mapgame.managers.TextureManager;
-import fr.leroideskiwis.plugins.events.OnPlayerTakeObject;
 import fr.leroideskiwis.utils.Utils;
 
 import java.util.function.BiConsumer;
@@ -20,34 +18,37 @@ import java.util.function.Predicate;
 public class SpecialObject extends Entity{
 
     private BiConsumer<ExecutionData, SpecialObject> execute = (data, sp) -> {};
-    private Function<ExecutionData, Location> spawn = data -> data.getMap().getRandomLocationWithSize(size());
+    private Function<ExecutionData, Location> spawn = data -> data.game.getLocationNearEnemy();
     private Predicate<ExecutionData> onCollide;
     private Predicate<ExecutionData> canSpawn = (data) -> true;
-    private String name;
-    private float chance;
+    private final String name;
+    private final float chance;
+    private final boolean triggerable;
 
     protected void execute(ExecutionData executionData, SpecialObject specialObject){
         execute.accept(executionData, specialObject);
     }
 
     public SpecialObject(String name, float chance, BiConsumer<ExecutionData, SpecialObject> execute, Function<ExecutionData, Location> spawn,
-                         Predicate<ExecutionData> onCollide, Predicate<ExecutionData> canSpawn) {
+                         Predicate<ExecutionData> onCollide, Predicate<ExecutionData> canSpawn, boolean triggerable) {
         super(name+".png");
         this.name = Utils.getText("objects."+name+".name");
         this.chance = chance;
 
         this.onCollide = data -> {
-            OnPlayerTakeObject event = new OnPlayerTakeObject(getLocation(), this);
-            data.getGame().getPluginManager().callEvent(event);
-            if(event.isCancelled()) return false;
-            data.getGame().sendMessage(Utils.format("objects.found", event.getSpecialObject().name));
-            event.getSpecialObject().execute(data, this);
+            execute(data, this);
             return true;
         };
         this.execute = execute != null ? execute : this.execute;
         this.onCollide = onCollide != null ? onCollide : this.onCollide;
         this.spawn = spawn != null ? spawn : this.spawn;
         this.canSpawn = canSpawn != null ? canSpawn : this.canSpawn;
+        this.triggerable = triggerable;
+    }
+    public SpecialObject(String name, float chance, BiConsumer<ExecutionData, SpecialObject> execute, Function<ExecutionData, Location> spawn,
+                         Predicate<ExecutionData> onCollide, Predicate<ExecutionData> canSpawn){
+        this(name, chance, execute, spawn, onCollide, canSpawn, true);
+
     }
 
     public SpecialObject(String name, float chance, BiConsumer<ExecutionData, SpecialObject> execute){
@@ -76,16 +77,12 @@ public class SpecialObject extends Entity{
         return canSpawn.test(executionData);
     }
 
-    public boolean isName(String name){
-        return this.name.equals(name);
-    }
-
-    public String getName() {
-        return name;
-    }
-
     public float getChance() {
         return chance;
+    }
+
+    public boolean isTriggerable(){
+        return triggerable;
     }
 
     @Override

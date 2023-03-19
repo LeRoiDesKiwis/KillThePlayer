@@ -19,9 +19,9 @@ public class Entity {
         this(0, 0, path);
     }
 
-    private Entity(int x, int y, String path) {
+    public Entity(int x, int y, String path) {
         this.path = path;
-        setLocation(x, y);
+        this.location = new Location(x, y);
     }
 
     public Entity setLocation(int x, int y){
@@ -35,10 +35,6 @@ public class Entity {
 
     public Entity setLocation(Location location) {
         return setLocation(location.x, location.y);
-    }
-
-    public boolean isInvulnerable(){
-        return false;
     }
 
     public boolean onCollide(ExecutionData executionData){
@@ -64,6 +60,7 @@ public class Entity {
 
         for(int x = location.x - 1; x <= location.x + 1; x++){
             for(int y = location.y - 1; y <= location.y + 1; y++){
+                if(y == location.y && x == location.x) continue;
                 Location currentLocation = new Location(x, y);
                 surroundingLocations.add(currentLocation);
             }
@@ -78,5 +75,13 @@ public class Entity {
 
     public Location getLocation(){
         return location;
+    }
+
+    public boolean isRemovable() {
+        return true;
+    }
+
+    public boolean isLocatedIn(List<Location> locations) {
+        return locations.contains(location);
     }
 }
