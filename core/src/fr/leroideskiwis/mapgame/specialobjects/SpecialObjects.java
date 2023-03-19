@@ -19,14 +19,14 @@ public class SpecialObjects {
     public static TextureManager<String> textureManager = new TextureManager<>();
 
     public static List<Supplier<SpecialObject>> ALL = new ArrayList<>(Arrays.asList(
-            CLEAR_ENNEMIES = () -> new SpecialObject("clearennemies", 0.004f, SpecialObjects::clearEnnemies, null, null, null),
-            HORIZONTAL_OPEN_PATH = () -> new SpecialObject("openpathH", 0.123f, SpecialObjects::horizontalOpenPath, null, null, null),
+            CLEAR_ENNEMIES = () -> new SpecialObject("clearennemies", 0.001f, SpecialObjects::clearEnnemies, null, null, null),
+            HORIZONTAL_OPEN_PATH = () -> new SpecialObject("openpathH", 0.2f, SpecialObjects::horizontalOpenPath, null, null, null),
             INVINCIBLE_PLAYER = () -> new SpecialObject("invincible", 0.06f, SpecialObjects::invincible, null, null, null),
-            RAYON_ENNEMY_KILLER = () -> new SpecialObject("rayonkiller", 0.69f, SpecialObjects::rayonEnnemyKiller, null, null, null),
-            REPARATOR = () -> new SpecialObject("reparator", 0.06f, SpecialObjects::reparator, null, null, data -> data.map.getEntitiesByType(Obstacle.class).stream().noneMatch(Obstacle::wasObject)),
+            RAYON_ENNEMY_KILLER = () -> new SpecialObject("rayonkiller", 0.5f, SpecialObjects::rayonEnnemyKiller, null, null, null),
+            REPARATOR = () -> new SpecialObject("reparator", 0.06f, SpecialObjects::reparator, null, null, data -> data.map.getEntitiesByType(Obstacle.class).stream().anyMatch(Obstacle::wasObject)),
             RESPAWN = () -> new SpecialObject("respawn", 0.06f, (data, specialObject) -> data.map.getEntitiesByType(SpecialObject.class).forEach(specialObj -> specialObj.setLocation(specialObj.spawn(data))), null, null, null),
             TRIGGER_ALL = () -> new SpecialObject("trigger", 0.004f, SpecialObjects::trigger),
-            VERTICAL_OPEN_PATH = () -> new SpecialObject("openpathV", 0.123f, SpecialObjects::verticalOpenPath, data -> data.game.getLocationNearEnemy(), null, null)
+            VERTICAL_OPEN_PATH = () -> new SpecialObject("openpathV", 0.1f, SpecialObjects::verticalOpenPath, data -> data.game.getLocationNearEnemy(), null, null)
     ));
 
     private static void clearEnnemies(ExecutionData executionData, SpecialObject specialObject){
