@@ -2,7 +2,6 @@ package fr.leroideskiwis.ktp;
 
 import club.minnced.discord.rpc.DiscordEventHandlers;
 import club.minnced.discord.rpc.DiscordRPC;
-import club.minnced.discord.rpc.DiscordRichPresence;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -13,6 +12,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.I18NBundle;
+import fr.leroideskiwis.mapgame.Entity;
 import fr.leroideskiwis.mapgame.Game;
 import fr.leroideskiwis.mapgame.Move;
 import fr.leroideskiwis.mapgame.managers.TextureManager;
@@ -29,7 +29,7 @@ public class Main extends ApplicationAdapter {
 	private float multiplicatorX;
 	private long started;
 	private Texture emptyCase;
-	private final TextureManager textureManager = new TextureManager();
+	private final TextureManager<Entity> textureManager = new TextureManager<>();
 	private BitmapFont font;
 	private final List<Move> moves = new ArrayList<>();
 
@@ -78,7 +78,7 @@ public class Main extends ApplicationAdapter {
 
 		DiscordRPC discord = DiscordRPC.INSTANCE;
 		discord.Discord_Initialize("562996306646138911", new DiscordEventHandlers(), true, "");
-		updatePresence();
+		game.updatePresence(started);
 
 		new Thread(() -> {
 			while(!Thread.currentThread().isInterrupted()){
@@ -94,20 +94,9 @@ public class Main extends ApplicationAdapter {
 
 	}
 
-	private void updatePresence(){
-		DiscordRichPresence presence = new DiscordRichPresence();
-		if(game != null) {
-			presence.state = "score : " + game.getScore();
-			presence.details = Utils.format("presence.sizemap", game.getSize());
-		}
-		presence.startTimestamp = started;
-        presence.largeImageKey = "new_high_score_";
-		DiscordRPC.INSTANCE.Discord_UpdatePresence(presence);
-	}
-
 	private void update(boolean hasFail){
 		if(hasFail) return;
-		updatePresence();
+		game.updatePresence(started);
 		try {
 			game.update();
 		} catch (Exception e) {
@@ -122,12 +111,7 @@ public class Main extends ApplicationAdapter {
 		updateGame();
 		batch.begin();
 
-		drawText(Utils.format("score.show", game.getScore()), 750, 500);
-
-		for(int i = 0; i < game.getBuffer().size(); i++) {
-			String s = game.getBuffer().get(i);
-			drawText(s, 650, 460-i*20);
-		}
+		game.drawBuffer(batch, font);
 
 		game.drawMap(textureManager, batch, multiplicatorX, multiplicatorY, emptyCase);
 
@@ -140,7 +124,7 @@ public class Main extends ApplicationAdapter {
 
 		moves.stream().filter(Move::canMove).limit(1).forEach(move -> update(!game.movePlayer(move.x, move.y)));
 
-		if(game.getPlayer().hasLose() && Gdx.input.isKeyPressed(Input.Keys.ENTER)) {
+		if(game.hasLose() && Gdx.input.isKeyPressed(Input.Keys.ENTER)) {
 			try {
 				initGame();
 			} catch (Exception e) {
@@ -160,11 +144,6 @@ public class Main extends ApplicationAdapter {
 		if(sound == null) return;
 		sound.play(volume);
 	}*/
-
-	private void drawText(String s, int x, int y){
-
-		font.draw(batch, s, x, y);
-	}
 
 	@Override
 	public void dispose () {

@@ -18,7 +18,7 @@ import java.util.function.Predicate;
 public class SpecialObject extends Entity{
 
     private BiConsumer<ExecutionData, SpecialObject> execute = (data, sp) -> {};
-    private Function<ExecutionData, Location> spawn = data -> data.getMap().getRandomLocationWithSize(size());
+    private Function<ExecutionData, Location> spawn = data -> data.game.getLocationNearEnemy();
     private Predicate<ExecutionData> onCollide;
     private Predicate<ExecutionData> canSpawn = (data) -> true;
     private final String name;
@@ -75,10 +75,6 @@ public class SpecialObject extends Entity{
 
     public boolean canSpawn(ExecutionData executionData){
         return canSpawn.test(executionData);
-    }
-
-    public String getName() {
-        return name;
     }
 
     public float getChance() {

@@ -19,84 +19,79 @@ public class SpecialObjects {
     public static TextureManager<String> textureManager = new TextureManager<>();
 
     public static List<Supplier<SpecialObject>> ALL = new ArrayList<>(Arrays.asList(
-            CLEAR_ENNEMIES = () -> new SpecialObject("clearennemies", 0.004f, SpecialObjects::clearEnnemies, data -> data.getGame().getLocationNearEnemy(), null, null),
-            HORIZONTAL_OPEN_PATH = () -> new SpecialObject("openpathH", 0.123f, SpecialObjects::horizontalOpenPath, data -> data.getGame().getLocationNearEnemy(), null, null),
-            INVINCIBLE_PLAYER = () -> new SpecialObject("invincible", 0.06f, SpecialObjects::invincible, data -> data.getGame().getLocationNearEnemy(), null, null),
-            RAYON_ENNEMY_KILLER = () -> new SpecialObject("rayonkiller", 0.69f, SpecialObjects::rayonEnnemyKiller, data -> data.getGame().getLocationNearEnemy(), null, null),
-            REPARATOR = () -> new SpecialObject("reparator", 0.06f, SpecialObjects::reparator, null, null, data -> data.getGame().getMap().getEntitiesByType(Obstacle.class).stream().noneMatch(Obstacle::wasObject)),
-            RESPAWN = () -> new SpecialObject("respawn", 0.06f, (data, specialObject) -> data.getMap().getEntitiesByType(SpecialObject.class).forEach(specialObj -> specialObj.setLocation(specialObj.spawn(data))), null, null, null),
+            CLEAR_ENNEMIES = () -> new SpecialObject("clearennemies", 0.004f, SpecialObjects::clearEnnemies, null, null, null),
+            HORIZONTAL_OPEN_PATH = () -> new SpecialObject("openpathH", 0.123f, SpecialObjects::horizontalOpenPath, null, null, null),
+            INVINCIBLE_PLAYER = () -> new SpecialObject("invincible", 0.06f, SpecialObjects::invincible, null, null, null),
+            RAYON_ENNEMY_KILLER = () -> new SpecialObject("rayonkiller", 0.69f, SpecialObjects::rayonEnnemyKiller, null, null, null),
+            REPARATOR = () -> new SpecialObject("reparator", 0.06f, SpecialObjects::reparator, null, null, data -> data.map.getEntitiesByType(Obstacle.class).stream().noneMatch(Obstacle::wasObject)),
+            RESPAWN = () -> new SpecialObject("respawn", 0.06f, (data, specialObject) -> data.map.getEntitiesByType(SpecialObject.class).forEach(specialObj -> specialObj.setLocation(specialObj.spawn(data))), null, null, null),
             TRIGGER_ALL = () -> new SpecialObject("trigger", 0.004f, SpecialObjects::trigger),
-            VERTICAL_OPEN_PATH = () -> new SpecialObject("openpathV", 0.123f, SpecialObjects::verticalOpenPath, data -> data.getGame().getLocationNearEnemy(), null, null)
+            VERTICAL_OPEN_PATH = () -> new SpecialObject("openpathV", 0.123f, SpecialObjects::verticalOpenPath, data -> data.game.getLocationNearEnemy(), null, null)
     ));
 
     private static void clearEnnemies(ExecutionData executionData, SpecialObject specialObject){
-        executionData.getMap().getEntities()
-                .stream()
+        executionData.map.streamEntities()
                 .filter(entity -> entity instanceof Enemy)
-                .forEach(executionData.getMap()::deleteEntity);
+                .forEach(executionData.map::deleteEntity);
 
-        executionData.getGame().sendMessage(Utils.getText("objects.clearennemies.cleared"));
+        executionData.game.sendMessage(Utils.getText("objects.clearennemies.cleared"));
     }
 
     private static void horizontalOpenPath(ExecutionData executionData, SpecialObject specialObject){
-        int rayon = executionData.getGame().randomInt(3, 4);
+        int rayon = executionData.game.randomInt(3, 4);
 
-        executionData.getGame().getEntities()
-                .stream()
+        executionData.map.streamEntities()
                 .filter(entity -> entity instanceof Enemy && Interval.of(specialObject.getLocation().y-rayon, specialObject.getLocation().y+rayon).contains(entity.getLocation().y))
-                .forEach(executionData.getMap()::deleteEntity);
+                .forEach(executionData.map::deleteEntity);
     }
 
     private static void verticalOpenPath(ExecutionData executionData, SpecialObject specialObject) {
-        int rayon = executionData.getGame().randomInt(3, 4);
+        int rayon = executionData.game.randomInt(3, 4);
 
-        executionData.getMap().getEntities()
-                .stream()
+        executionData.map.streamEntities()
                 .filter(entity -> entity instanceof Enemy && Interval.of(specialObject.getLocation().x - rayon, specialObject.getLocation().x + rayon).contains(entity.getLocation().x))
-                .forEach(executionData.getMap()::deleteEntity);
+                .forEach(executionData.map::deleteEntity);
     }
 
     private static void invincible(ExecutionData executionData, SpecialObject specialObject){
-        int invincibleTour = executionData.getGame().randomInt(5, 6);
-        executionData.getPlayer().addInvincility(invincibleTour);
-        executionData.getGame().sendMessage(Utils.format("objects.invincible.got", invincibleTour));
+        int invincibleTour = executionData.game.randomInt(5, 6);
+        executionData.player.addInvincility(invincibleTour);
+        executionData.game.sendMessage(Utils.format("objects.invincible.got", invincibleTour));
     }
 
     private static void rayonEnnemyKiller(ExecutionData executionData, SpecialObject specialObject){
         Location location = specialObject.getLocation();
 
-        int rayon = executionData.getGame().randomInt(3, 4);
+        int rayon = executionData.game.randomInt(3, 4);
 
-        executionData.getGame().sendMessage(Utils.format("objects.rayonennemykiller.killed", rayon));
+        executionData.game.sendMessage(Utils.format("objects.rayonennemykiller.killed", rayon));
         int minX = location.x-rayon;
         int maxX = location.x+rayon;
 
         int minY = location.y-rayon;
         int maxY = location.y+rayon;
 
-        executionData.getGame().getEntities()
-                .stream()
-                .filter(entity -> entity instanceof Enemy && Interval.of(minX, maxX).contains(entity.getLocation().x) && Interval.of(minY, maxY).contains(entity.getLocation().y)).forEach(entity -> executionData.getMap().deleteEntity(entity));
+        executionData.map.streamEntities()
+                .filter(entity -> entity instanceof Enemy && Interval.of(minX, maxX).contains(entity.getLocation().x) && Interval.of(minY, maxY).contains(entity.getLocation().y)).forEach(executionData.map::deleteEntity);
     }
 
     private static void reparator(ExecutionData executionData, SpecialObject specialObject){
-        List<Obstacle> lostObstacle = executionData.getMap().getEntitiesByType(Obstacle.class).stream().filter(Obstacle::wasObject).collect(Collectors.toList());
+        List<Obstacle> lostObstacle = executionData.map.getEntitiesByType(Obstacle.class).stream().filter(Obstacle::wasObject).collect(Collectors.toList());
 
         if(lostObstacle.isEmpty()) return;
 
-        for(int i = 0, rand = executionData.getGame().randomInt(1, 2); i < rand; i++) {
+        for(int i = 0, rand = executionData.game.randomInt(1, 2); i < rand; i++) {
 
             Obstacle obstacle = lostObstacle.get(0);
-            executionData.getMap().replaceEntity(obstacle.getLocation(), obstacle.getLostObject());
-            executionData.getGame().sendMessage(Utils.format("objects.reparator.restore", obstacle.getLostObject().getName()));
+            obstacle.revive(executionData);
             i++;
 
         }
     }
 
     private static void trigger(ExecutionData executionData, SpecialObject specialObject){
-        executionData.getGame().sendMessage(Utils.getText("objects.trigger.message"));
-        executionData.getMap().getEntitiesByType(SpecialObject.class).stream().filter(SpecialObject::isTriggerable).forEach(entity -> entity.onCollide(executionData));
+        executionData.game.sendMessage(Utils.getText("objects.trigger.message"));
+        executionData.map.getEntitiesByType(SpecialObject.class).stream().filter(SpecialObject::isTriggerable).forEach(entity -> entity.onCollide(executionData));
     }
 
 }

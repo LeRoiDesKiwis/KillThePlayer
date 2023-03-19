@@ -3,6 +3,7 @@ package fr.leroideskiwis.mapgame.entities;
 import fr.leroideskiwis.ktp.ExecutionData;
 import fr.leroideskiwis.mapgame.Entity;
 import fr.leroideskiwis.mapgame.specialobjects.SpecialObject;
+import fr.leroideskiwis.utils.Utils;
 
 public class Obstacle extends Entity {
 
@@ -12,8 +13,16 @@ public class Obstacle extends Entity {
         this(null);
     }
 
-    public Obstacle(SpecialObject obj){
-         super("obstacle.png");
+    public Obstacle(int x, int y){
+        this(null, x, y);
+    }
+
+    public Obstacle(SpecialObject specialObject){
+        this(specialObject, 0, 0);
+    }
+
+    public Obstacle(SpecialObject obj, int x, int y){
+         super(x, y, "obstacle.png");
          this.lostObject = obj;
     }
 
@@ -21,8 +30,9 @@ public class Obstacle extends Entity {
         return lostObject != null;
     }
 
-    public SpecialObject getLostObject() {
-        return lostObject;
+    public void revive(ExecutionData executionData){
+        executionData.map.replaceEntity(getLocation(), lostObject);
+        executionData.game.sendMessage(Utils.format("objects.reparator.restore", lostObject));
     }
 
     public String toString(){

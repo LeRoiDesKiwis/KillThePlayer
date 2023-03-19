@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class Map{
 
@@ -25,13 +26,13 @@ public class Map{
         this.width = width;
 
         for(int x = 0; x < width; x++){
-            entities.add(new Obstacle().setLocation(x, 0));
-            entities.add(new Obstacle().setLocation(x, height-1));
+            entities.add(new Obstacle(x, 0));
+            entities.add(new Obstacle(x, height-1));
         }
 
         for(int y = 0; y < height; y++){
-            entities.add(new Obstacle().setLocation(0, y));
-            entities.add(new Obstacle().setLocation(width-1, y));
+            entities.add(new Obstacle(0, y));
+            entities.add(new Obstacle(width-1, y));
         }
     }
 
@@ -142,7 +143,7 @@ public class Map{
     }
 
     public Location getRandomLocationWithSize(int size){
-        return game.getRandomList(getEmptyCases().stream()
+        return game.getRandomElement(getEmptyCases().stream()
                 .filter(location -> {
                     for(int x = 0; x < size; x++){
 
@@ -158,10 +159,6 @@ public class Map{
 
     public List<Location> getEmptyCases(){
         return getLocations().stream().filter(this::isEmpty).collect(Collectors.toList());
-    }
-
-    public List<Entity> getEntities(){
-        return new ArrayList<>(entities);
     }
 
     public boolean isEmpty(Location location){
@@ -190,7 +187,7 @@ public class Map{
                 .filter(entity -> entity.getLocation().equals(x, y)).findAny();
     }
 
-    public void draw(TextureManager manager, SpriteBatch batch, float multiplicatorX, float multiplicatorY, Texture emptyCase) {
+    public void draw(TextureManager<Entity> manager, SpriteBatch batch, float multiplicatorX, float multiplicatorY, Texture emptyCase) {
 
         for(Location location : getLocations()){
             Optional<Entity> entity = getEntityWithoutSize(location.x, location.y);
@@ -206,5 +203,9 @@ public class Map{
 
     public boolean hasFullSurrounding(Entity entity){
         return entity.getSurroundingLocations().stream().noneMatch(Objects::isNull);
+    }
+
+    public Stream<Entity> streamEntities() {
+        return entities.stream();
     }
 }

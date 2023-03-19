@@ -19,9 +19,9 @@ public class Entity {
         this(0, 0, path);
     }
 
-    private Entity(int x, int y, String path) {
+    public Entity(int x, int y, String path) {
         this.path = path;
-        setLocation(x, y);
+        this.location = new Location(x, y);
     }
 
     public Entity setLocation(int x, int y){
