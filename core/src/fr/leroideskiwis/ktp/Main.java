@@ -43,7 +43,7 @@ public class Main extends ApplicationAdapter {
 		Gdx.app.log("INFO", "starting game...");
 
 		try {
-			this.game = new Game(textureManager);
+			this.game = new Game();
 			resize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 		} catch (Exception e) {
 			e.printStackTrace();

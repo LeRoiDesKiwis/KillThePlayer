@@ -17,10 +17,13 @@ import java.util.function.Predicate;
 
 public class SpecialObject extends Entity{
 
-    private BiConsumer<ExecutionData, SpecialObject> execute = (data, sp) -> {};
-    private Function<ExecutionData, Location> spawn = data -> data.game.getLocationNearEnemy();
-    private Predicate<ExecutionData> onCollide;
-    private Predicate<ExecutionData> canSpawn = (data) -> true;
+    private final BiConsumer<ExecutionData, SpecialObject> execute;
+    private final Function<ExecutionData, Location> spawn;
+    private final Predicate<ExecutionData> onCollide = data -> {
+        execute(data, this);
+        return true;
+    };;
+    private final Predicate<ExecutionData> canSpawn;
     private final String name;
     private final float chance;
     private final boolean triggerable;
@@ -29,30 +32,14 @@ public class SpecialObject extends Entity{
         execute.accept(executionData, specialObject);
     }
 
-    public SpecialObject(String name, float chance, BiConsumer<ExecutionData, SpecialObject> execute, Function<ExecutionData, Location> spawn,
-                         Predicate<ExecutionData> onCollide, Predicate<ExecutionData> canSpawn, boolean triggerable) {
+    public SpecialObject(String name, float chance, BiConsumer<ExecutionData, SpecialObject> execute, Function<ExecutionData, Location> spawn, Predicate<ExecutionData> canSpawn, boolean triggerable) {
         super(name+".png");
         this.name = Utils.getText("objects."+name+".name");
         this.chance = chance;
-
-        this.onCollide = data -> {
-            execute(data, this);
-            return true;
-        };
-        this.execute = execute != null ? execute : this.execute;
-        this.onCollide = onCollide != null ? onCollide : this.onCollide;
-        this.spawn = spawn != null ? spawn : this.spawn;
-        this.canSpawn = canSpawn != null ? canSpawn : this.canSpawn;
+        this.execute = execute;
+        this.spawn = spawn;
+        this.canSpawn = canSpawn;
         this.triggerable = triggerable;
-    }
-    public SpecialObject(String name, float chance, BiConsumer<ExecutionData, SpecialObject> execute, Function<ExecutionData, Location> spawn,
-                         Predicate<ExecutionData> onCollide, Predicate<ExecutionData> canSpawn){
-        this(name, chance, execute, spawn, onCollide, canSpawn, true);
-
-    }
-
-    public SpecialObject(String name, float chance, BiConsumer<ExecutionData, SpecialObject> execute){
-        this(name, chance, execute, null, null, null);
     }
 
     public String toString(){
@@ -94,7 +81,6 @@ public class SpecialObject extends Entity{
     public static class SpecialObjectBuilder{
         private BiConsumer<ExecutionData, SpecialObject> execute = (data, sp) -> {};
         private Function<ExecutionData, Location> spawn = data -> data.game.getLocationNearEnemy();
-        private Predicate<ExecutionData> onCollide;
         private Predicate<ExecutionData> canSpawn = (data) -> true;
         private String name;
         private float chance;
@@ -107,11 +93,6 @@ public class SpecialObject extends Entity{
 
         public SpecialObjectBuilder setSpawn(Function<ExecutionData, Location> spawn) {
             this.spawn = spawn;
-            return this;
-        }
-
-        public SpecialObjectBuilder setOnCollide(Predicate<ExecutionData> onCollide) {
-            this.onCollide = onCollide;
             return this;
         }
 
@@ -136,7 +117,7 @@ public class SpecialObject extends Entity{
         }
 
         public SpecialObject build() {
-            return new SpecialObject(name, chance, execute, spawn, onCollide, canSpawn, triggerable);
+            return new SpecialObject(name, chance, execute, spawn, canSpawn, triggerable);
         }
     }
 }
