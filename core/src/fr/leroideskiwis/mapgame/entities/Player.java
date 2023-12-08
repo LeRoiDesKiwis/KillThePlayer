@@ -38,11 +38,11 @@ public class Player extends Entity {
         entityOpt.filter(entity -> entity.onCollide(new ExecutionData(this, map, game))).ifPresent(map::deleteEntity);
 
         if(invincibility.isInvincible()) {
-            entityOpt.filter(Entity::isRemovable).ifPresent(entity -> {
+            if(!entityOpt.isPresent() || entityOpt.get().isRemovable()) {
                 map.replaceEntity(x, y, this);
                 invincibility.removeOne();
                 invincibility.display(game);
-            });
+            } else return false;
         } else return map.setEntity(x, y, this);
 
         return true;
