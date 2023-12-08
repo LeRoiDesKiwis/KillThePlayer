@@ -90,4 +90,53 @@ public class SpecialObject extends Entity{
         Texture texture = SpecialObjects.textureManager.registerIfAbsent(name, path);
         batch.draw(texture, rectangle.x, rectangle.y, rectangle.width*size(), rectangle.height*size());
     }
+
+    public static class SpecialObjectBuilder{
+        private BiConsumer<ExecutionData, SpecialObject> execute = (data, sp) -> {};
+        private Function<ExecutionData, Location> spawn = data -> data.game.getLocationNearEnemy();
+        private Predicate<ExecutionData> onCollide;
+        private Predicate<ExecutionData> canSpawn = (data) -> true;
+        private String name;
+        private float chance;
+        private boolean triggerable;
+
+        public SpecialObjectBuilder setExecute(BiConsumer<ExecutionData, SpecialObject> execute) {
+            this.execute = execute;
+            return this;
+        }
+
+        public SpecialObjectBuilder setSpawn(Function<ExecutionData, Location> spawn) {
+            this.spawn = spawn;
+            return this;
+        }
+
+        public SpecialObjectBuilder setOnCollide(Predicate<ExecutionData> onCollide) {
+            this.onCollide = onCollide;
+            return this;
+        }
+
+        public SpecialObjectBuilder setCanSpawn(Predicate<ExecutionData> canSpawn) {
+            this.canSpawn = canSpawn;
+            return this;
+        }
+
+        public SpecialObjectBuilder setName(String name) {
+            this.name = name;
+            return this;
+        }
+
+        public SpecialObjectBuilder setChance(float chance) {
+            this.chance = chance;
+            return this;
+        }
+
+        public SpecialObjectBuilder setTriggerable(boolean triggerable) {
+            this.triggerable = triggerable;
+            return this;
+        }
+
+        public SpecialObject build() {
+            return new SpecialObject(name, chance, execute, spawn, onCollide, canSpawn, triggerable);
+        }
+    }
 }
