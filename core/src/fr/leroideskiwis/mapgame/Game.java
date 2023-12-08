@@ -32,7 +32,6 @@ public final class Game {
     private final int size;
     //private JSONConfiguration configuration;
     private boolean lock = false;
-    private final TextureManager<Entity> textureManager;
 
     public boolean movePlayer(int x, int y){
         return player.move(x, y);
@@ -43,8 +42,7 @@ public final class Game {
         sendMessage(Utils.format("score.win", score));
     }
 
-    public Game(TextureManager<Entity> textureManager) {
-        this.textureManager = textureManager;
+    public Game() {
         this.size = randomInt(28, 32);
         Gdx.app.log("INFO", "new instance of game");
         debugMode = false;
@@ -85,17 +83,20 @@ public final class Game {
     }
 
     public void update() {
-        if (map.getEntitiesByType(Coin.class).size() == 0) map.generateRandom(new Coin(randomInt(5, 10)));
+        if (map.getEntitiesByType(Coin.class).isEmpty()) map.generateRandom(new Coin(randomInt(5, 10)));
 
         for (int i = 0, rand = 1; i < rand; i++) {
+            if(Math.random() < 0.8) continue;
             spawnEnnemy(map);
         }
 
-        if (Math.random() < 0.05) spawnRandomObject();
+        int objectSize = map.getEntitiesByType(SpecialObject.class).size();
+
+        if (Math.random() < 0.35d/objectSize) spawnRandomObject();
 
         if(Math.random() < 0.005) killObjectIfSurrounded();
 
-        if (player.hasLose() || map.getEmptyCases().size() == 0){
+        if (player.hasLose() || map.getEmptyCases().isEmpty()){
             sendMessage(Utils.getText("game.finish"));
             return;
         }
@@ -131,7 +132,7 @@ public final class Game {
             return;
         }
 		
-		if(map.getEmptyCases().size() == 0) return;
+		if(map.getEmptyCases().isEmpty()) return;
 
         map.setEntity(getLocationNearEnemy(), new Enemy());
 
