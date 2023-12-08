@@ -31,7 +31,6 @@ public class Utils {
 
         if(list.isEmpty()) return Optional.empty();
 
-        return Optional.of(list.get(random.nextInt(list.size()-1)));
-
+        return Optional.of(list.get(random.nextInt(list.size())));
     }
 }
